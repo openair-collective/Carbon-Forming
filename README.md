@@ -125,15 +125,15 @@ Firebase emulators require [Java](https://www.oracle.com/java/technologies/downl
 
 ### Running the Development Server
 
-Run these these two commands in seperate terminal instances
+You will want to run these two commands in seperate terminal instances
 
 1. Run the Vite project in development mode
    ```sh
-    npm run dev
+    npm run watch:dev
    ```
 1. Run the Firebase emulators
    ```sh
-    npx run firebase emulators:start
+    npx firebase emulators:start
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

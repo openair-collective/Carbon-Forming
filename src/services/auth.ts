@@ -1,8 +1,7 @@
 import { User } from '@/store/user'
 
-const FIREBASE_FUNCTIONS_URI = import.meta.env.VITE_FIREBASE_FUNCTIONS_URI
-const REDIRECT_URI = `${FIREBASE_FUNCTIONS_URI}${import.meta.env.VITE_FIREBASE_REDIRECT_PATH}`
-const TOKEN_URI = `${FIREBASE_FUNCTIONS_URI}${import.meta.env.VITE_FIREBASE_TOKEN_PATH}`
+const REDIRECT_URI = import.meta.env.VITE_FIREBASE_REDIRECT_PATH
+const TOKEN_URI = import.meta.env.VITE_FIREBASE_TOKEN_PATH
 
 class AuthService {
   

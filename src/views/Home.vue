@@ -1,8 +1,10 @@
 <template>
   <h1>Home</h1>
-  <p v-if="currentUser && currentUser.guild">
+  <div v-if="currentUser && currentUser.guild">
     <strong>Hello, {{ currentUser.guild.user.username}}</strong>
-  </p>
+    <p>{{ currentUser.guild.roles }}</p>
+    <img :src="currentUser.avatar" />
+  </div>
 </template>
 
 <script lang="ts">
