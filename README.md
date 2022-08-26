@@ -90,7 +90,7 @@ For local development, you will want to [create a new test Application](https://
 
 #### Firebase
 
-Our application has been desinged for deployment on the [Firebase app development](https://firebase.google.com) platform. The Firebase services that are currently used are:
+The application has been designed to be deployed to the [Firebase app development](https://firebase.google.com) platform. The Firebase services that are currently used are:
 
 * [Cloud Firestore](https://firebase.google.com/docs/firestore/quickstart)
 * [Authentication for Web](https://firebase.google.com/docs/auth/web/start)
@@ -114,8 +114,8 @@ Firebase emulators require [Java](https://www.oracle.com/java/technologies/downl
    ```
 1. Copy and update your Environment Variable files ([Read Docs](https://github.com/openair-collective/Carbon-Forming/wiki/Environment-Variables))
    ```sh
-   cp .sample.env > .env.local
-   cp ./functions/.sample.secret.local > ./functions/secret.local
+   cp .sample.env .env.local
+   cp ./functions/.sample.secret.local ./functions/secret.local
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
