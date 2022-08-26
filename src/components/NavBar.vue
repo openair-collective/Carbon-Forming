@@ -8,7 +8,16 @@
     <div class="navbar-menu">
       <div class="navbar-start">
         <router-link :to="{name: 'home'}" class="navbar-item" >Home</router-link>
-        <router-link :to="{name: 'competitions'}" class="navbar-item">Competitions</router-link>
+        <router-link 
+          v-if="currentUser"
+          :to="{name: 'competitions'}" 
+          class="navbar-item"
+        >
+            Competitions
+        </router-link>
+      </div>
+      <div v-if="currentUser" class="navbar-end">
+        <button @click="logout" class="navbar-item" >Logout</button>
       </div>
     </div>
   </nav>
@@ -16,9 +25,23 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import auth from '@/services/auth'
+import { mapState, mapStores } from 'pinia'
+import { useUserStore } from '@/store/user'
 
 export default defineComponent({
-  name: "nav-bar"
+  name: "nav-bar",
+  computed: {
+    ...mapStores(useUserStore),
+    ...mapState(useUserStore, ['currentUser'])
+  },
+  methods: {
+    logout() {
+      this.userStore.logout().then(result => {
+        this.$router.push({'name': 'login'})
+      })
+    }
+  }
 })
 </script>
 
