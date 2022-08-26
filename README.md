@@ -13,7 +13,7 @@
 <br />
 <div align="center">
 
-  <h3 align="center">Carbon-Forming</h3>
+  <h3 align="center">Carbon Forming Competition Platform</h3>
 
   <p align="center">
     A platform to support the evolution of distributed DIY carbon removal technology though monthly competition and collaboration.
@@ -44,6 +44,7 @@
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
+    <li><a href="#usage">Usage</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -75,18 +76,67 @@ A platform to support the evolution of distributed DIY carbon removal technology
 
 ### Prerequisites
 
+#### Node & NVM
+
+Our current version of [Vite][Vite-url] requires a Node version of **v18.6.0**.
+
+[Node Version Manager (nvm)](https://github.com/nvm-sh/nvm) is reccomended for managing your local node installations. A `.nvmrc` file is located at the root of the project.
+
 #### Discord
 
-TBD
+We use the Discord [OAuth2](https://discord.com/developers/docs/topics/oauth2) authoriation system to authenticate OpenAir server users and access API data on their behalf.
+
+For local development, you will want to [create a new test Application](https://discord.com/developers/docs/getting-started#creating-an-app) within the Discord [Developer Portal](https://discord.com/developers/applications). A Discord account is required.
 
 #### Firebase
 
-TBD
+Our application has been desinged for deployment on the [Firebase app development](https://firebase.google.com) platform. The Firebase services that are currently used are:
+
+* [Cloud Firestore](https://firebase.google.com/docs/firestore/quickstart)
+* [Authentication for Web](https://firebase.google.com/docs/auth/web/start)
+* [Cloud Storage for Web](https://firebase.google.com/docs/storage/web/start)
+
+For local development, you will want to [create a new Project](https://firebase.google.com/docs/web/setup?authuser=0&hl=en#create-firebase-project-and-app) within the Firebase [Console](https://console.firebase.google.com/). A Google account is required.
+
+#### Java
+
+Firebase emulators require [Java](https://www.oracle.com/java/technologies/downloads) JDK version 11 or higher.
 
 ### Installation
 
-TBD
+1. Clone the repo
+   ```sh
+   git clone https://github.com/openair-collective/Carbon-Forming.git
+   ```
+1. Install NPM packages
+   ```sh
+   npm install
+   ```
+1. Copy and update your Environment Variable files ([Read Docs](https://github.com/openair-collective/Carbon-Forming/wiki/Environment-Variables))
+   ```sh
+   cp .sample.env > .env.local
+   cp ./functions/.sample.secret.local > ./functions/secret.local
+   ```
 
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- USAGE EXAMPLES -->
+## Usage
+
+### Running the Development Server
+
+Run these these two commands in seperate terminal instances
+
+1. Run the Vite project in development mode
+   ```sh
+    npm run dev
+   ```
+1. Run the Firebase emulators
+   ```sh
+    npx run firebase emulators:start
+   ```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- CONTRIBUTING -->
 ## Contributing
@@ -121,7 +171,7 @@ TBD
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-<!-- MARKDOWN LINKS & IMAGES -->
+<!-- MARKDOWN LINKS -->
 [contributors-shield]: https://img.shields.io/github/contributors/openair-collective/Carbon-Forming
 [contributors-url]: https://github.com/openair-collective/Carbon-Forming/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/openair-collective/Carbon-Forming
