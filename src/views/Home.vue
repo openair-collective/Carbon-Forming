@@ -7,9 +7,9 @@
   </div>
   <div>
     <h2>Comps list</h2>
-    <template v-if="list && list.length">
-      <p v-for="comp in list" :key="comp.name">{{ comp.name }}</p>
-    </template>
+    <ul v-if="list && list.length">
+      <li v-for="(comp, i) in list" :key="'comp_' + i">{{ comp.name }}</li>
+    </ul>
   </div>
 </template>
 
@@ -29,10 +29,10 @@ export default defineComponent({
     ...mapState(useCompetitionStore, ['list'])
   },
   mounted() {
-    if (this.currentUser && !this.currentUser.guild) {
-      this.userStore.fetchUserGuild()
-    }
-    else {
+    if (this.currentUser) {
+      if (!this.currentUser.guild) {
+        this.userStore.fetchUserGuild()
+      }
       this.competitionStore.fetchList()
     }
   }

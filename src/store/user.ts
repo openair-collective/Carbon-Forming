@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import auth from '@/services/auth'
 import discord from '@/services/discord'
-import firebase from '@/services/firebase'
 import log from '@/services/logger'
 
 export declare interface User {
@@ -37,7 +36,7 @@ export const useUserStore = defineStore('user', {
       return auth.login()
     },
     logout():Promise<any> {
-      return firebase.logout()
+      return auth.logout()
         .then(() => {
           localStorage.removeItem(KEY_OAUTH_USER)
           this.currentUser = null
@@ -48,7 +47,6 @@ export const useUserStore = defineStore('user', {
         const response = await auth.exchangeToken(code, status)
         localStorage.setItem(KEY_OAUTH_USER, JSON.stringify(response))
         this.currentUser = response as User
-        firebase.login(this.currentUser.firebase_access_token)
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
