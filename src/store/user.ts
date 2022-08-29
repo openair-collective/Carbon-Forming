@@ -1,4 +1,3 @@
-// store.js
 import { defineStore } from 'pinia'
 import auth from '@/services/auth'
 import discord from '@/services/discord'
@@ -6,9 +5,9 @@ import firebase from '@/services/firebase'
 import log from '@/services/logger'
 
 export declare interface User {
-  firebase_access_token:string,
-  discord_access_token:string,
-  discord_id:string,
+  firebase_access_token:string
+  discord_access_token:string
+  discord_id:string
   avatar:string
   guild?:Guild
 }
@@ -54,7 +53,7 @@ export const useUserStore = defineStore('user', {
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
-        log.error(MODULE_ID, '#fetchUserGuild > ' + message)
+        log.error(MODULE_ID, '#exchangeToken > ' + message)
       }
       return this.currentUser
     },

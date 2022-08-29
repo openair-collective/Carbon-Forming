@@ -131,9 +131,9 @@ You will want to run these two commands in seperate terminal instances
    ```sh
     npm run watch:dev
    ```
-1. Run the Firebase emulators
+1. Run the Firebase emulators and import the seed data
    ```sh
-    npx firebase emulators:start
+    npx firebase emulators:start --import ./seed
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

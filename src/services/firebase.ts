@@ -1,23 +1,26 @@
-import { initializeApp } from "firebase/app";
-import { getAuth, Auth, signInWithCustomToken, connectAuthEmulator } from 'firebase/auth'
+import { getApp, getApps, initializeApp } from "firebase/app"
+import { FIREBASE_CONFIG } from "@/const"
+import { getAuth, onAuthStateChanged, Auth, signInWithCustomToken, connectAuthEmulator } from 'firebase/auth'
+import log from '@/services/logger'
 
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID
-}
+const MODULE_ID = 'services/firebase'
 
-const app = initializeApp(firebaseConfig)
+const app = getApps().length > 0 ? getApp() : initializeApp(FIREBASE_CONFIG)
 
 export const auth:Auth = getAuth()
 export const URI_FIREBASE_AUTH = import.meta.env.VITE_FIREBASE_EMULATOR_AUTH_URI
 
-if (URI_FIREBASE_AUTH) {
-  connectAuthEmulator(auth, URI_FIREBASE_AUTH)
+if (import.meta.env.DEV) {
+  connectAuthEmulator(auth, 'http://localhost:9099')
 }
+
+onAuthStateChanged(auth, user => {
+  if (user) {
+    log.info(MODULE_ID, '#onAuthStateChange > user authenticated')
+  } else {
+    log.info(MODULE_ID, '#onAuthStateChange > user not authenticated')
+  }
+})
 
 class FirebaseService {
 

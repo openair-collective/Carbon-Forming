@@ -7,7 +7,8 @@
     "dev": "vite",
     "watch:dev": "vite build --watch --mode development",
     "build": "vue-tsc --noEmit && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "db:export": "firebase emulators:export ./seed"
   },
   "dependencies": {
     "@types/node": "^18.7.6",
