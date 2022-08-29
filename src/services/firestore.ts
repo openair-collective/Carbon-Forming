@@ -1,6 +1,6 @@
 import { getApp, getApps, initializeApp } from "firebase/app"
 import { FIREBASE_CONFIG } from "@/const"
-import { getFirestore, getDocs, collection, connectFirestoreEmulator } from "firebase/firestore"
+import { getFirestore, getDocs, collection, doc, connectFirestoreEmulator } from "firebase/firestore"
 
 const app = getApps().length > 0 ? getApp() : initializeApp(FIREBASE_CONFIG)
 const db = getFirestore(app)
@@ -24,7 +24,7 @@ class FirestoreService {
     let result = [] as Array<Object>
     const docsSnap = await getDocs(competitionsRef)
     if (docsSnap.size) {
-      result = docsSnap.docs.map(doc => doc.data())
+      result = docsSnap.docs.map(comp => Object.assign({ id: comp.id }, comp.data()))
     }
     return result
   }

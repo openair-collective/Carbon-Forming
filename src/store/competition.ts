@@ -3,8 +3,9 @@ import firestore from '@/services/firestore'
 import log from '@/services/logger'
 
 export declare interface Competition {
-  name:string,
-  description:string,
+  id: string
+  name:string
+  description:string
   start:string
   end:string
 }
