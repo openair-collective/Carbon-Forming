@@ -9,10 +9,6 @@ class AuthService {
     window.location.href = REDIRECT_URI
   }
 
-  logout():Promise<void> {
-    return Promise.resolve()
-  }
-
   async exchangeToken(code: string, state: string):Promise<User> {
     const uri = `${TOKEN_URI}?code=${code}&state=${state}`
     const response = await fetch(uri)

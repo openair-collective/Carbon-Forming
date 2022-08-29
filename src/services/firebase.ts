@@ -1,6 +1,13 @@
 import { getApp, getApps, initializeApp } from "firebase/app"
 import { FIREBASE_CONFIG } from "@/const"
-import { getAuth, onAuthStateChanged, Auth, signInWithCustomToken, connectAuthEmulator } from 'firebase/auth'
+import { 
+  getAuth, 
+  onAuthStateChanged, 
+  Auth, 
+  signInWithCustomToken, 
+  connectAuthEmulator,
+  signOut
+} from 'firebase/auth'
 import log from '@/services/logger'
 
 const MODULE_ID = 'services/firebase'
@@ -29,7 +36,8 @@ class FirebaseService {
   }
 
   logout() {
-    return auth.signOut()
+    console.info('signing out')
+    return signOut(auth)
   }
 
 }

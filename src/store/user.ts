@@ -37,8 +37,7 @@ export const useUserStore = defineStore('user', {
       return auth.login()
     },
     logout():Promise<any> {
-      return auth.logout()
-        .then(() => firebase.logout)
+      return firebase.logout()
         .then(() => {
           localStorage.removeItem(KEY_OAUTH_USER)
           this.currentUser = null
