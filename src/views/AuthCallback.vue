@@ -5,8 +5,8 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import auth from '@/services/auth'
-import { mapStores } from 'pinia'
+import { auth as authRef } from '@/services/firebase'
+import { mapState, mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
 
 function getURLParameter(name:string): string | null {
@@ -24,21 +24,30 @@ export default defineComponent({
     }
   },
   computed: {
+    ...mapState(useUserStore, ['currentUser', 'oauth']),
     ...mapStores(useUserStore),
   },
   mounted() {
+    let unsubscribe = authRef.onAuthStateChanged(user => {
+      if (user) {
+        this.userStore.fetchUser(user.uid, user.photoURL || '')
+          .then(result => {
+            this.$router.push({ name: 'home'})
+          })
+          .catch(error => {
+            this.error = 'There was an issue with your login <PROMPT FOR LOGIN>'
+          })
+      }
+    })
     if (this.code && this.state) {
       this.userStore.exchangeToken(this.code, this.state)
-        .then(
-          result => {
-            this.$router.push({ name: 'home'})
-          },
-          error => {
-            this.error = error
-          }
-        )
     }
-    else {
+    else if (this.oauth && this.currentUser) {
+      unsubscribe()
+      this.$router.push({ name: 'home'})
+    }
+    else if (!this.oauth && !this.currentUser) {
+      unsubscribe()
       this.$router.push({ name: 'login' })
     }
   }

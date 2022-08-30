@@ -37,10 +37,14 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const store = useUserStore()
+  // auth_callback should always load - it manages intermediate Auth states
   if (to.name === 'auth_callback') {
     next()
   }
-  else if (!store.currentUser && to.name !== 'login') {
+  else if (store.oauth && !store.currentUser && to.name !== 'auth_callback') {
+    next({ name: 'auth_callback'})
+  }
+  else if (!store.oauth && to.name !== 'login') {
     next({ name: 'login' })
   }
   else {

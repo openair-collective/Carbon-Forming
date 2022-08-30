@@ -1,29 +1,21 @@
 import { defineStore } from 'pinia'
+import { Competition } from '@/types'
 import firestore from '@/services/firestore'
 import log from '@/services/logger'
-
-export declare interface Competition {
-  id: string
-  name:string
-  description:string
-  start:string
-  end:string
-}
 
 const MODULE_ID = 'store/competition'
 
 interface CompetionState {
-  list: Array<Competition>
+  list: Array<Competition> | null
 }
 
 export const useCompetitionStore = defineStore('competition', {
   state: (): CompetionState => ({
-    list: [],
+    list: null,
   }),
   actions: {
-    async fetchList():Promise<Competition[]> {
+    async fetchList():Promise<Competition[]|null> {
       try { 
-        log.info(MODULE_ID, 'fetching competition list')
         const response = await firestore.competitions()
         this.list = response as Competition[]
       }

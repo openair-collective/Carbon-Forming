@@ -24,22 +24,28 @@ function getUserAvatar(user_id, avatar_id, ext) {
 *
 * @returns {Promise<string>} The Firebase custom auth token in a promise.
 */
-async function createFirebaseToken(discord_id) {
-
-  // The UID we'll assign to the user.
-  const uid = `discord:${discord_id}`
+async function createFirebaseToken(uid, photoURL) {
 
   // Create or update the user account.
-  const userCreationTask = admin.auth().updateUser(uid, {})
+  const userAuthTask = admin.auth().updateUser(uid, {})
     .catch((error) => {
       // If user does not exists we create it.
       if (error.code === 'auth/user-not-found') {
-        return admin.auth().createUser({ uid: uid})
+        return admin.auth().createUser({
+          uid: uid,
+          photoURL: photoURL
+        })
       }
       throw error
     })
 
-  await Promise.all([userCreationTask]);
+  const db = admin.firestore()  
+  const userCreationTask = db.collection('users').doc(uid).set({}, {merge: true})
+    .catch((error) => {
+      throw error
+    })
+
+  await Promise.all([userAuthTask, userCreationTask])
 
   const token = await admin.auth().createCustomToken(uid)
   return token
@@ -88,7 +94,7 @@ exports.token = functions.https.onRequest(async (req, res) => {
         }
       ).toString()
 
-      // fetch access token
+      // fetch access token from Discord OAuth api
       const tokenResponse = await fetch(URI_TOKEN, {
         method: 'POST',
         body: data,
@@ -97,8 +103,8 @@ exports.token = functions.https.onRequest(async (req, res) => {
         }
       })
 
-      // fetch user info
       if (tokenResponse.ok) {
+        // Fetch Discord user info
         let tokenJSON = await tokenResponse.json()
         functions.logger.log('Received tokenJSON:', tokenJSON)
         const userResponse = await fetch(URI_USER, {
@@ -107,16 +113,18 @@ exports.token = functions.https.onRequest(async (req, res) => {
             Authorization: `Bearer ${tokenJSON.access_token}`
           }
         })
-        let userJSON = await userResponse.json()
-        functions.logger.log('Received userJSON:', userJSON)
-        let fb_token = await createFirebaseToken(userJSON.id)
+        let discordUserJSON = await userResponse.json()
+        // The UID we'll assign to the user.
+        const uid = `discord:${discordUserJSON.id}`
+        // Create a custom Firebase auth user/token
+        const photoURL = getUserAvatar(discordUserJSON.id, discordUserJSON.avatar)
+        const fb_token = await createFirebaseToken(uid, photoURL)
         res.json({
           firebase_access_token: fb_token,
           discord_access_token: tokenJSON.access_token,
+          discord_id: discordUserJSON.id,
           // discord_refresh_token: tokenJSON.refresh_token,
-          // expires_in: tokenJSON.expires_in,
-          discord_id: userJSON.id,
-          avatar: getUserAvatar(userJSON.id, userJSON.avatar)
+          // expires_in: tokenJSON.expires_in
         })
       }
       else {
