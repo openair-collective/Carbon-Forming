@@ -9,14 +9,14 @@
       <div class="navbar-start">
         <router-link :to="{name: 'home'}" class="navbar-item" >Home</router-link>
         <router-link 
-          v-if="currentUser"
+          v-if="profile"
           :to="{name: 'competitions'}" 
           class="navbar-item"
         >
             Competitions
         </router-link>
       </div>
-      <div v-if="currentUser" class="navbar-end">
+      <div v-if="profile" class="navbar-end">
         <button @click="logout" class="navbar-item" >Logout</button>
       </div>
     </div>
@@ -33,7 +33,7 @@ export default defineComponent({
   name: "nav-bar",
   computed: {
     ...mapStores(useUserStore),
-    ...mapState(useUserStore, ['currentUser'])
+    ...mapState(useUserStore, ['profile'])
   },
   methods: {
     logout() {

@@ -1,5 +1,5 @@
 <template>
-  <nav-bar v-if="currentUser" />
+  <nav-bar v-if="profile" />
   <article class="article">
     <router-view />
   </article>
@@ -19,7 +19,7 @@ export default defineComponent({
     NavBar
   },
   computed: {
-    ...mapState(useUserStore, ['currentUser'])
+    ...mapState(useUserStore, ['profile'])
   }
 })
 </script>

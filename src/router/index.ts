@@ -3,6 +3,7 @@ import type { App } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '@/views/Home.vue'
 import Competitions from '@/views/Competitions.vue'
+import Team from '@/views/Team.vue'
 import Login from '@/views/Login.vue'
 import AuthCallback from '@/views/AuthCallback.vue'
 import { useUserStore } from '@/store/user'
@@ -17,6 +18,11 @@ const routes: RouteRecordRaw[] = [
     path: '/competitions',
     name: 'competitions',
     component: Competitions
+  },
+  {
+    path: '/teams/:id',
+    name: 'team',
+    component: Team
   },
   {
     path: '/login',
@@ -41,7 +47,7 @@ router.beforeEach(async (to, from, next) => {
   if (to.name === 'auth_callback') {
     next()
   }
-  else if (store.oauth && !store.currentUser && to.name !== 'auth_callback') {
+  else if (store.oauth && !store.profile && to.name !== 'auth_callback') {
     next({ name: 'auth_callback'})
   }
   else if (!store.oauth && to.name !== 'login') {

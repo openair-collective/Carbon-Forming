@@ -24,7 +24,7 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapState(useUserStore, ['currentUser', 'oauth']),
+    ...mapState(useUserStore, ['profile', 'oauth']),
     ...mapStores(useUserStore),
   },
   mounted() {
@@ -42,11 +42,11 @@ export default defineComponent({
     if (this.code && this.state) {
       this.userStore.exchangeToken(this.code, this.state)
     }
-    else if (this.oauth && this.currentUser) {
+    else if (this.oauth && this.profile) {
       unsubscribe()
       this.$router.push({ name: 'home'})
     }
-    else if (!this.oauth && !this.currentUser) {
+    else if (!this.oauth && !this.profile) {
       unsubscribe()
       this.$router.push({ name: 'login' })
     }

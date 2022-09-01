@@ -31,10 +31,11 @@ export default defineComponent({
   },
   methods: {
     submitTeamForm() {
+      console.info('saving team')
       this.saving = true
       firestore.saveTeam(this.team)
         .then(result => {
-          console.info(result)
+          this.$emit("team-saved", result)
         })
         .catch(error => {
           console.info(error)

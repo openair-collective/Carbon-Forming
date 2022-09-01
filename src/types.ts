@@ -4,11 +4,9 @@ export declare interface OAuth {
   discord_id:string
 }
 
-export declare interface User {
+export declare interface UserProfile {
   id: string
   avatar:string
-  guild?:Guild
-  teams?:Array<Team>
 }
 
 export declare interface Guild {
@@ -33,6 +31,6 @@ export declare interface Competition {
   id: string
   name:string
   description:string
-  start:string
-  end:string
+  start:number
+  end:number
 }

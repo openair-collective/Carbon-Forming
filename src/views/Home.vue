@@ -3,34 +3,39 @@
   <div v-if="guildError">
     <p>Warning: User is not an OpenAir guild member. Need to do some kind of redirect thing.</p>
   </div>
-  <div v-else-if="currentUser && currentUser.guild">
-    <img :src="currentUser.avatar" />
+  <div v-else-if="profile && guild">
+    <img :src="profile.avatar" />
     <br />
-    <strong>Hello, {{ currentUser.guild.user.username}}</strong>
+    <strong>Hello, {{ guild.user.username}}</strong>
     <hr/>
-    <strong>Discord Role IDs</strong>
+    <h2>Discord Role IDs</h2>
     <ul>
-      <li v-for="role in currentUser.guild.roles" :key="role">
+      <li v-for="role in guild.roles" :key="role">
         {{ role }}
       </li>
     </ul>
+    <template v-if="profile">
     <hr/>
-    <strong>Teams</strong>
-    <ul v-if="currentUser && currentUser.teams && currentUser.teams.length">
-      <li v-for="(team, i) in currentUser.teams" :key="i">
-        {{ team.name }}
-      </li>
-    </ul>
-    <p v-else><em>No teams</em></p>
-    <div>
-      <strong>Add User Team</strong>
-      <team-form />
+    <div v-if="teams.length">
+      <h2>Your Team</h2>
+      <ul v-if="teams.length ">
+        <li v-for="(team, i) in teams" :key="i">
+          <router-link :to="{ name: 'team', params: { id: team.id } }">{{ team.name }}</router-link> | 
+          <button @click="removeTeam(team)">remove</button>
+        </li>
+      </ul>
     </div>
+    <div v-else>
+      <strong>Create Your Team</strong>
+      <team-form @team-saved="onTeamSaved" />
+    </div>
+    </template>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { Team } from '@/types'
 import { mapState, mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
 import log from '@/services/logger'
@@ -47,15 +52,31 @@ export default defineComponent({
   },
   computed: {
     ...mapStores(useUserStore),
-    ...mapState(useUserStore, ['currentUser', 'oauth'])
+    ...mapState(useUserStore, ['profile', 'oauth', 'teams', 'guild'])
   },
   mounted() {
-    if (this.oauth && this.currentUser && !this.currentUser.guild) {
+    if (this.oauth) {
+      if (!this.guild) {
         this.userStore.fetchUserGuild()
           .catch(error => {
             this.guildError = true
             log.info(MODULE_ID, 'User is not a valid OpenAir member. <PROMPT USER>')
           })
+      }
+      if (!this.teams) {
+        this.userStore.fetchTeams()
+          .catch(error => {
+            log.info(MODULE_ID, error)
+          })
+      }
+    }
+  },
+  methods: {
+    onTeamSaved(team:Team) {
+      this.userStore.addTeam(team.id)
+    },
+    removeTeam(team:Team) {
+      this.userStore.removeTeam(team.id)
     }
   }
 })
