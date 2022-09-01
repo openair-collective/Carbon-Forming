@@ -108,14 +108,18 @@ Firebase emulators require [Java](https://www.oracle.com/java/technologies/downl
    ```sh
    git clone https://github.com/openair-collective/Carbon-Forming.git
    ```
-1. Install NPM packages
+1. Install NPM packages in root and `/functions` directory
    ```sh
+   npm install
+   ```
+   ```sh
+   cd functions
    npm install
    ```
 1. Copy and update your Environment Variable files ([Read Docs](https://github.com/openair-collective/Carbon-Forming/wiki/Environment-Variables))
    ```sh
    cp .sample.env .env.local
-   cp ./functions/.sample.secret.local ./functions/secret.local
+   cp ./functions/.sample.secret.local ./functions/.secret.local
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
