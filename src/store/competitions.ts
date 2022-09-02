@@ -9,7 +9,7 @@ interface CompetionState {
   list: Array<Competition> | null
 }
 
-export const useCompetitionStore = defineStore('competition', {
+export const useCompetitionsStore = defineStore('competitions', {
   state: (): CompetionState => ({
     list: null,
   }),

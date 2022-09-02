@@ -1,7 +1,13 @@
 <template>
-  <h1 v-if="team">
-    Team {{ team.name }}
-  </h1>
+  <section v-if="team">
+    <figure class="image is-64x64 is-pulled-left mr-4">
+      <img src="https://bulma.io/images/placeholders/64x64.png">
+    </figure>
+    <h1 class="title is-2">{{ team.name }}</h1>
+    <h2 class="subtitle">Region/Province/City, Country</h2>
+    <hr/>
+    <h3 class="title is-3">Projects</h3>
+  </section>
   <h1 v-else>Loading...</h1>
 </template>
 
@@ -20,8 +26,8 @@ export default defineComponent({
     }
   },
   mounted() {
-    if (this.$route.params.id) {
-      firestore.team(this.$route.params.id as string)
+    if (!this.team && this.$route.params.team_id) {
+      firestore.team(this.$route.params.team_id as string)
         .then(result => this.team = result)
     }
     else {

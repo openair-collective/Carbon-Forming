@@ -23,9 +23,9 @@ body {
 
 #app {
   flex-grow: 1;
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0;
+  min-height: 100%;
+  flex-direction: column;
+  flex-wrap: wrap;
 }
 
 @media (prefers-color-scheme: light) {

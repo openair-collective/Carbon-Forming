@@ -1,9 +1,10 @@
 import type { RouteRecordRaw } from 'vue-router'
 import type { App } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '@/views/Home.vue'
+import Dashboard from '@/views/Dashboard.vue'
 import Competitions from '@/views/Competitions.vue'
 import Team from '@/views/Team.vue'
+import UserTeam from '@/views/UserTeam.vue'
 import Login from '@/views/Login.vue'
 import AuthCallback from '@/views/AuthCallback.vue'
 import { useUserStore } from '@/store/user'
@@ -11,8 +12,15 @@ import { useUserStore } from '@/store/user'
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    name: 'home',
-    component: Home
+    name: 'root',
+    component: Dashboard,
+    children: [
+      {
+        path: '/user/:id/teams/:team_id',
+        name: 'user-team',
+        component: UserTeam
+      }
+    ]
   },
   {
     path: '/competitions',

@@ -1,6 +1,15 @@
 <template>
-  <h1>Logging you in...</h1>
-  <div v-if="error">{{ error }}</div>
+  <main>
+    <section class="p-4">
+      <div v-if="error">
+        <h1 class="title is-1">Uh oh.</h1>
+        <div v-if="error">{{ error }}</div>
+      </div>
+      <div v-else>
+        <h1 class="title is-3">Logging you in...</h1>
+      </div>
+    </section>
+  </main>
 </template>
 
 <script lang="ts">
@@ -32,7 +41,7 @@ export default defineComponent({
       if (user) {
         this.userStore.fetchUser(user.uid, user.photoURL || '')
           .then(result => {
-            this.$router.push({ name: 'home'})
+            this.$router.push({ name: 'root'})
           })
           .catch(error => {
             this.error = 'There was an issue with your login <PROMPT FOR LOGIN>'
@@ -44,7 +53,7 @@ export default defineComponent({
     }
     else if (this.oauth && this.profile) {
       unsubscribe()
-      this.$router.push({ name: 'home'})
+      this.$router.push({ name: 'root'})
     }
     else if (!this.oauth && !this.profile) {
       unsubscribe()

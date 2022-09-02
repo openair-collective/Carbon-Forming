@@ -1,29 +1,31 @@
 <template>
-  <h1>Competitions</h1>
-  <div v-if="!list">
-    <p>Loading competitions</p>
-  </div>
-  <ol v-else>
-    <li v-for="(comp, i) in list" :key="i">{{ comp.name }}</li>
-  </ol>
+  <section class="p-4">
+    <h1 class="title is-2">Competitions</h1>
+    <div v-if="!list">
+      <p>Loading competitions</p>
+    </div>
+    <ol v-else>
+      <li v-for="(comp, i) in list" :key="i">{{ comp.name }}</li>
+    </ol>
+  </section>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { mapState, mapStores } from 'pinia';
-import { useCompetitionStore } from '@/store/competition';
+import { useCompetitionsStore } from '@/store/competitions';
 
 export default defineComponent({
   data() {
     return {}
   },
   computed: {
-    ...mapStores(useCompetitionStore),
-    ...mapState(useCompetitionStore, ['list'])
+    ...mapStores(useCompetitionsStore),
+    ...mapState(useCompetitionsStore, ['list'])
   },
   mounted() {
     if (!this.list) {
-      this.competitionStore.fetchList()
+      this.competitionsStore.fetchList()
     }
   }
 })

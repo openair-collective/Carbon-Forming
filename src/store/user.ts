@@ -7,7 +7,9 @@ import log from '@/services/logger'
 
 const MODULE_ID = 'store/user'
 const KEY_OAUTH = 'oauth'
-let localOAuth = localStorage.getItem(KEY_OAUTH)
+const KEY_GUILD = 'guild'
+const localOAuth = localStorage.getItem(KEY_OAUTH)
+const localGuild = localStorage.getItem(KEY_GUILD)
 
 interface UserState {
   oauth: OAuth | null
@@ -20,11 +22,13 @@ export const useUserStore = defineStore('user', {
   state: (): UserState => ({
     oauth: localOAuth ? JSON.parse(localOAuth) as OAuth : null,
     profile: null,
-    guild: null,
+    guild: localGuild ? JSON.parse(localGuild) as Guild : null,
     teams: [] as Team[]
   }),
   getters: {
-    isAuthenticated: (state) => { return state.oauth }
+    isAuthenticated: (state) => { 
+      return state.oauth && state.profile && state.guild
+    }
   },
   actions: {
     login() {
@@ -32,6 +36,7 @@ export const useUserStore = defineStore('user', {
     },
     async logout():Promise<void> {
       localStorage.removeItem(KEY_OAUTH)
+      localStorage.removeItem(KEY_GUILD)
       // need some kind of reset function here
       this.oauth = null
       this.profile = null
@@ -56,6 +61,9 @@ export const useUserStore = defineStore('user', {
         response.id = uid
         response.avatar = photoUrl
         this.profile = response
+        if (!this.guild) {
+          await this.fetchUserGuild()
+        }
         await this.fetchTeams()
       }
       catch(error) {
@@ -67,6 +75,7 @@ export const useUserStore = defineStore('user', {
       if (this.oauth && this.oauth.discord_access_token) {
         try {
           const response = await discord.userGuildMember(this.oauth.discord_access_token)
+          localStorage.setItem(KEY_GUILD, JSON.stringify(response))
           this.guild = response as Guild
         }
         catch(error) {
