@@ -4,9 +4,13 @@
     <div v-if="!list">
       <p>Loading competitions</p>
     </div>
-    <ol v-else>
-      <li v-for="(comp, i) in list" :key="i">{{ comp.name }}</li>
-    </ol>
+    <ul v-else>
+      <li v-for="(comp, i) in list" :key="i">
+        <router-link class="button is-text" :to="{ name: 'competition', params: { id: comp.id } }">
+          {{ comp.name }}
+        </router-link>
+      </li>
+    </ul>
   </section>
 </template>
 
@@ -16,17 +20,12 @@ import { mapState, mapStores } from 'pinia';
 import { useCompetitionsStore } from '@/store/competitions';
 
 export default defineComponent({
-  data() {
-    return {}
-  },
   computed: {
     ...mapStores(useCompetitionsStore),
     ...mapState(useCompetitionsStore, ['list'])
   },
   mounted() {
-    if (!this.list) {
-      this.competitionsStore.fetchList()
-    }
+    this.competitionsStore.fetchList()
   }
 })
 

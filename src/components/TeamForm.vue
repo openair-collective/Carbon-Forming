@@ -1,25 +1,36 @@
 <template>
   <form @submit.prevent="submitTeamForm" :disabled="saving">
     <div class="field"> 
+      <label>Team Name</label>
       <div class="control">
-        <input class="input" type="text" placeholder="Team Name" v-model="team.name">
+        <input class="input" type="text" v-model="team.name" required>
       </div>
     </div>
-    <button type="submit">Save</button>
+    <div class="field"> 
+      <label>Where is your team located?</label>
+      <div class="control">
+        <input class="input" type="text" v-model="team.location" required>
+      </div>
+    </div>
+    <button type="submit" class="">Save</button>
   </form>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import firestore from '@/services/firestore'
 import { Team } from '@/types'
+import firestore from '@/services/firestore'
+import log from '@/services/logger'
+
+const MODULE_ID = 'components/TeamForm'
 
 export default defineComponent({
   props: {
     team: {
       type: Object as () => Team,
       default: {
-        name: ''
+        name: null,
+        location: null
       }
     }
   },
@@ -31,14 +42,13 @@ export default defineComponent({
   },
   methods: {
     submitTeamForm() {
-      console.info('saving team')
       this.saving = true
       firestore.saveTeam(this.team)
         .then(result => {
           this.$emit("team-saved", result)
         })
         .catch(error => {
-          console.info(error)
+          log.error(MODULE_ID, error)
         })
         .finally(() => {
           this.saving = false

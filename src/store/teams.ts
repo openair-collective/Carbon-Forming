@@ -11,10 +11,10 @@ interface TeamState {
 
 export const useTeamsStore = defineStore('teams', {
   state: (): TeamState => ({
-    list: null,
+    list: null
   }),
   actions: {
-    async fetchList():Promise<Team[]|null> {
+    async fetchList():Promise<void> {
       try { 
         const response = await firestore.teams()
         this.list = response as Team[]
@@ -23,7 +23,6 @@ export const useTeamsStore = defineStore('teams', {
         let message = (error instanceof Error) ? error.message : String(error)
         log.error(MODULE_ID, '#fetchList > ' + message)
       }
-      return this.list
     }
   }
 })

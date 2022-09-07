@@ -1,50 +1,53 @@
 <template>
-  <section v-if="profile && guild" class="section" >
-    <aside class="aside p-4 has-background-grey-light">
-      <h1 class="title is-6">My Teams</h1>
-      <ul v-if="teams.length ">
-        <li v-for="(team, i) in teams" :key="i">
-          <router-link :to="{ name: 'user-team', params: { id: profile.id, team_id: team.id } }">{{ team.name }}</router-link>
-        </li>
-      </ul>
-      <hr/>
-      <strong>Add a Team</strong>
-      <team-form @team-saved="onTeamSaved" />
-    </aside>
-    <article class="article p-4">
-      <router-view />
-    </article>
-  </section>
-  <section v-else>
-    Loading...
-  </section>
+  <div class="dashboard">
+    <div class="sidebar has-background-grey-dark p-4">
+      <router-link :to="{name: 'root'}" class="button is-small is-fullwidth" >Teams</router-link>
+      <br/>
+      <router-link :to="{name: 'competitions'}" class="button is-small is-fullwidth">Competitions</router-link>
+    </div>
+    <router-view v-if="isAuthenticated" class="content" />
+    <div v-else>
+      Loading...
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Team } from '@/types'
 import { mapState, mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
-import TeamForm from '@/components/TeamForm.vue'
 import log from '@/services/logger'
 
-const MODULE_ID ='views/team'
+const MODULE_ID ='views/dashboard'
 
 export default defineComponent({
-  components: { TeamForm },
   data() {
     return {}
   },
   computed: {
     ...mapStores(useUserStore),
-    ...mapState(useUserStore, ['profile', 'teams', 'guild'])
+    ...mapState(useUserStore, ['profile', 'teams', 'isAuthenticated'])
+  },
+  beforeRouteUpdate(to, from) {
+    if (to.name === 'root') {
+      this.selectDefaultTeam()
+    }
+  },
+  mounted() {
+    if (this.$route.name === 'root') {
+      this.selectDefaultTeam()
+    }
   },
   methods: {
-    onTeamSaved(team:Team) {
-      this.userStore.addTeam(team.id)
+    selectDefaultTeam() {
+      const store = useUserStore()
+      if (this.teams.length) {
+        let team = this.teams[0]
+        this.$router.replace({ name: 'teams', params: { id: team.id }})
+      }
     },
-    removeTeam(team:Team) {
-      this.userStore.removeTeam(team.id)
+    onCreateNewTeam() {
+      return false
     }
   }
 })
@@ -52,18 +55,17 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.section {
+.dashboard {
   display: flex;
   flex-direction: row;
 }
-.aside {
-  width: 176px;
+.sidebar {
+  width: 132px;
   flex:0 1 auto;
   order: 1;
 }
-.article {
+.content {
   flex: 2;
   order: 2;
-  min-height: calc(100vh - 56px);
 }
 </style>

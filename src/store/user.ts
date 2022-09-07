@@ -26,8 +26,12 @@ export const useUserStore = defineStore('user', {
     teams: [] as Team[]
   }),
   getters: {
-    isAuthenticated: (state) => { 
-      return state.oauth && state.profile && state.guild
+    isAuthenticated: (state):boolean => {
+      let result = false
+      if(state.oauth && state.profile && state.guild) {
+        result = true
+      }
+      return result
     }
   },
   actions: {
@@ -60,11 +64,7 @@ export const useUserStore = defineStore('user', {
         const response = await firestore.userProfile(uid)
         response.id = uid
         response.avatar = photoUrl
-        this.profile = response
-        if (!this.guild) {
-          await this.fetchUserGuild()
-        }
-        await this.fetchTeams()
+        this.profile = response as UserProfile
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
@@ -74,9 +74,11 @@ export const useUserStore = defineStore('user', {
     async fetchUserGuild():Promise<void> {
       if (this.oauth && this.oauth.discord_access_token) {
         try {
-          const response = await discord.userGuildMember(this.oauth.discord_access_token)
-          localStorage.setItem(KEY_GUILD, JSON.stringify(response))
-          this.guild = response as Guild
+          if (!this.guild) {
+            const response = await discord.userGuildMember(this.oauth.discord_access_token)
+            localStorage.setItem(KEY_GUILD, JSON.stringify(response))
+            this.guild = response as Guild
+          }
         }
         catch(error) {
           let message = (error instanceof Error) ? error.message : String(error)
@@ -90,8 +92,7 @@ export const useUserStore = defineStore('user', {
     async fetchTeams():Promise<void> {
       if (this.oauth && this.profile) {
         try {
-          const response = await firestore.userTeams(this.profile.id)
-          this.teams = response as Team[]
+          this.teams = await firestore.userTeams(this.profile.id) as Team[]
         }
         catch(error) {
           let message = (error instanceof Error) ? error.message : String(error)
@@ -106,7 +107,7 @@ export const useUserStore = defineStore('user', {
       if (this.oauth && this.profile) {
         try {
           await firestore.addTeamToUser(team_id, this.profile.id)
-          return this.fetchTeams()
+          this.fetchTeams()
         }
         catch(error) {
           let message = (error instanceof Error) ? error.message : String(error)
@@ -121,7 +122,7 @@ export const useUserStore = defineStore('user', {
       if (this.oauth && this.profile) {
         try {
           await firestore.removeTeamFromUser(team_id, this.profile.id)
-          return this.fetchTeams()
+          this.fetchTeams()
         }
         catch(error) {
           let message = (error instanceof Error) ? error.message : String(error)

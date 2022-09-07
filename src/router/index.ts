@@ -1,12 +1,12 @@
 import type { RouteRecordRaw } from 'vue-router'
-import type { App } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import Dashboard from '@/views/Dashboard.vue'
 import Competitions from '@/views/Competitions.vue'
-import Team from '@/views/Team.vue'
-import UserTeam from '@/views/UserTeam.vue'
+import Competition from '@/views/Competition.vue'
+import Teams from '@/views/Teams.vue'
 import Login from '@/views/Login.vue'
 import AuthCallback from '@/views/AuthCallback.vue'
+import Onboarding from '@/views/Onboarding.vue'
 import { useUserStore } from '@/store/user'
 
 const routes: RouteRecordRaw[] = [
@@ -16,21 +16,26 @@ const routes: RouteRecordRaw[] = [
     component: Dashboard,
     children: [
       {
-        path: '/user/:id/teams/:team_id',
-        name: 'user-team',
-        component: UserTeam
+        path: '/teams/:id',
+        name: 'teams',
+        component: Teams
+      },
+      {
+        path: '/competitions',
+        name: 'competitions',
+        component: Competitions
+      },
+      {
+        path: '/competitions/:id',
+        name: 'competition',
+        component: Competition
       }
     ]
   },
   {
-    path: '/competitions',
-    name: 'competitions',
-    component: Competitions
-  },
-  {
-    path: '/teams/:id',
-    name: 'team',
-    component: Team
+    path: '/onboarding',
+    name: 'onboarding',
+    component: Onboarding
   },
   {
     path: '/login',
@@ -49,26 +54,16 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, from) => {
   const store = useUserStore()
-  // auth_callback should always load - it manages intermediate Auth states
-  if (to.name === 'auth_callback') {
-    next()
-  }
-  else if (store.oauth && !store.profile && to.name !== 'auth_callback') {
-    next({ name: 'auth_callback'})
-  }
-  else if (!store.oauth && to.name !== 'login') {
-    next({ name: 'login' })
-  }
-  else {
-    next()
-  }
-})
 
-// can set some router hooks here
-export function useRouter(app: App<Element>) {
-  app.use(router)
-}
+  if (!store.oauth && to.name !== 'auth_callback' && to.name !== 'login') {
+    return { name: 'login', query: { redirect: to.path }}
+  }
+  else if (!store.profile && to.name !== 'auth_callback' && to.name !== 'login') {
+    return { name: 'auth_callback', query: { redirect: to.path }}
+  }
+
+})
 
 export default router

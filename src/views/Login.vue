@@ -12,10 +12,18 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import auth from '@/services/auth'
+import { useUserStore } from '@/store/user'
 
 export default defineComponent({
   data() {
     return {}
+  },
+  beforeRouteEnter(to, from) {
+    let store = useUserStore()
+    if (store.oauth) {
+      let redirect = to.query.redirect as string
+      return redirect || '/'
+    }
   },
   methods: {
     login() {
