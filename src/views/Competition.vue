@@ -61,12 +61,21 @@
     >
       <h2 class="title is-4">Submitted Projects</h2>
       <div v-if="competition.projects && competition.projects.length">
-      <ul>
-        <li v-for="(project, i) in competition.projects" :key="'project_'+ i" >
-          {{ project }}
-        </li>
-      </ul>
-    </div>
+        <div v-if="errors.projects">
+          {{ errors.projects }}
+        </div>
+        <ul v-else-if="projects && projects.length">
+          <li v-for="(project, i) in projects" :key="'project_'+ i" >
+            {{ project.name }}
+          </li>
+        </ul>
+        <div v-else>
+          Loading...
+        </div>
+      </div>
+      <div v-else>
+        No projects
+      </div>
     </article>
   </section>
   <h1 v-else class="title is-2">Loading...</h1>
@@ -74,7 +83,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Competition } from '@/types'
+import { Competition, Project } from '@/types'
 import { mapState, mapStores } from 'pinia'
 import { useCompetitionsStore } from '@/store/competitions'
 import log from '@/services/logger'
@@ -89,9 +98,20 @@ const TABS = {
 export default defineComponent({
   data() {
     return {
-      competition: undefined as Competition|undefined,
       kTabs: TABS,
-      activeTab: TABS.DETAILS
+      competition: undefined as Competition|undefined,
+      projects: undefined as Project[]|undefined,
+      activeTab: TABS.DETAILS,
+      errors: {
+        projects: ''
+      }
+    }
+  },
+  watch: {
+    activeTab(newTab) {
+      if (newTab === TABS.PROJECTS && this.competition && !this.projects) {
+        this.setCompetitionProjects(this.competition)
+      }
     }
   },
   computed: { 
@@ -111,6 +131,17 @@ export default defineComponent({
   methods: {
     setCompetitonByID(id:string) {
       this.competition = this.list.find(t => t.id === id)
+    },
+    setCompetitionProjects(comp:Competition) {
+      this.errors.projects = ''
+      this.competitionsStore.getCompetitionProjects(comp)
+        .then(result => {
+          this.projects = result
+        })
+        .catch(error => {
+          this.errors.projects = '<ERROR SHOW PROMPT>'
+          log.error(MODULE_ID, '#setTeamProjects > Error' + error)
+        })
     }
   }
 })

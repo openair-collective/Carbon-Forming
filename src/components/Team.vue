@@ -10,11 +10,17 @@
     <article class="article p-4 has-background-white-bis">
       <h3 class="title is-4">Projects</h3>
       <div v-if="team.projects && team.projects.length">
-        <ul>
-          <li v-for="(project, i) in team.projects" :key="'project_'+ i" >
-            {{ project }}
+        <div v-if="errors.projects">
+          {{ errors.projects }}
+        </div>
+        <ul v-else-if="projects && projects.length">
+          <li v-for="(project, i) in projects" :key="'project_'+ i" >
+            {{ project.name }}
           </li>
         </ul>
+        <div v-else>
+          Loading...
+        </div>
       </div>
       <div v-else>
         <h4 class="title is-5">No projects yet</h4>
@@ -27,7 +33,9 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Team } from '@/types'
+import { Team, Project } from '@/types'
+import { mapStores } from 'pinia'
+import { useTeamsStore } from '@/store/teams'
 import log from '@/services/logger'
 
 const MODULE_ID ='components/team'
@@ -37,6 +45,37 @@ export default defineComponent({
     team: {
       type: Object as () => Team,
       default: undefined
+    }
+  },
+  data() {
+    return {
+      projects: undefined as Project[]|undefined,
+      errors: {
+        projects: ''
+      }
+    }
+  },
+  watch: {
+    team(newTeam) {
+      if (newTeam) {
+        this.setTeamProjects(newTeam)
+      }
+    }
+  },
+  computed: { 
+    ...mapStores(useTeamsStore),
+  },
+  methods: {
+    setTeamProjects(team:Team) {
+      this.errors.projects = ''
+      this.teamsStore.getTeamProjects(team)
+        .then(result => {
+          this.projects = result
+        })
+        .catch(error => {
+          this.errors.projects = '<ERROR SHOW PROMPT>'
+          log.error(MODULE_ID, '#setTeamProjects > Error' + error)
+        })
     }
   }
 })

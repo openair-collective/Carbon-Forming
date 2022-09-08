@@ -1,16 +1,16 @@
 import { defineStore } from 'pinia'
-import { Team } from '@/types'
+import { Team, Project } from '@/types'
 import firestore from '@/services/firestore'
 import log from '@/services/logger'
 
 const MODULE_ID = 'store/teams'
 
-interface TeamState {
+interface State {
   list: Array<Team> | null
 }
 
 export const useTeamsStore = defineStore('teams', {
-  state: (): TeamState => ({
+  state: (): State => ({
     list: null
   }),
   actions: {
@@ -22,6 +22,16 @@ export const useTeamsStore = defineStore('teams', {
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
         log.error(MODULE_ID, '#fetchList > ' + message)
+      }
+    },
+    async getTeamProjects(team:Team):Promise<Project[]|undefined> {
+      try {
+        const response = await firestore.competitionProjects(team.id)
+        return response
+      }
+      catch(error) {
+        let message = (error instanceof Error) ? error.message : String(error)
+        log.error(MODULE_ID, '#getTeamProjects > ' + message)
       }
     }
   }

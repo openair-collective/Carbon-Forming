@@ -1,16 +1,16 @@
 import { defineStore } from 'pinia'
-import { Competition } from '@/types'
+import { Competition, Project } from '@/types'
 import firestore from '@/services/firestore'
 import log from '@/services/logger'
 
 const MODULE_ID = 'store/competition'
 
-interface CompetionState {
+interface State {
   list: Array<Competition>
 }
 
 export const useCompetitionsStore = defineStore('competitions', {
-  state: (): CompetionState => ({
+  state: (): State => ({
     list: [] as Competition[],
   }),
   actions: {
@@ -31,6 +31,16 @@ export const useCompetitionsStore = defineStore('competitions', {
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
         log.error(MODULE_ID, '#saveCompetition > ' + message)
+      }
+    },
+    async getCompetitionProjects(comp:Competition):Promise<Project[]|undefined> {
+      try {
+        const response = await firestore.competitionProjects(comp.id)
+        return response
+      }
+      catch(error) {
+        let message = (error instanceof Error) ? error.message : String(error)
+        log.error(MODULE_ID, '#getCompetitionProjects > ' + message)
       }
     }
   }
