@@ -16,7 +16,7 @@ export const useCompetitionsStore = defineStore('competitions', {
   actions: {
     async fetchList():Promise<void> {
       try {
-        const response = await firestore.competitions()
+        const response = await firestore.getCompetitions()
         this.list = response as Competition[]
       }
       catch(error) {
@@ -35,7 +35,7 @@ export const useCompetitionsStore = defineStore('competitions', {
     },
     async getCompetitionProjects(comp:Competition):Promise<Project[]|undefined> {
       try {
-        const response = await firestore.competitionProjects(comp.id)
+        const response = await firestore.getCompetitionProjects(comp)
         return response
       }
       catch(error) {

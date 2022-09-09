@@ -16,6 +16,7 @@ import { auth as authRef } from '@/services/firebase'
 import { Team } from '@/types'
 import { mapState, mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
+import { isEmpty } from '@/utils/object'
 import log from '@/services/logger'
 
 const MODULE_ID = 'views/AuthCallback'
@@ -46,11 +47,11 @@ export default defineComponent({
       if (user) {
         this.userStore.fetchUser(user.uid, user.photoURL || '')
           .then(result => this.userStore.fetchUserGuild())
-          .then(result => this.userStore.fetchTeams())
           .then(result => {
-            if (this.teams.length) {
-              let redirect = this.$route.query.redirect as string
-              this.$router.replace({ path: redirect || '/' })
+            const userTeams = this.profile && this.profile.teams
+            if (userTeams && !isEmpty(userTeams)) {
+              let redirect = this.$route.query.redirect as string || '/'
+              this.$router.replace({ path: redirect })
             }
             else {
               this.$router.replace({ name: 'onboarding'})

@@ -7,27 +7,35 @@ export declare interface OAuth {
 export declare interface UserProfile {
   id: string
   avatar:string
+  teams:{ [key:Team['id']]: boolean }
 }
 
 export declare interface Guild {
-  id:string
+  id?:string
   roles:string[]
   user: {
     username: string
   }
 }
 
+export enum TeamRole {
+  default,
+  admin
+}
+
 export declare interface Team {
   id:string
   name:string
   location:string
-  projects:Project[]
+  projects: { [key:Project['id']]: boolean }
+  members: { [key:string]: TeamRole }
 }
 
 export declare interface Project {
   id: string
   name:string
   team_id:string
+  terms:boolean
 }
 
 export declare interface Competition {
@@ -36,5 +44,11 @@ export declare interface Competition {
   description:string
   start:number
   end:number
-  projects:Project[]
+  projects:{ [key: Project['id']]: boolean }
+}
+
+export declare interface Modal {
+  title:string
+  component:string,
+  meta?:object
 }

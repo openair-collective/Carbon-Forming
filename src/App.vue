@@ -1,5 +1,5 @@
 <template>
-  <nav-bar v-if="showChrome && isAuthenticated" />
+  <nav-bar v-if="isAuthenticated" />
   <main class="main">
     <router-view class="content" />
   </main>
@@ -20,10 +20,7 @@ export default defineComponent({
     NavBar
   },
   computed: {
-    ...mapState(useUserStore, ['isAuthenticated']),
-    showChrome() {
-      return this.$route.name !== 'onboarding'
-    }
+    ...mapState(useUserStore, ['isAuthenticated'])
   }
 })
 </script>

@@ -14,8 +14,10 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { Team } from '@/types'
 import { mapState, mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
+import { useTeamsStore } from '@/store/teams'
 import log from '@/services/logger'
 
 const MODULE_ID ='views/dashboard'
@@ -25,8 +27,10 @@ export default defineComponent({
     return {}
   },
   computed: {
-    ...mapStores(useUserStore),
-    ...mapState(useUserStore, ['profile', 'teams', 'isAuthenticated'])
+    ...mapStores(useUserStore, useTeamsStore),
+    ...mapState(useUserStore, ['profile', 'isAuthenticated']),
+    ...mapState(useTeamsStore, ['getTeamsByMemberId']),
+    ...mapState(useTeamsStore, { teamList: 'list'})
   },
   beforeRouteUpdate(to, from) {
     if (to.name === 'root') {
@@ -40,10 +44,23 @@ export default defineComponent({
   },
   methods: {
     selectDefaultTeam() {
-      const store = useUserStore()
-      if (this.teams.length) {
-        let team = this.teams[0]
-        this.$router.replace({ name: 'teams', params: { id: team.id }})
+      if (this.profile) {
+        if (this.teamList) {
+          let userTeams = this.getTeamsByMemberId(this.profile.id)
+          let team = userTeams && userTeams.length ? userTeams[0] : this.teamList[0]
+          this.$router.replace({ name: 'teams', params: { id: team.id }})
+        }
+        else {
+          this.teamsStore.fetchList()
+            .then(result => {
+              if (this.teamList) {
+                this.selectDefaultTeam()
+              }
+              else {
+                log.warn(MODULE_ID, "#selectDefaultTeam > No teams to show <PROMPT FOR")
+              }
+            })
+          }
       }
     },
     onCreateNewTeam() {

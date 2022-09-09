@@ -1,6 +1,6 @@
 import { getApp, getApps, initializeApp } from "firebase/app"
 import { FIREBASE_CONFIG } from "@/const"
-import { UserProfile, Team, Project, Competition } from "@/types"
+import { UserProfile, Team,TeamRole, Project, Competition } from "@/types"
 import { 
   getFirestore,
   addDoc,
@@ -32,10 +32,10 @@ if (import.meta.env.DEV) {
 
 class FirestoreService {
 
-  async userProfile(uid:string):Promise<UserProfile> {
-    const ref = doc(db, KEY_USERS, uid)
+  async getUserProfile(id:string):Promise<UserProfile> {
+    const ref = doc(db, KEY_USERS, id)
     const docSnap = await getDoc(ref)
-    return Object.assign(docSnap.data() as UserProfile, {id: uid})
+    return Object.assign(docSnap.data() as UserProfile, { id })
   }
 
   async saveUserProfile(user:UserProfile):Promise<void> {
@@ -48,44 +48,43 @@ class FirestoreService {
     await setDoc(ref, clone, { merge: true })
   }
 
-  async userTeams(uid:string):Promise<Team[]> {
-    const q = query(collection(db, KEY_TEAMS), where(`members.${uid}`, '==', true))
+  async userTeams(user:UserProfile):Promise<Team[]> {
+    const q = query(collection(db, KEY_TEAMS), where(`members.${user.id}`, '==', true))
     const snap = await getDocs(q)
     return snap.docs.map(team => Object.assign({ id: team.id }, team.data()) as Team)
   }
 
-  async addTeamToUser(team_id:string, uid:string, role?:string):Promise<void> {
+  async addTeamToUser(team:Team, user:UserProfile, role?:TeamRole):Promise<void> {
     const batch = writeBatch(db)
-    // save team to user as team
-    const userRef = doc(db, KEY_USERS, uid)
+    // save team ref to user.teams
+    const userRef = doc(db, KEY_USERS, user.id)
     batch.set(userRef, { teams: {
-        [`${team_id}`]: role || 'default'
+        [`${team.id}`]: role || TeamRole.default
       }
-    })
-    // save user to team as a member
-    const teamRef = doc(db, KEY_TEAMS, team_id)
-    batch.set(teamRef, {
-      members: {
-        [`${uid}`]: true
+    }, { merge: true })
+    // save user to team to  team.members
+    const teamRef = doc(db, KEY_TEAMS, team.id)
+    batch.set(teamRef, { members: {
+        [`${user.id}`]: true
       }
     }, { merge: true })
     await batch.commit()
   }
 
-  async removeTeamFromUser(team_id:string, uid:string) {
+  async removeTeamFromUser(team:Team, user:UserProfile) {
     const batch = writeBatch(db)
-    const userRef = doc(db, KEY_USERS, uid)
+    const userRef = doc(db, KEY_USERS, user.id)
     batch.update(userRef, { teams: 
       {
-        [`${team_id}`]: deleteField()
+        [`${team.id}`]: deleteField()
       }
     })
-    const q = query(collection(db, KEY_TEAMS), where(`members.${uid}`, '==', true))
+    const q = query(collection(db, KEY_TEAMS), where(`members.${user.id}`, '==', true))
     const snap = await getDocs(q)
     snap.forEach(doc => {
       batch.update(doc.ref, { members: 
         {
-          [`${uid}`]: deleteField()
+          [`${user.id}`]: deleteField()
         }
       })
     })
@@ -109,25 +108,25 @@ class FirestoreService {
     return result
   }
 
-  async deleteTeam(team_id:string):Promise<void> {
+  async deleteTeam(team:Team):Promise<void> {
 
     const batch = writeBatch(db)
 
     // delete Team doc
-    batch.delete(doc(db, KEY_TEAMS, team_id))
+    batch.delete(doc(db, KEY_TEAMS, team.id))
 
     // delete Team from User docs user/{user_id}/teams/{team_id}
-    const usersQuery = query(collection(db, KEY_USERS), where(`teams.${team_id}`, '==', true))
+    const usersQuery = query(collection(db, KEY_USERS), where(`teams.${team.id}`, '==', true))
     const usersSnap = await getDocs(usersQuery)
     usersSnap.forEach(doc => {
       batch.update(doc.ref, { teams: 
         {
-          [`${team_id}`] : deleteField() 
+          [`${team.id}`] : deleteField() 
         }
       })
     })
     // delete Projects that belong to the Team
-    const projectsQuery = query(collection(db, KEY_PROJECTS), where(`${team_id}`, '==', true))
+    const projectsQuery = query(collection(db, KEY_PROJECTS), where('team_id', '==', [`${team.id}`]))
     const projectsSnap = await getDocs(projectsQuery)
     const projectIDs:string[] = []
     projectsSnap.forEach(doc => {
@@ -148,13 +147,13 @@ class FirestoreService {
     return await batch.commit() 
   }
 
-  async team(team_id:string):Promise<Team> {
+  async getTeam(team_id:string):Promise<Team> {
     const teamRef = doc(db, KEY_TEAMS, team_id)
     const team = await getDoc(teamRef)
     return Object.assign({ id: team.id }, team.data()) as Team
   }
 
-  async teams():Promise<Team[]> {
+  async getTeams():Promise<Team[]> {
     let result = [] as Array<any>
     const teamsRef = collection(db, KEY_TEAMS)
     const docsSnap = await getDocs(teamsRef)
@@ -174,38 +173,28 @@ class FirestoreService {
       docRef = await setDoc(ref, clone, { merge: true })
     }
     else {
-      docRef = await addDoc(collection(db, KEY_TEAMS), project)
-      result = Object.assign(project, { id: docRef.id }) as Project
+      docRef = await addDoc(collection(db, KEY_PROJECTS), project)
+      result = Object.assign({ id: docRef.id }, project) as Project
     }
     return result
   }
 
-  async deleteProject(project_id:string):Promise<void> {
+  async deleteProject(project:Project):Promise<void> {
     const batch = writeBatch(db)
 
-    const projectRef = doc(db, KEY_PROJECTS, project_id)
+    const projectRef = doc(db, KEY_PROJECTS, project.id)
     const projectDoc = await getDoc(projectRef)
     const projectData = projectDoc.data()
-    // delete the Projecgt
+    // delete the Project
     batch.delete(projectRef)
 
-    // delete Project from Team 
-    if (projectData && 'team_id' in projectData) {
-      const teamRef = doc(db, KEY_TEAMS,projectData.team_id)
-      batch.update(teamRef, { projects: 
-        {
-          [`${project_id}`] : deleteField()
-        }
-      })
-    }
-
     // delete Project from all Competitions
-    const compsQuery = query(collection(db, KEY_COMPETITIONS), where(`projects.${project_id}`, '==', true))
+    const compsQuery = query(collection(db, KEY_COMPETITIONS), where(`projects.${project.id}`, '==', true))
     const compsSnap = await getDocs(compsQuery)
     compsSnap.forEach(doc => {
       batch.update(doc.ref, { projects: 
         {
-          [`${project_id}`]: deleteField() 
+          [`${project.id}`]: deleteField() 
         }
       })
     })
@@ -213,13 +202,13 @@ class FirestoreService {
     return await batch.commit() 
   }
 
-  async project(project_id:string):Promise<Project> {
+  async getProject(project_id:string):Promise<Project> {
     const teamRef = doc(db, KEY_PROJECTS, project_id)
     const team = await getDoc(teamRef)
     return Object.assign({ id: team.id }, team.data()) as Project
   }
 
-  async projects():Promise<Project[]> {
+  async getProjects():Promise<Project[]> {
     let result = [] as Array<Project>
     const ref = collection(db, KEY_PROJECTS)
     const docsSnap = await getDocs(ref)
@@ -229,49 +218,50 @@ class FirestoreService {
     return result
   }
 
-  async teamProjects(team_id:string):Promise<Project[]> {
-    const q = query(collection(db, KEY_PROJECTS), where(`${team_id}`, '==', team_id))
+  async getTeamProjects(team:Team):Promise<Project[]> {
+    const ref = collection(db, KEY_PROJECTS)
+    const q = query(ref, where("team_id", "==", team.id))
     const snap = await getDocs(q)
     return snap.docs.map(project => Object.assign({ id: project.id }, project.data()) as Project)
   }
 
-  async competitionProjects(comp_id:string):Promise<Project[]> {
-    const q = query(collection(db, KEY_PROJECTS), where(`competitions.${comp_id}`, '==', true))
+  async getCompetitionProjects(comp:Competition):Promise<Project[]> {
+    const q = query(collection(db, KEY_PROJECTS), where(`competitions.${comp.id}`, '==', true))
     const snap = await getDocs(q)
     return snap.docs.map(project => Object.assign({ id: project.id }, project.data()) as Project)
   }
 
-  async addProjectToCompetition(project_id:string, comp_id:string):Promise<void> {
+  async addProjectToCompetition(project:Project, comp:Competition):Promise<void> {
     const batch = writeBatch(db)
-    const projectRef = doc(db, KEY_PROJECTS, project_id)
+    const projectRef = doc(db, KEY_PROJECTS, project.id)
     batch.set(projectRef, { competitions: 
       {
-        [`${comp_id}`]: true
+        [`${comp.id}`]: true
       }
     })
-    const compRef = doc(db, KEY_PROJECTS, comp_id)
+    const compRef = doc(db, KEY_PROJECTS, comp.id)
     batch.set(compRef, { projects: 
       {
-        [`${project_id}`]: true
+        [`${project.id}`]: true
       }
     }, { merge: true })
     await batch.commit()
   }
 
-  async removeProjectFromCompetitions(project_id:string, comp_id:string):Promise<void> {
+  async removeProjectFromCompetitions(project:Project, comp:Competition):Promise<void> {
     const batch = writeBatch(db)
-    const projectRef = doc(db, KEY_PROJECTS, project_id)
+    const projectRef = doc(db, KEY_PROJECTS, project.id)
     batch.update(projectRef, { competitions: 
       {
-        [`${comp_id}`]: deleteField() 
+        [`${comp.id}`]: deleteField() 
       }
     })
-    const q = query(collection(db, KEY_COMPETITIONS), where(`projects.${project_id}`, '==', true))
+    const q = query(collection(db, KEY_COMPETITIONS), where(`projects.${project.id}`, '==', true))
     const snap = await getDocs(q)
     snap.forEach(doc => {
       batch.update(doc.ref, { projects: 
         {
-          [`${project_id}`] : deleteField()
+          [`${project.id}`] : deleteField()
         }
       })
     })
@@ -295,19 +285,19 @@ class FirestoreService {
     return result
   }
 
-  async deleteCompetition(comp_id:string):Promise<void> {
+  async deleteCompetition(comp:Competition):Promise<void> {
     const batch = writeBatch(db)
 
     // delete Comp doc
-    batch.delete(doc(db, KEY_COMPETITIONS, comp_id))
+    batch.delete(doc(db, KEY_COMPETITIONS, comp.id))
 
     // delete Comps from Project docs project/{project_id}/competitions/{comp_id}
-    const q = query(collection(db, KEY_PROJECTS), where(`competitions.${comp_id}`, '==', true))
+    const q = query(collection(db, KEY_PROJECTS), where(`competitions.${comp.id}`, '==', true))
     const snap = await getDocs(q)
     snap.forEach(doc => {
       batch.update(doc.ref, { competitions: 
         {
-          [`${comp_id}`]: deleteField()
+          [`${comp.id}`]: deleteField()
         }
       })
     })
@@ -315,13 +305,13 @@ class FirestoreService {
     return await batch.commit() 
   }
 
-  async competition(comp_id:string):Promise<Competition> {
+  async getCompetition(comp_id:string):Promise<Competition> {
     const teamRef = doc(db, KEY_COMPETITIONS, comp_id)
     const team = await getDoc(teamRef)
     return Object.assign({ id: team.id }, team.data()) as Competition
   }
 
-  async competitions():Promise<Competition[]> {
+  async getCompetitions():Promise<Competition[]> {
     let result = [] as Array<Competition>
     const competitionsRef = collection(db, KEY_COMPETITIONS)
     const docsSnap = await getDocs(competitionsRef)

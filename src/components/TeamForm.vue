@@ -12,14 +12,15 @@
         <input class="input" type="text" v-model="team.location" required>
       </div>
     </div>
-    <button type="submit" class="">Save</button>
+    <button type="submit" class="button is-primary">Save</button>
   </form>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Team } from '@/types'
-import firestore from '@/services/firestore'
+import { mapStores } from 'pinia'
+import { useTeamsStore } from '@/store/teams'
 import log from '@/services/logger'
 
 const MODULE_ID = 'components/TeamForm'
@@ -28,10 +29,7 @@ export default defineComponent({
   props: {
     team: {
       type: Object as () => Team,
-      default: {
-        name: null,
-        location: null
-      }
+      required: true
     }
   },
   data() {
@@ -40,10 +38,13 @@ export default defineComponent({
       saving: false
     }
   },
+  computed: {
+    ...mapStores(useTeamsStore)
+  },
   methods: {
     submitTeamForm() {
       this.saving = true
-      firestore.saveTeam(this.team)
+      this.teamsStore.saveTeam(this.team)
         .then(result => {
           this.$emit("team-saved", result)
         })

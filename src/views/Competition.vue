@@ -118,7 +118,7 @@ export default defineComponent({
     ...mapStores(useCompetitionsStore),
     ...mapState(useCompetitionsStore, ['list'])
   },
-  mounted() {
+  created() {
     const id = this.$route.params.id as string
     if (!this.list.length) {
       this.competitionsStore.fetchList()

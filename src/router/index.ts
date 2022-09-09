@@ -4,6 +4,11 @@ import Dashboard from '@/views/Dashboard.vue'
 import Competitions from '@/views/Competitions.vue'
 import Competition from '@/views/Competition.vue'
 import Teams from '@/views/Teams.vue'
+import TeamNew from '@/views/TeamNew.vue'
+import TeamProjects from '@/views/TeamProjects.vue'
+import TeamProjectNew from '@/views/TeamProjectNew.vue'
+import TeamProjectEdit from '@/views/TeamProjectEdit.vue'
+import TeamProject from '@/views/TeamProject.vue'
 import Login from '@/views/Login.vue'
 import AuthCallback from '@/views/AuthCallback.vue'
 import Onboarding from '@/views/Onboarding.vue'
@@ -16,9 +21,37 @@ const routes: RouteRecordRaw[] = [
     component: Dashboard,
     children: [
       {
+        path: '/teams/new',
+        name: 'teams-new',
+        component: TeamNew
+      },
+      {
         path: '/teams/:id',
         name: 'teams',
-        component: Teams
+        redirect: to => `/teams/${to.params.id}/projects`,
+        component: Teams,
+        children: [
+          {
+            path: 'projects',
+            name: 'team-projects',
+            component: TeamProjects
+          },
+          {
+            path: 'projects/:project_id',
+            name: 'team-project-show',
+            component: TeamProject
+          },
+          {
+            path: 'projects/:project_id/edit',
+            name: 'team-project-edit',
+            component: TeamProjectEdit
+          },
+          {
+            path: 'projects/new',
+            name: 'team-project-new',
+            component: TeamProjectNew
+          }
+        ]
       },
       {
         path: '/competitions',

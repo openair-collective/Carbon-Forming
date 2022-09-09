@@ -3,12 +3,12 @@
     <aside class="aside has-background-grey-light">
       <h1 class="title is-6 px-4 my-2">My Teams</h1>
       <div class="has-text-centered">
-        <ul v-if="teams.length">
+        <ul v-if="userTeams && userTeams.length">
           <li 
-            v-for="(team, i) in teams"
+            v-for="(team, i) in userTeams"
             :key="i"
           >
-            <router-link class="button is-text" :to="{ name: 'teams', params: { id: team.id } }">
+            <router-link class="button is-text" :to="{ name: 'team-projects', params: { id: team.id } }">
               {{ team.name }}
             </router-link>
           </li>
@@ -22,18 +22,30 @@
       </div>
       <hr/>
       <h1 class="title is-6 px-4 my-2">All Teams</h1>
+      <ul v-if="otherTeams && otherTeams.length">
+        <li 
+          v-for="(team, i) in otherTeams"
+          :key="i"
+        >
+          <router-link class="button is-text" :to="{ name: 'team-projects', params: { id: team.id } }">
+            {{ team.name }}
+          </router-link>
+        </li>
+      </ul>
     </aside>
     <article class="article">
-      <team-component :team="selectedTeam" />
+      <team-component v-if="selectedTeam" :team="selectedTeam" />
+      <div v-else>Loading...</div>
     </article>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { mapState, mapStores } from 'pinia'
-import { useUserStore } from '@/store/user'
+import { mapState, mapStores, mapWritableState } from 'pinia'
 import { Team } from '@/types'
+import { useUserStore } from '@/store/user'
+import { useTeamsStore } from '@/store/teams'
 import TeamComponent  from '@/components/Team.vue'
 import log from '@/services/logger'
 
@@ -43,20 +55,44 @@ export default defineComponent({
   components: { TeamComponent },
   data() {
     return {
-      selectedTeam: undefined as Team|undefined
+      selectedTeam:undefined as Team|undefined
     }
   },
   computed: {
-    ...mapState(useUserStore, ['teams'])
+    ...mapStores(useTeamsStore),
+    ...mapState(useUserStore, ['profile']),
+    ...mapState(useTeamsStore, ['list', 'getTeamsByMemberId']),
+    userTeams():Team[] { 
+      let result = [] as Team[]
+      if (this.profile && this.list) {
+        result = this.getTeamsByMemberId(this.profile.id) as Team[]
+      }
+      return result
+    },
+    otherTeams():Team[] {
+      let result = this.list || []
+      if (this.list && this.userTeams) {
+        result = this.list.filter(t => this.userTeams.indexOf(t))
+      }
+      return result
+    }
   },
-  mounted() {
-    let id = this.$route.params.id
-    let team = this.teams.find(t => t.id === id)
-    this.selectedTeam = team as Team
+  created() {
+    if (this.list) {
+      this.selectedTeam = this.userTeams && this.userTeams[0]
+    }
+    else {
+      this.teamsStore.fetchList()
+        .then(result => {
+          if (this.list) {
+            this.selectedTeam = this.userTeams && this.userTeams[0]
+          }
+        })
+    }
   },
   methods: {
     onCreateNewTeam() {
-      return false
+      this.$router.push({ name: 'teams-new'})
     }
   }
 })
@@ -77,6 +113,7 @@ export default defineComponent({
   flex: 2;
   order: 2;
 }
+.router-link-active.is-text,
 .router-link-exact-active.is-text {
   background-color: hsl(0, 0%, 96%);
 }
