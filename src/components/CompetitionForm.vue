@@ -1,15 +1,15 @@
 <template>
-  <form @submit.prevent="submitTeamForm" :disabled="saving">
+  <form @submit.prevent="submitForm" :disabled="saving">
     <div class="field"> 
-      <label class="label">Team Name</label>
+      <label class="label">Name</label>
       <div class="control">
-        <input class="input" type="text" v-model="team.name" required>
+        <input class="input" type="text" v-model="competition.name" required>
       </div>
     </div>
     <div class="field"> 
-      <label class="label">Where is your team located?</label>
+      <label class="label">Description</label>
       <div class="control">
-        <input class="input" type="text" v-model="team.location" required>
+        <textarea class="textarea" v-model="competition.description"></textarea>
       </div>
     </div>
     <div class="field is-grouped is-grouped-right">
@@ -20,7 +20,7 @@
       </div>
       <div class="control">
         <button type="submit" class="button is-primary">
-          {{ team.id === undefined ? 'Create Team' : 'Update Team' }}
+          {{ competition.id === undefined ? 'Create Competition' : 'Update Competition' }}
         </button>
       </div>
     </div>
@@ -29,17 +29,17 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Team } from '@/types'
+import { Competition } from '@/types'
 import { mapStores } from 'pinia'
-import { useTeamsStore } from '@/store/teams'
+import { useCompetitionsStore } from '@/store/competitions'
 import log from '@/services/logger'
 
-const MODULE_ID = 'components/TeamForm'
+const MODULE_ID = 'components/CompetitionForm'
 
 export default defineComponent({
   props: {
-    team: {
-      type: Object as () => Team,
+    competition: {
+      type: Object as () => Competition,
       required: true
     }
   },
@@ -50,14 +50,14 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapStores(useTeamsStore)
+    ...mapStores(useCompetitionsStore)
   },
   methods: {
-    submitTeamForm() {
+    submitForm() {
       this.saving = true
-      this.teamsStore.saveTeam(this.team)
+      this.competitionsStore.saveCompetition(this.competition)
         .then(result => {
-          this.$emit("team-saved", result)
+          this.$emit("comp-saved", result)
         })
         .catch(error => {
           log.error(MODULE_ID, error)

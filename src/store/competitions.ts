@@ -6,13 +6,18 @@ import log from '@/services/logger'
 const MODULE_ID = 'store/competition'
 
 interface State {
-  list: Array<Competition>
+  list: Competition[] | undefined
 }
 
 export const useCompetitionsStore = defineStore('competitions', {
   state: (): State => ({
-    list: [] as Competition[],
+    list: undefined,
   }),
+  getters: {
+    getCompetitionById: (state) => {
+      return (compId:string) => state.list?.find((comp:Competition) => comp.id === compId)
+    }
+  },
   actions: {
     async fetchList():Promise<void> {
       try {
@@ -24,9 +29,14 @@ export const useCompetitionsStore = defineStore('competitions', {
         log.error(MODULE_ID, '#fetchList > ' + message)
       }
     },
-    async saveCompetition(comp:Competition):Promise<void> {
+    async saveCompetition(comp:Competition):Promise<Competition|undefined> {
       try {
-        await firestore.saveCompetition(comp)
+         const response = await firestore.saveCompetition(comp)
+         comp = { ...comp, ...response }
+         if (!this.list) {
+           await this.fetchList()
+         }
+         return comp
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)

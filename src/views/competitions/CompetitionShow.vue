@@ -11,6 +11,12 @@
         </ul>
       </nav>
       <h1 class="title is-2">{{ competition.name }}</h1>
+      <router-link 
+        v-if="canEdit"
+        :to="{ name: 'comp-edit', params: {id: competition.id }}"
+        class="button is-primary mb-4">
+        Edit Competition
+      </router-link>
       <div class="tabs mb-0 pb-0">
         <ul>
           <li 
@@ -85,7 +91,9 @@
 import { defineComponent } from 'vue'
 import { Competition, Project } from '@/types'
 import { mapState, mapStores } from 'pinia'
+import { useUserStore } from '@/store/user'
 import { useCompetitionsStore } from '@/store/competitions'
+import { canCreateCompetition } from '@/helpers/authHelper'
 import log from '@/services/logger'
 
 const MODULE_ID ='views/competition'
@@ -115,12 +123,20 @@ export default defineComponent({
     }
   },
   computed: { 
-    ...mapStores(useCompetitionsStore),
-    ...mapState(useCompetitionsStore, ['list'])
+    ...mapStores(useCompetitionsStore, useUserStore),
+    ...mapState(useCompetitionsStore, ['list']),
+    ...mapState(useUserStore, ['guild']),
+    canEdit():boolean {
+      let result = false
+      if (this.guild) {
+        result = canCreateCompetition(this.guild)
+      }
+      return result
+    }
   },
   created() {
     const id = this.$route.params.id as string
-    if (!this.list.length) {
+    if (!this.list || !this.list.length) {
       this.competitionsStore.fetchList()
         .then(()=> this.setCompetitonByID(id))
     }
@@ -130,7 +146,7 @@ export default defineComponent({
   },
   methods: {
     setCompetitonByID(id:string) {
-      this.competition = this.list.find(t => t.id === id)
+      this.competition = this.list &&  this.list.find(t => t.id === id)
     },
     setCompetitionProjects(comp:Competition) {
       this.errors.projects = ''

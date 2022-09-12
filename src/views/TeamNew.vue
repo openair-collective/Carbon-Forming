@@ -35,12 +35,12 @@ export default defineComponent({
   methods: {
     onCancel() {
       const id = this.$route.params.id
-      this.$router.replace({ name: 'teams'})
+      this.$router.replace({ name: 'root'})
     },
     onTeamSaved(team:Team) {
       this.userStore.addTeam(team)
         .then(result => {
-          this.$router.push({ name: 'teams', params: { id: team.id }})
+          this.$router.replace({ name: 'teams', params: { id: team.id }})
         })
         .catch(error => {
           log.warn(MODULE_ID, '#onTeamSaved > Error adding Team to User')

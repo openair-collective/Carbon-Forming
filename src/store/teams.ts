@@ -40,7 +40,7 @@ export const useTeamsStore = defineStore('teams', {
         const result = await firestore.saveTeam(team) as Team
         team = { ...team, ...result }
         if (!this.list) {
-          this.list = [team]
+          await this.fetchList()
         }
         return team
       }
@@ -64,7 +64,7 @@ export const useTeamsStore = defineStore('teams', {
         let response = await firestore.saveProject(project)
         project = {...project, ...response}
         if (!this.projects[team.id]) {
-          this.projects[team.id] = [project]
+          await this.getTeamProjects(team)
         }
         else {
           this.projects[team.id].push(project)

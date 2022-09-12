@@ -2,7 +2,11 @@
   <nav class="navbar is-light is-expanded" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
       <div class="navbar-item">
-        <h1 class="title is-4">Carbon Forming</h1>
+        <h1 class="title is-4">
+          <router-link :to="{ name: 'root'}">
+            Carbon Forming
+          </router-link>
+        </h1>
       </div>
     </div>
     <div class="navbar-menu">

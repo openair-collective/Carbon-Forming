@@ -2,7 +2,9 @@ import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHistory } from 'vue-router'
 import Dashboard from '@/views/Dashboard.vue'
 import Competitions from '@/views/Competitions.vue'
-import Competition from '@/views/Competition.vue'
+import CompetitionShow from '@/views/competitions/CompetitionShow.vue'
+import CompetitionNew from '@/views/competitions/CompetitionNew.vue'
+import CompetitionEdit from '@/views/competitions/CompetitionEdit.vue'
 import Teams from '@/views/Teams.vue'
 import TeamNew from '@/views/TeamNew.vue'
 import TeamProjects from '@/views/TeamProjects.vue'
@@ -56,12 +58,22 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/competitions',
         name: 'competitions',
-        component: Competitions
+        component: Competitions,
       },
       {
         path: '/competitions/:id',
-        name: 'competition',
-        component: Competition
+        name: 'comp-show',
+        component: CompetitionShow
+      },
+      {
+        path: '/competitions/:id/edit',
+        name: 'comp-edit',
+        component: CompetitionEdit
+      },
+      {
+        path: '/competitions/new',
+        name: 'comp-new',
+        component: CompetitionNew
       }
     ]
   },
