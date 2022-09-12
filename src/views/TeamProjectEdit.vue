@@ -1,12 +1,20 @@
 <template>
   <main>
     <section class="p-4">
+      <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+          <li>
+            <router-link :to="{ name: 'team-projects', params: { id: team.id }}">
+              &lt; Back to projects
+            </router-link>
+          </li>
+        </ul>
+      </nav>
       <h1 class="title is-3">Edit Project</h1>
       <project-form
         v-if="project"
         :team="team"
         :project="project"
-        @project-saved="onProjectSaved"
         @cancel="onCancel"
       />
       <div v-else>Loading...</div>
@@ -60,10 +68,6 @@ export default defineComponent({
     onCancel() {
       const project_id = this.$route.params.project_id
       this.$router.replace({ name: 'team-project-show', params: { project_id }})
-    },
-    onProjectSaved(project:Project) {
-      const id = this.$route.params.id
-      this.$router.replace({ name: 'team-project', params: { id, project_id: project.id }})
     }
   }
 })

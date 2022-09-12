@@ -36,6 +36,7 @@ export declare interface Project {
   name:string
   team_id:string
   terms:boolean
+  materials: Material[]
 }
 
 export declare interface Competition {
@@ -45,6 +46,13 @@ export declare interface Competition {
   start:number
   end:number
   projects:{ [key: Project['id']]: boolean }
+}
+
+export declare interface Material {
+  name: string
+  cost: number
+  quantity: number
+  link: string
 }
 
 export declare interface Modal {

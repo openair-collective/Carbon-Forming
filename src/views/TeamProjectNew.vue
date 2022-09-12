@@ -1,6 +1,16 @@
 <template>
   <main>
     <section class="p-4">
+      <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+          <li>
+          <router-link :to="{ name: 'team-projects', params: { id: team.id }}">
+              &lt; Back to projects
+            </router-link>
+          </li>
+        </ul>
+      </nav>
+      <h1 class="title is-3">Add Team Project</h1>
       <project-form
         :team="team"
         :project="project"
@@ -14,7 +24,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Team, Project } from '@/types';
+import { Team, Project, Material } from '@/types';
 import ProjectForm from '@/components/ProjectForm.vue';
 
 export default defineComponent({
@@ -29,7 +39,8 @@ export default defineComponent({
     project():Project {
       return {
         name: '',
-        terms: false
+        terms: false,
+        materials: [] as Material[]
       } as Project
     }
   },

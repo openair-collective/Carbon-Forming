@@ -4,7 +4,7 @@
       <h1 class="title is-3">{{ project.name }}</h1>
       <router-link 
         :to="{name: 'team-project-edit', params: { project_id: project.id }}"
-        class="button is-small is-primary"
+        class="button is-primary"
       >
         Edit Project
       </router-link>
@@ -13,6 +13,27 @@
       <h2 class="title is-4">Competitions</h2>
       <hr/>
       <h2 class="title is-4">Bill of Materials</h2>
+        <table class="table is-fullwidth">
+          <thead>
+            <tr>
+              <th>Item Name*</th>
+              <th>Price ($)</th>
+              <th>Quantity*</th>
+              <th>Purchase Link</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr 
+              v-for="(m, i) in project.materials" 
+              :key="'m'+ i"
+            >
+              <td>{{ m.name }}</td>
+              <td>{{ m.cost }}</td>
+              <td>{{ m.quantity }}</td>
+              <td>{{ m.link }}</td>
+            </tr>
+          </tbody>
+        </table>
       <hr/>
       <h2 class="title is-4">Design Document</h2>
       <hr/>
