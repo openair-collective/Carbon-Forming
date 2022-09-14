@@ -21,7 +21,7 @@
       <router-view :team="team" />
     </article>
   </section>
-  <loading-view v-else />
+  <loading v-else />
 </template>
 
 <script lang="ts">
@@ -31,14 +31,14 @@ import { useUserStore } from '@/store/user'
 import { useTeamsStore } from '@/store/teams'
 import { Team } from '@/types'
 import { canEditTeam } from '@/helpers/authHelper'
-import LoadingView from '@/components/Loading.vue'
+import Loading from '@/components/Loading.vue'
 import { TEAM_AVATAR_PLACEHOLDER } from '@/const'
 import log from '@/services/logger'
 
 const MODULE_ID ='components/teams/TeamShow'
 
 export default defineComponent({
-  components: { LoadingView },
+  components: { Loading },
   data() {
     return {
       team: undefined as Team | undefined

@@ -86,16 +86,14 @@
             {{ project.name }}
           </li>
         </ul>
-        <div v-else>
-          Loading...
-        </div>
+        <loading v-else />
       </div>
       <div v-else>
         No projects
       </div>
     </article>
   </section>
-  <h1 v-else class="title is-2">Loading...</h1>
+  <loading v-else />
 </template>
 
 <script lang="ts">
@@ -105,6 +103,7 @@ import { mapState, mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
 import { useCompetitionsStore } from '@/store/competitions'
 import { canCreateCompetition } from '@/helpers/authHelper'
+import Loading from '@/components/Loading.vue'
 import log from '@/services/logger'
 
 const MODULE_ID ='views/competition'
@@ -115,6 +114,7 @@ const TABS = {
 }
 
 export default defineComponent({
+  components: { Loading },
   data() {
     return {
       kTabs: TABS,

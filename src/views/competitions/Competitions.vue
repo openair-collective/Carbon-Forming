@@ -35,9 +35,7 @@
           </div>
         </div>
       </div>
-      <div v-else>
-        <p>Loading...</p>
-      </div>
+      <loading v-else />
     </article>
   </section>
 </template>
@@ -48,8 +46,10 @@ import { mapState, mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
 import { useCompetitionsStore } from '@/store/competitions'
 import { canCreateCompetition } from '@/helpers/authHelper'
+import Loading from '@/components/Loading.vue'
 
 export default defineComponent({
+  components: { Loading },
   computed: {
     ...mapStores(useCompetitionsStore, useUserStore),
     ...mapState(useCompetitionsStore, ['list']),

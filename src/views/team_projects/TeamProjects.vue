@@ -50,7 +50,7 @@
           </button>
         </div>
       </div>
-      <loading-view v-else />
+      <loading v-else />
     </article>
   </section>
 </template>
@@ -60,13 +60,13 @@ import { defineComponent } from 'vue'
 import { Team, Project } from '@/types'
 import { mapStores } from 'pinia'
 import { useTeamsStore } from '@/store/teams'
-import LoadingView from '@/components/Loading.vue'
+import Loading from '@/components/Loading.vue'
 import log from '@/services/logger'
 
 const MODULE_ID ='components/team'
 
 export default defineComponent({
-  components: { LoadingView },
+  components: { Loading },
   props: {
     team: {
       type: Object as () => Team,

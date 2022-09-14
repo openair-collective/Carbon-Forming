@@ -21,7 +21,7 @@
           :competition="competition"
           @cancel="onCancel"
         />
-        <loading-view v-else />
+        <loading v-else />
       </article>
     </section>
   </main>
@@ -31,7 +31,7 @@
 import { defineComponent } from 'vue'
 import { Competition } from '@/types'
 import CompetitionForm from '@/components/CompetitionForm.vue'
-import LoadingView from '@/components/Loading.vue'
+import Loading from '@/components/Loading.vue'
 import { mapState, mapStores } from 'pinia'
 import { useCompetitionsStore } from '@/store/competitions'
 import log from '@/services/logger'
@@ -39,7 +39,7 @@ import log from '@/services/logger'
 const MODULE_ID = 'views/CompetitionNew'
 
 export default defineComponent({
-  components: { CompetitionForm, LoadingView },
+  components: { CompetitionForm, Loading },
   data() {
     return {
       competition: undefined as Competition|undefined,

@@ -17,7 +17,7 @@
         :project="project"
         @cancel="onCancel"
       />
-      <div v-else>Loading...</div>
+      <loading v-else />
     </section>
   </main>
 </template>
@@ -28,12 +28,13 @@ import { Team, Project } from '@/types'
 import { mapStores } from 'pinia'
 import { useTeamsStore } from '@/store/teams'
 import ProjectForm from '@/components/ProjectForm.vue'
+import Loading from '@/components/Loading.vue'
 import log from '@/services/logger'
 
 const MODULE_ID = 'views/TeamProjectEdit'
 
 export default defineComponent({
-  components: { ProjectForm },
+  components: { ProjectForm, Loading },
   props: {
     team: {
       type: Object as () => Team,

@@ -4,19 +4,17 @@
       <h1 class="title is-1">Uh oh.</h1>
       <div v-if="error">{{ error }}</div>
     </div>
-    <div v-else>
-      <h1 class="title is-3">Logging you in...</h1>
-    </div>
+    <loading v-else />
   </section>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { auth as authRef } from '@/services/firebase'
-import { Team } from '@/types'
 import { mapState, mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
 import { isEmpty } from '@/utils/object'
+import Loading from '@/components/Loading.vue'
 import log from '@/services/logger'
 
 const MODULE_ID = 'views/AuthCallback'
@@ -28,6 +26,7 @@ function getURLParameter(name:string): string | null {
 }
 
 export default defineComponent({
+  components: { Loading },
   data() {
     return {
       code: getURLParameter('code'),

@@ -13,7 +13,7 @@
     </section>
     <article class="article">
       <project-view v-if="project" :project="project" />
-      <loading-view v-else />
+      <loading v-else />
     </article>
   </main>
 </template>
@@ -23,14 +23,14 @@ import { defineComponent } from 'vue'
 import { mapStores } from 'pinia'
 import { Team, Project } from '@/types'
 import ProjectView from '@/components/Project.vue'
-import LoadingView from '@/components/Loading.vue'
+import Loading from '@/components/Loading.vue'
 import { useTeamsStore } from '@/store/teams'
 import log from '@/services/logger'
 
 const MODULE_ID = 'views/TeamProject'
 
 export default defineComponent({
-  components: { ProjectView, LoadingView },
+  components: { ProjectView, Loading },
   props: {
     team: {
       type: Object as () => Team,
