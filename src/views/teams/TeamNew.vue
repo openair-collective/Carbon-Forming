@@ -1,12 +1,25 @@
 <template>
   <main>
     <section class="p-4">
+      <header class="mb-4">
+        <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+          <li>
+            <router-link :to="{ name: 'teams'}">
+              &lt; Back to teams
+            </router-link>
+          </li>
+        </ul>
+      </nav>
       <h1 class="title is-3">Create Team</h1>
-      <team-form
-        :team="team"
-        @team-saved="onTeamSaved"
-        @cancel="onCancel"
-      />
+      </header>
+      <article>
+        <team-form
+          :team="team"
+          @team-saved="onTeamSaved"
+          @cancel="onCancel"
+        />
+      </article>
     </section>
   </main>
 </template>
@@ -40,7 +53,7 @@ export default defineComponent({
     onTeamSaved(team:Team) {
       this.userStore.addTeam(team)
         .then(result => {
-          this.$router.replace({ name: 'teams', params: { id: team.id }})
+          this.$router.replace({ name: 'team-show', params: { id: team.id }})
         })
         .catch(error => {
           log.warn(MODULE_ID, '#onTeamSaved > Error adding Team to User')

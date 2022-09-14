@@ -1,16 +1,18 @@
 import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHistory } from 'vue-router'
 import Dashboard from '@/views/Dashboard.vue'
-import Competitions from '@/views/Competitions.vue'
+import Competitions from '@/views/competitions/Competitions.vue'
 import CompetitionShow from '@/views/competitions/CompetitionShow.vue'
 import CompetitionNew from '@/views/competitions/CompetitionNew.vue'
 import CompetitionEdit from '@/views/competitions/CompetitionEdit.vue'
-import Teams from '@/views/Teams.vue'
-import TeamNew from '@/views/TeamNew.vue'
-import TeamProjects from '@/views/TeamProjects.vue'
-import TeamProjectNew from '@/views/TeamProjectNew.vue'
-import TeamProjectEdit from '@/views/TeamProjectEdit.vue'
-import TeamProject from '@/views/TeamProject.vue'
+import Teams from '@/views/teams/Teams.vue'
+import TeamShow from '@/views/teams/TeamShow.vue'
+import TeamNew from '@/views/teams/TeamNew.vue'
+import TeamEdit from '@/views/teams/TeamEdit.vue'
+import TeamProjects from '@/views/team_projects/TeamProjects.vue'
+import TeamProjectNew from '@/views/team_projects/TeamProjectNew.vue'
+import TeamProjectEdit from '@/views/team_projects/TeamProjectEdit.vue'
+import TeamProject from '@/views/team_projects/TeamProject.vue'
 import Login from '@/views/Login.vue'
 import AuthCallback from '@/views/AuthCallback.vue'
 import Onboarding from '@/views/Onboarding.vue'
@@ -20,7 +22,8 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'root',
-    component: Dashboard,
+    component: Dashboard, // has router-view -- wraps team and competition views
+    redirect: to => { return '/teams' },
     children: [
       {
         path: '/teams/new',
@@ -28,32 +31,42 @@ const routes: RouteRecordRaw[] = [
         component: TeamNew
       },
       {
-        path: '/teams/:id',
+        path: '/teams',
         name: 'teams',
-        redirect: to => `/teams/${to.params.id}/projects`,
-        component: Teams,
+        component: Teams, // has router-view -- wraps team instances with / sidebar
         children: [
           {
-            path: 'projects',
-            name: 'team-projects',
-            component: TeamProjects
-          },
-          {
-            path: 'projects/:project_id',
-            name: 'team-project-show',
-            component: TeamProject
-          },
-          {
-            path: 'projects/:project_id/edit',
-            name: 'team-project-edit',
-            component: TeamProjectEdit
-          },
-          {
-            path: 'projects/new',
-            name: 'team-project-new',
-            component: TeamProjectNew
+            path: ':id',
+            component: TeamShow, // has router-view -- container team children
+            children: [
+              {
+                path: '',
+                name: 'team-show',
+                component: TeamProjects
+              },
+              {
+                path: 'projects/:project_id',
+                name: 'team-project-show',
+                component: TeamProject
+              },
+              {
+                path: 'projects/:project_id/edit',
+                name: 'team-project-edit',
+                component: TeamProjectEdit
+              },
+              {
+                path: 'projects/new',
+                name: 'team-project-new',
+                component: TeamProjectNew
+              }
+            ]
           }
-        ]
+        ],
+      },
+      {
+        path: '/teams/:id/edit',
+        name: 'team-edit',
+        component: TeamEdit // edit a team instance directly
       },
       {
         path: '/competitions',

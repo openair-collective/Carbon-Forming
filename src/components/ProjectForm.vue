@@ -5,11 +5,11 @@
       :error="error" 
       :success="success" 
       @remove="clearMessages" />
-    <form @submit.prevent="submitProjectForm" :disabled="saving">
+    <form @submit.prevent="submitProjectForm" :disabled="isSaving">
       <div class="field"> 
         <label class="label">Project Name</label>
         <div class="control">
-          <input class="input" type="text" v-model="project.name" required>
+          <input class="input" type="text" v-model="clone.name" required>
         </div>
       </div>
       <hr/>
@@ -28,7 +28,7 @@
             </thead>
             <tbody>
               <tr 
-                v-for="(m, i) in project.materials" 
+                v-for="(m, i) in clone.materials" 
                 :key="'m'+ i"
               >
                 <td><input type="text" class="input" v-model="m.name" /></td>
@@ -36,20 +36,21 @@
                 <td><input type="number" class="input" v-model="m.quantity" /></td>
                 <td><input type="text" class="input" v-model="m.link" /></td>
                 <td>
-                    <button
+                    <a
                       @click="removeMaterialAtIndex(i)"
                       class="button is-text"
                     >
                       {{ i == 0 ? 'Clear' : 'Remove' }}
-                    </button>
+                    </a>
                 </td>
               </tr>
             </tbody>
-            <button
+            <a
               @click="addMaterial"
-              class="button is-primary m-2">
+              class="button is-primary m-2"
+            >
               + Add More Materials
-            </button>
+            </a>
           </table>
         </div>
       <hr/>
@@ -60,7 +61,7 @@
       <div class="field"> 
         <div class="control">
           <label class="checkbox">
-            <input type="checkbox" v-model="project.terms" required>
+            <input type="checkbox" v-model="clone.terms" required>
               By ticking this checkbox you agree to have your project posted on the OpenAir Github under the <a href="#">open source licence</a>
             </label>
         </div>
@@ -68,12 +69,16 @@
       <hr/>
       <div class="field is-grouped is-grouped-right">
         <div class="control">
-          <button @click="$emit('cancel')" class="button is-outlined">
+          <a @click.prevent="$emit('cancel')" class="button is-outlined">
             Cancel
-          </button>
+          </a>
         </div>
         <div class="control">
-          <button type="submit" class="button is-primary">
+          <button 
+            type="submit" 
+            class="button is-primary"
+            :disabled="disableSubmit"
+          >
             Save Project
           </button>
         </div>
@@ -115,28 +120,35 @@ export default defineComponent({
   },
   data() {
     return {
+      clone: Object.assign({}, this.project),
       success: '',
       error: '',
-      saving: false,
+      isSaving: false,
     }
   },
   computed: {
-    ...mapStores(useTeamsStore)
+    ...mapStores(useTeamsStore),
+    disableSubmit():boolean {
+      return !this.clone.name || !this.clone.terms
+    }
   },
   created() {
-    let materials = this.project.materials || [initMaterial()]
-    this.project.materials = materials
+    if (!this.clone.materials || !this.clone.materials.length) {
+      this.clone.materials = [initMaterial()]
+    }
   },
   methods: {
     addMaterial() {
-      this.project.materials.push(initMaterial())
+      let patch = this.clone.materials.slice()
+      patch.push(initMaterial())
+      this.clone.materials = patch
     },
     removeMaterialAtIndex(idx:number) {
-      if (this.project.materials.length === 1) {
-        this.project.materials = [initMaterial()]
+      if (this.clone.materials.length === 1) {
+        this.clone.materials = [initMaterial()]
       }
       else {
-        this.project.materials = this.project.materials.splice(idx, 1)
+        this.clone.materials.splice(idx, 1)
       }
     },
     clearMessages() {
@@ -144,27 +156,28 @@ export default defineComponent({
       this.error = ''
     },
     submitProjectForm() {
-      this.saving = true
+      this.isSaving = true
       this.clearMessages()
       // check for any materials missing required fields
-      const materialErrors = this.project.materials.filter(p => {
+      const materialErrors = this.clone.materials.filter(p => {
        return !p.name || !p.cost || !p.quantity
       })
       if (materialErrors.length) {
         this.error = "Some materials are missing required fields"
       }
       else {
-        this.teamsStore.saveTeamProject(this.team, this.project)
-        .then(result => {
-          this.success = 'Project Saved'
-          this.$emit("project-saved", result)
-        })
-        .catch(error => {
-          log.error(MODULE_ID, error)
-        })
-        .finally(() => {
-          this.saving = false
-        })
+        this.teamsStore.saveTeamProject(this.team, this.clone)
+          .then(result => {
+            Object.assign(this.clone, this.project)
+            this.success = 'Project Saved'
+            this.$emit("project-saved", this.project)
+          })
+          .catch(error => {
+            log.error(MODULE_ID, error)
+          })
+          .finally(() => {
+            this.isSaving = false
+          })
       }
     }
   }

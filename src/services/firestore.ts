@@ -48,10 +48,16 @@ class FirestoreService {
     await setDoc(ref, clone, { merge: true })
   }
 
-  async userTeams(user:UserProfile):Promise<Team[]> {
+  async getUserTeams(user:UserProfile):Promise<Team[]> {
+    let result = [] as Team[]
     const q = query(collection(db, KEY_TEAMS), where(`members.${user.id}`, '==', true))
     const snap = await getDocs(q)
-    return snap.docs.map(team => Object.assign({ id: team.id }, team.data()) as Team)
+    if (snap.size) {
+      result = snap.docs.map(team => {
+        return Object.assign({ id: team.id }, team.data()) as Team
+      })
+    }
+    return result
   }
 
   async addTeamToUser(team:Team, user:UserProfile, role?:TeamRole):Promise<void> {
@@ -154,11 +160,13 @@ class FirestoreService {
   }
 
   async getTeams():Promise<Team[]> {
-    let result = [] as Array<any>
+    let result = [] as Team[]
     const teamsRef = collection(db, KEY_TEAMS)
     const docsSnap = await getDocs(teamsRef)
     if (docsSnap.size) {
-      result = docsSnap.docs.map(team => Object.assign({ id: team.id }, team.data()))
+      result = docsSnap.docs.map(team => {
+        return Object.assign({ id: team.id }, team.data()) as Team
+      })
     }
     return result
   }

@@ -4,15 +4,17 @@
       <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
           <li>
-            <router-link :to="{ name: 'team-projects', params: { project_id: $route.params.project_id }}">
+            <router-link :to="{ name: 'team-show', params: { id: $route.params.id }}">
               &lt; Back to projects
             </router-link>
           </li>
         </ul>
       </nav>
-      <project-view v-if="project" :project="project" />
-      <div v-else>Loading...</div>
     </section>
+    <article class="article">
+      <project-view v-if="project" :project="project" />
+      <loading-view v-else />
+    </article>
   </main>
 </template>
 
@@ -21,13 +23,14 @@ import { defineComponent } from 'vue'
 import { mapStores } from 'pinia'
 import { Team, Project } from '@/types'
 import ProjectView from '@/components/Project.vue'
+import LoadingView from '@/components/Loading.vue'
 import { useTeamsStore } from '@/store/teams'
 import log from '@/services/logger'
 
 const MODULE_ID = 'views/TeamProject'
 
 export default defineComponent({
-  components: { ProjectView },
+  components: { ProjectView, LoadingView },
   props: {
     team: {
       type: Object as () => Team,

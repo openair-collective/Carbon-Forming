@@ -2,7 +2,7 @@ import { UserProfile, Team, Guild } from '@/types'
 import { DISCORD_ADMIN_ID } from '@/const'
 
 export function canEditTeam(user:UserProfile, team:Team):boolean {
-  return team.id in user.teams && user.teams[team.id]
+  return team.id in user.teams
 }
 
 export function canCreateCompetition(guild:Guild):boolean {

@@ -11,12 +11,23 @@
         </ul>
       </nav>
       <h1 class="title is-2">{{ competition.name }}</h1>
-      <router-link 
-        v-if="canEdit"
-        :to="{ name: 'comp-edit', params: {id: competition.id }}"
-        class="button is-primary mb-4">
-        Edit Competition
-      </router-link>
+      <div class="field is-grouped mb-4">
+        <div class="control">
+          <button
+            class="button is-primary"
+          >
+            Enter this competition
+          </button>
+        </div>
+        <div class="control">
+          <router-link 
+            v-if="canEdit"
+            :to="{ name: 'comp-edit', params: {id: competition.id }}"
+            class="button is-info is-outlined">
+            Edit this competition
+          </router-link>
+        </div>
+      </div>
       <div class="tabs mb-0 pb-0">
         <ul>
           <li 

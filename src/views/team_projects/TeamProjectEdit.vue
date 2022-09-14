@@ -4,7 +4,7 @@
       <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
           <li>
-            <router-link :to="{ name: 'team-projects', params: { id: team.id }}">
+            <router-link :to="{ name: 'team-show', params: { id: team.id }}">
               &lt; Back to projects
             </router-link>
           </li>

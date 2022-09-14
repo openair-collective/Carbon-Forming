@@ -14,14 +14,16 @@ const localGuild = localStorage.getItem(KEY_GUILD)
 interface UserState {
   oauth: OAuth | null
   profile: UserProfile | null
-  guild: Guild | null
+  guild: Guild | null,
+  teams: Team[] | null
 }
 
 export const useUserStore = defineStore('user', {
   state: (): UserState => ({
     oauth: localOAuth ? JSON.parse(localOAuth) as OAuth : null,
     profile: null,
-    guild: localGuild ? JSON.parse(localGuild) as Guild : null
+    guild: localGuild ? JSON.parse(localGuild) as Guild : null,
+    teams: null
   }),
   getters: {
     isAuthenticated: (state):boolean => {
@@ -86,11 +88,27 @@ export const useUserStore = defineStore('user', {
         throw new Error(`${MODULE_ID} #fetchUserGuild > User must be authenticated and profile fetched`)
       }
     },
+    async fetchTeams():Promise<void> {
+      if (this.oauth && this.profile) {
+        try {
+          this.teams = await firestore.getUserTeams(this.profile)
+        }
+        catch(error) {
+          let message = (error instanceof Error) ? error.message : String(error)
+          log.error(MODULE_ID, '#fetchUserGuild > ' + message)
+        }
+      }
+      else {
+        throw new Error(`${MODULE_ID} #fetchTeams > User must be authenticated and profile fetched`)
+      }
+    },
     async addTeam(team:Team, role?:TeamRole):Promise<void> {
       if (this.oauth && this.profile) {
         try {
           await firestore.addTeamToUser(team, this.profile)
           team.members[this.profile.id] = role || TeamRole.default
+          let patch = this.teams ? this.teams.slice() : []
+          this.teams = patch
         }
         catch(error) {
           let message = (error instanceof Error) ? error.message : String(error)
@@ -106,6 +124,9 @@ export const useUserStore = defineStore('user', {
         try {
           await firestore.removeTeamFromUser(team, this.profile)
           delete team.members[this.profile.id]
+          let patch = this.teams ? this.teams.slice() : []
+          patch.splice(patch.indexOf(team), 1)
+          this.teams = patch
         }
         catch(error) {
           let message = (error instanceof Error) ? error.message : String(error)

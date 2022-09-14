@@ -29,7 +29,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import auth from '@/services/auth'
 import { mapState, mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
 

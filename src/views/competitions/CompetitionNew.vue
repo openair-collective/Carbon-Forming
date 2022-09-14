@@ -1,12 +1,24 @@
 <template>
   <main>
     <section class="p-4">
-      <h1 class="title is-3">Create Competition</h1>
-      <competition-form
-        :competition="competition"
-        @comp-saved="onSaved"
-        @cancel="onCancel"
-      />
+      <header class="mb-4">
+        <nav class="breadcrumb" aria-label="breadcrumbs">
+          <ul>
+            <li>
+              <router-link :to="{ name: 'competitions'}">
+                &lt; Back to competitions
+              </router-link>
+            </li>
+          </ul>
+        </nav>
+        <h1 class="title is-3">Create Competition</h1>
+      </header>
+      <article>
+        <competition-form
+          :competition="competition"
+          @cancel="onCancel"
+        />
+      </article>
     </section>
   </main>
 </template>
@@ -31,14 +43,6 @@ export default defineComponent({
   methods: {
     onCancel() {
       this.$router.replace({ name: 'competitions'})
-    },
-    onSaved(comp:Competition) {
-        if (comp) {
-          this.$router.push({ name: 'comp-show', params: { id: comp.id }})
-        }
-        else {
-          log.warn(MODULE_ID, '#onSaved > Error creating Competition')
-        }
     }
   }
 })

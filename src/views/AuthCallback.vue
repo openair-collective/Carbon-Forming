@@ -36,7 +36,7 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapState(useUserStore, ['profile', 'oauth', 'teams', 'isAuthenticated']),
+    ...mapState(useUserStore, ['profile', 'oauth', 'isAuthenticated']),
     ...mapStores(useUserStore),
   },
   created() {

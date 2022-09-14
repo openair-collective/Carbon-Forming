@@ -1,14 +1,16 @@
 <template>
   <section>
     <header class="header p-4 has-background-white">
-      <h1 class="title is-2">Competitions</h1>
-      <router-link 
-        v-if="canCreate"
-        :to="{ name: 'comp-new' }"
-        class="button is-primary"
-      >
-        New Competition
-      </router-link>
+      <h1 class="title is-4">
+        Competitions
+        <router-link 
+          v-if="canCreate"
+          :to="{ name: 'comp-new' }"
+          class="button is-info is-small is-outlined ml-2"
+        >
+          New Competition
+        </router-link>
+      </h1>
     </header>
     <article class="article p-4 has-background-white-bis">
       <div 
@@ -20,12 +22,15 @@
           :key="i"
           class="column is-one-third"
         > 
-          <div class="box">
+          <div
+            @click="$router.push({ name: 'comp-show', params: { id: comp.id } })" 
+            class="box"
+          >
             <router-link 
               :to="{ name: 'comp-show', params: { id: comp.id } }"
               class="button is-text" 
             > 
-              {{ comp.name }}
+              <h2 class="title is-4">{{ comp.name }}</h2>
             </router-link>
           </div>
         </div>

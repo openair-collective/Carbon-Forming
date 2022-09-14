@@ -12,6 +12,12 @@
 @import "bulma/sass/elements/table.sass";
 @import "bulma/sass/elements/title.sass";
 @import "bulma/sass/components/breadcrumb.sass";
+@import "bulma/sass/components/menu.sass";
 @import "bulma/sass/components/modal.sass";
 @import "bulma/sass/components/navbar.sass";
 @import "bulma/sass/components/tabs.sass";
+
+.button.is-disabled {
+  cursor: not-allowed;
+  opacity: .5;
+}
