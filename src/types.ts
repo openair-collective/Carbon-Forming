@@ -27,6 +27,8 @@ export declare interface Team {
   id:string
   name:string
   location:string
+  avatar_url:string
+  avatar_filename:string
   projects: { [key:Project['id']]: boolean }
   members: { [key:string]: TeamRole }
 }
@@ -35,6 +37,7 @@ export declare interface Project {
   id: string
   name:string
   team_id:string
+  project_id:string
   terms:boolean
   materials: Material[]
 }
