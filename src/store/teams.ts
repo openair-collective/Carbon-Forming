@@ -61,7 +61,8 @@ export const useTeamsStore = defineStore('teams', {
     },
     async deleteTeam(team:Team):Promise<void> {
       try {
-        return await firestore.deleteTeam(team)
+        await firestore.deleteTeam(team)
+        await this.removeTeamAvatar(team)
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
