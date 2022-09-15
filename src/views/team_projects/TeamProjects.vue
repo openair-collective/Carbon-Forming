@@ -16,7 +16,7 @@
       <div v-if="errors.projects">
         {{ errors.projects }}
       </div>
-      <div v-else-if="projects">
+      <div v-else-if="projects" class="box box--with-border">
         <table 
           v-if="projects.length"
           class="table is-fullwidth"
@@ -35,7 +35,20 @@
                 {{ project.name }}
               </router-link>
               </td>
-              <td>---</td>
+              <td>
+                <router-link
+                  v-if="project.competition_id"
+                  :to="{ name: 'comp-show', params: { id: project.competition_id }}"
+                  >
+                  {{ project.competition_id }}
+                </router-link>
+                <button 
+                  v-else
+                  class="button is-info is-small"
+                >
+                  Submit to Competition
+                </button>
+              </td>
               <td><button class="button">...</button></td>
             </tr>
           </tbody>

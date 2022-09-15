@@ -1,5 +1,5 @@
 import { getApp, getApps, initializeApp } from "firebase/app"
-import { FIREBASE_CONFIG } from "@/const"
+import { FIREBASE_CONFIG } from "@/consts"
 import { 
   getAuth,
   Auth, 

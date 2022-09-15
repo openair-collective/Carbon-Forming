@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia'
-import { Team, Project, UserProfile } from '@/types'
+import { Team, Project } from '@/types'
 import firestore from '@/services/firestore'
 import storage from '@/services/storage'
+import { useProjectsStore } from '@/store/projects'
 import log from '@/services/logger'
 
 const MODULE_ID = 'store/teams'
@@ -69,10 +70,10 @@ export const useTeamsStore = defineStore('teams', {
         log.error(MODULE_ID, '#deleteTeam > ' + message)
       }
     },
-    async saveTeamProject(team:Team, project:Project):Promise<Project|undefined> {
+    async saveTeamProject(team:Team, project:Project, design_doc?:File):Promise<Project|undefined> {
       try {
         project.team_id = team.id
-        let response = await firestore.saveProject(project)
+        let response = await useProjectsStore().saveProject(project, design_doc)
         project = {...project, ...response}
         if (!this.projects[team.id]) {
           await this.getTeamProjects(team)
@@ -114,25 +115,24 @@ export const useTeamsStore = defineStore('teams', {
         log.error(MODULE_ID, '#getTeamProjects > ' + message)
       }
     },
-    async saveTeamAvatar(team:Team, avatar:File):Promise<void> {
+    async saveTeamAvatar(team:Team, avatar:File):Promise<Team|undefined> {
       try {
-        const filename = 'avatar_' + avatar.name
-        const response = await storage.saveTeamFile(team, avatar, filename)
-        team.avatar_url = response
-        team.avatar_filename = filename
-        await this.saveTeam(team)
+        const response = await storage.saveFile(avatar)
+        team.avatar = response
+        return await this.saveTeam(team)
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
         log.error(MODULE_ID, '#saveTeamAvatar > ' + message)
       }
     },
-    async removeTeamAvatar(team:Team):Promise<void> {
+    async removeTeamAvatar(team:Team):Promise<Team|undefined> {
       try {
-        const avatar_response = await storage.removeTeamFileWithName(team, team.avatar_filename)
-        team.avatar_url = ''
-        team.avatar_filename = ''
-        await this.saveTeam(team)
+        if (team.avatar) {
+          const avatar_response = await storage.removeFile(team.avatar)
+          team.avatar = null
+          return await this.saveTeam(team)
+        }
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)

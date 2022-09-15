@@ -1,5 +1,5 @@
 import { getApp, getApps, initializeApp } from "firebase/app"
-import { FIREBASE_CONFIG } from "@/const"
+import { FIREBASE_CONFIG } from "@/consts"
 import {  
   getDownloadURL, 
   getStorage,
@@ -8,7 +8,7 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage"
-import { Team, Project } from '@/types'
+import { Team, Project, FileUpload } from '@/types'
 
 const app = getApps().length > 0 ? getApp() : initializeApp(FIREBASE_CONFIG)
 const storage = getStorage()
@@ -19,25 +19,16 @@ if (import.meta.env.DEV) {
 
 class FirebaseService {
 
-  async saveTeamFile(team:Team, file:File, filename?:string):Promise<string> {
-    const storageRef = ref(storage, `teams/${team.id}/${filename || file.name}`)
-    return uploadBytes(storageRef, file)
-            .then(result => getDownloadURL(storageRef))
+  async saveFile(file:File):Promise<FileUpload> {
+    const filename = `${Date.now()}.${file.name}`
+    const storageRef = ref(storage, filename)
+    const response = await uploadBytes(storageRef, file)
+    const url = await getDownloadURL(storageRef)
+    return { filename, url }
   }
 
-  async removeTeamFileWithName(team:Team, filename:string):Promise<void> {
-    const storageRef = ref(storage, `teams/${team.id}/${filename}`)
-    return deleteObject(storageRef)
-  }
-
-  async saveProjectFile(project:Project, file:File, filename?:string):Promise<string> {
-    const storageRef = ref(storage, `projects/${project.id}/${filename || file.name}`)
-    return uploadBytes(storageRef, file)
-            .then(result => getDownloadURL(storageRef))
-  }
-
-  async removeProjectFileWithName(project:Project, filename:string):Promise<void> {
-    const storageRef = ref(storage, `projects/${project.id}/${filename}`)
+  async removeFile(file:FileUpload):Promise<void> {
+    const storageRef = ref(storage, file.filename)
     return deleteObject(storageRef)
   }
 }

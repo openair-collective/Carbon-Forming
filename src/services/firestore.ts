@@ -1,11 +1,13 @@
 import { getApp, getApps, initializeApp } from "firebase/app"
-import { FIREBASE_CONFIG } from "@/const"
-import { UserProfile, Team,TeamRole, Project, Competition } from "@/types"
+import { FIREBASE_CONFIG } from "@/consts"
+import { UserProfile, Team, Project, Competition } from "@/types"
+import { TeamRole } from "@/enums"
 import { 
   getFirestore,
   addDoc,
   getDoc,
   setDoc,
+  updateDoc,
   getDocs,
   collection,
   doc,
@@ -38,14 +40,22 @@ class FirestoreService {
     return Object.assign(docSnap.data() as UserProfile, { id })
   }
 
-  async saveUserProfile(user:UserProfile):Promise<void> {
-    const clone = Object.assign({}, user)
-    const blacklist:string[] = ['avatar', 'id']
-    blacklist.forEach((prop) => {
-      delete clone[prop as keyof UserProfile]
-    })
-    const ref = doc(db, KEY_USERS, user.id)
-    await setDoc(ref, clone, { merge: true })
+  async saveUserProfile(user:UserProfile):Promise<UserProfile> {
+    let result = user
+    if (user.id) {
+      const clone = Object.assign({}, user) as UserProfile
+      const blacklist:string[] = ['avatar', 'id']
+      blacklist.forEach((prop) => {
+        delete clone[prop as keyof UserProfile]
+      })
+      let ref = doc(db, KEY_USERS, user.id)
+      await setDoc(ref, clone as object, { merge: true })
+    }
+    else {
+      const docRef = await addDoc(collection(db, KEY_USERS), user)
+      result = Object.assign(user, { id: docRef.id }) as UserProfile
+    }
+    return result
   }
 
   async getUserTeams(user:UserProfile):Promise<Team[]> {
@@ -100,15 +110,14 @@ class FirestoreService {
 
   async saveTeam(team:Team):Promise<Team> {
     let result = team
-    var docRef
     if (team.id) {
       const ref = doc(db, KEY_TEAMS, team.id)
       const clone = Object.assign({}, team)
       delete clone['id' as keyof Team]
-      docRef = await setDoc(ref, clone, { merge: true })
+      await setDoc(ref, clone as object, { merge: true })
     }
     else {
-      docRef = await addDoc(collection(db, KEY_TEAMS), team)
+      const docRef = await addDoc(collection(db, KEY_TEAMS), team)
       result = Object.assign(team, { id: docRef.id }) as Team
     }
     return result
@@ -173,15 +182,14 @@ class FirestoreService {
 
   async saveProject(project:Project):Promise<Project> {
     let result = project
-    var docRef
     if (project.id) {
       const ref = doc(db, KEY_PROJECTS, project.id)
-      const clone = Object.assign({}, project)
+      const clone = Object.assign({}, project) as Project
       delete clone['id' as keyof Project]
-      docRef = await setDoc(ref, clone, { merge: true })
+      await updateDoc(ref, clone as object)
     }
     else {
-      docRef = await addDoc(collection(db, KEY_PROJECTS), project)
+      const docRef = await addDoc(collection(db, KEY_PROJECTS), project)
       result = Object.assign({ id: docRef.id }, project) as Project
     }
     return result
@@ -279,15 +287,14 @@ class FirestoreService {
 
   async saveCompetition(comp:Competition):Promise<Competition> {
     let result = comp
-    var docRef
     if (comp.id) {
       const ref = doc(db, KEY_COMPETITIONS, comp.id)
       const clone = Object.assign({}, comp)
       delete clone['id' as keyof Competition]
-      docRef = await setDoc(ref, comp, { merge: true })
+      await setDoc(ref, comp, { merge: true })
     }
     else {
-      docRef = await addDoc(collection(db, KEY_COMPETITIONS), comp)
+      let docRef = await addDoc(collection(db, KEY_COMPETITIONS), comp)
       result = Object.assign(comp, { id: docRef.id }) as Competition
     }
     return result

@@ -24,7 +24,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Team, Project, Material } from '@/types';
+import { Team, Project, Material, FileUpload } from '@/types';
 import ProjectForm from '@/components/ProjectForm.vue';
 
 export default defineComponent({
@@ -38,8 +38,10 @@ export default defineComponent({
   computed: {
     project():Project {
       return {
-        name: '',
+        name: undefined as string | undefined,
         terms: false,
+        design_doc: null as FileUpload | null,
+        design_doc_url: null as string | null,
         materials: [] as Material[]
       } as Project
     }
@@ -51,7 +53,10 @@ export default defineComponent({
     },
     onProjectSaved(project:Project) {
       const id = this.$route.params.id
-      this.$router.replace({ name: 'team-project-show', params: { id: id, project_id: project.id }})
+      this.$router.replace({ 
+        name: 'team-project-show', 
+        params: { id: id, project_id: project.id }
+      })
     }
   }
 })

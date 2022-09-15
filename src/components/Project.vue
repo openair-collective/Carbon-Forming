@@ -1,18 +1,29 @@
 <template>
   <section>
     <header class="header p-4">
-      <h1 class="title is-3">{{ project.name }}</h1>
-      <router-link 
-        :to="{name: 'team-project-edit', params: { project_id: project.id }}"
-        class="button is-primary"
-      >
-        Edit Project
-      </router-link>
+      <h1 class="title is-3">
+        {{ project.name }}
+          <router-link 
+            :to="{name: 'team-project-edit', params: { project_id: project.id }}"
+            class="button is-info is-small is-outlined ml-2"
+          >
+            Edit Project
+          </router-link>
+      </h1>
     </header>
     <article class="article p-4">
-      <h2 class="title is-4">Competitions</h2>
-      <hr/>
+      <h2 class="title is-4">Competition</h2>
+      <div v-if="project.competition_id" class="box box--with-border">
+        <router-link :to="{ name: 'competitions', params: { id: project.competition_id}}">
+          Competition Link
+        </router-link>
+      </div>
+      <div v-else class="box box--with-border has-text-centered">
+        <p class="mb-4">You have not entered this project in a competition yet</p>
+        <button class="button is-info">Submit to a Competition</button>
+      </div>
       <h2 class="title is-4">Bill of Materials</h2>
+      <div class="box box--with-border">
         <table class="table is-fullwidth">
           <thead>
             <tr>
@@ -34,11 +45,24 @@
             </tr>
           </tbody>
         </table>
-      <hr/>
+      </div>
       <h2 class="title is-4">Design Document</h2>
-      <hr/>
+      <div v-if="project.design_doc_url" class="box box--with-border">
+        <a :href="project.design_doc_url" target="_blank">
+          {{ project.design_doc_url }}
+        </a>
+      </div>
+      <div v-if="project.design_doc" class="box box--with-border">
+        <a
+          :href="project.design_doc.url" 
+          class="button is-info" 
+          target="_blank"
+        >
+          Review Document
+        </a>
+      </div>
       <h2 class="title is-4">OpenAir Github Link</h2>
-      <hr/>
+      <div class="box box--with-border"></div>
     </article>
   </section>
 </template>

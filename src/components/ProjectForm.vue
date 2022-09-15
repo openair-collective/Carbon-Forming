@@ -55,6 +55,72 @@
         </div>
       <hr/>
       <h2 class="title is-4">Design Document</h2>
+      <p class="mb-2">Please upload or link to a document that outlines the design of your project.</p>
+      <div v-if="clone.design_doc" >
+        <div class="field is-grouped">
+          <div class="control">
+            <button
+              @click.prevent="removeDesignDoc"
+              class="button is-warning"
+            >
+              Remove Document
+            </button>
+          </div>
+          <div class="control">
+            <a
+              :href="clone.design_doc.url"
+              target="_blank" 
+              class="button is-outlined"
+            >
+              Preview Document
+            </a>
+          </div>
+        </div>
+      </div>
+      <div v-else class="is-flex is-flex-direction-row">
+        <div>
+          <label class="label">Upload a document</label>
+          <div class="file has-name">
+            <label class="file-label">
+              <input
+                @change="onDesignDocFileChange"
+                class="file-input" 
+                type="file"
+                accept="application/pdf"
+                ref="file_design_doc"
+                :disabled="!!clone.design_doc_url"
+              > 
+              <span class="file-cta">
+                <span class="file-label">
+                  {{ docFile ? 'Change Document' : 'Upload Document' }}
+                </span>
+              </span>
+              <span v-if="docFile" class="file-name">
+                {{ docFile.name }} ( {{ docFile.size / 100 }}kb )
+              </span>
+            </label>
+          </div>
+          <p class="help is-info">
+            Accepts pdf files only.<br/> Maximum file size is {{ kDocMaxFileSize / 1000 }}kb.
+          </p>
+        </div>
+        <div class="mx-6">
+          <label class="label">or</label>
+        </div>
+        <div class="is-flex-grow-1">
+          <div class="field"> 
+            <label class="label">Design document link</label>
+            <div class="control">
+              <input
+                class="input" 
+                type="text"
+                v-model="clone.design_doc_url"
+                :disabled="!!docFile"
+              >
+            </div>
+          </div>
+        </div>
+      </div>
       <hr/>
       <h2 class="title is-4">Share your project on the OpenAir GitHub</h2>
       <p class="mb-2">By sharing your project on the OpenAir GitHub you will help to drive innovation and progress in Carbon Dioxide Removal and Storage technology.</p>
@@ -77,6 +143,7 @@
           <button 
             type="submit" 
             class="button is-primary"
+            :class="{'is-loading': isSaving}"
             :disabled="disableSubmit"
           >
             Save Project
@@ -93,9 +160,11 @@ import { Team, Project, Material } from '@/types'
 import log from '@/services/logger'
 import { mapStores } from 'pinia'
 import { useTeamsStore } from '@/store/teams'
+import { useProjectsStore } from '@/store/projects'
 import Notification from '@/components/Notification.vue'
 
 const MODULE_ID = 'components/TeamForm'
+const DESIGN_DOC_MAX_FILE_SIZE = 200 * 1000 // 200k
 
 function initMaterial():Material {
   return {
@@ -120,16 +189,31 @@ export default defineComponent({
   },
   data() {
     return {
-      clone: Object.assign({}, this.project),
+      kDocMaxFileSize: DESIGN_DOC_MAX_FILE_SIZE,
+      clone: { ...this.project } as Project,
       success: '',
       error: '',
       isSaving: false,
+      docFile: undefined as File|undefined
     }
   },
   computed: {
-    ...mapStores(useTeamsStore),
+    ...mapStores(useTeamsStore, useProjectsStore),
     disableSubmit():boolean {
       return !this.clone.name || !this.clone.terms
+    },
+    hasValidMaterials():boolean {
+      const materialErrors = this.project.materials.filter(p => {
+        return !p.name || !p.cost || !p.quantity
+      })
+      return materialErrors.length === 0
+    },
+    hasValidDesignDoc():boolean {
+      let result = !!this.clone.design_doc_url
+      if (this.docFile) {
+        result = this.docFile.size < DESIGN_DOC_MAX_FILE_SIZE
+      }
+      return result
     }
   },
   created() {
@@ -138,10 +222,16 @@ export default defineComponent({
     }
   },
   methods: {
+    clearMessages() {
+      this.success = ''
+      this.error = ''
+    },
+    onDesignDocFileChange(event:Event) {
+      const files = (event.target as HTMLInputElement).files
+      this.docFile = files && files.length ? files[0] : undefined
+    },
     addMaterial() {
-      let patch = this.clone.materials.slice()
-      patch.push(initMaterial())
-      this.clone.materials = patch
+      this.clone.materials.push(initMaterial())
     },
     removeMaterialAtIndex(idx:number) {
       if (this.clone.materials.length === 1) {
@@ -151,24 +241,29 @@ export default defineComponent({
         this.clone.materials.splice(idx, 1)
       }
     },
-    clearMessages() {
-      this.success = ''
-      this.error = ''
+    removeDesignDoc() {
+      if (this.clone.design_doc && confirm("Are you sure you want to remove the Document?")) {
+        this.isSaving = true
+        this.projectsStore.removeProjectDesignDoc(this.clone)
+          .then(result => {
+            if (result) {
+              Object.assign(this.project, result)
+              this.clone = { ...this.project }
+            }
+          })
+          .finally(()=> {
+            this.isSaving = false
+          })
+      }
     },
     submitProjectForm() {
       this.isSaving = true
       this.clearMessages()
-      // check for any materials missing required fields
-      const materialErrors = this.clone.materials.filter(p => {
-       return !p.name || !p.cost || !p.quantity
-      })
-      if (materialErrors.length) {
-        this.error = "Some materials are missing required fields"
-      }
-      else {
-        this.teamsStore.saveTeamProject(this.team, this.clone)
+      if (this.hasValidMaterials && this.hasValidDesignDoc) {
+        this.teamsStore.saveTeamProject(this.team, this.clone, this.docFile)
           .then(result => {
-            Object.assign(this.clone, this.project)
+            Object.assign(this.project, result)
+            this.clone = { ...this.project }
             this.success = 'Project Saved'
             this.$emit("project-saved", this.project)
           })
@@ -178,6 +273,14 @@ export default defineComponent({
           .finally(() => {
             this.isSaving = false
           })
+      }
+      else {
+        if (!this.hasValidMaterials) {
+          this.error = this.error + "Some materials are missing required fields."
+        }
+        if (!this.hasValidDesignDoc) {
+          this.error = this.error + `The Design Document file size cannot exceed ${DESIGN_DOC_MAX_FILE_SIZE}kb.`
+        }
       }
     }
   }

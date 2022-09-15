@@ -11,39 +11,48 @@
           <img :src="teamImageUrl" />
         </div>
       </div>
-      <div class="">
+      <div>
         <label class="label">Team Avatar</label>
-        <div class="file mb-2">
-          <label class="file-label">
-            <input 
-              @change="showAvatarPreview"
-              class="file-input" 
-              type="file"
-              accept="image/*"
-              ref="file_avatar"
-            >
-            <span class="file-cta">
-              <span class="file-label">
-                Choose a file…
-              </span>
-            </span>
-          </label>
-        </div>
-        <p class="help is-info">
-            Accepts .jpeg, .jpg, and .png files only. Maximum file size is 200kb.
+        <button
+            v-if="clone.avatar"
+            @click.prevent="removeAvatar"
+            class="button is-warning"
+          >
+            Remove Avatar
+        </button>
+        <div v-else>
+          <p class="help is-info mb-2">
+           Accepts .jpeg, .jpg, and .png files only. Maximum file size is {{ kAvatarMaxSize / 1000 }}kb.
           </p>
+          <div class="file mb-2">
+            <label class="file-label">
+              <input 
+                @change="showAvatarPreview"
+                class="file-input" 
+                type="file"
+                accept="image/*"
+                ref="file_avatar"
+              >
+              <span class="file-cta">
+                <span class="file-label">
+                  {{ teamImageUrl === kAvatarPlaceholder  ?  'Upload Team Avatar' : 'Change Avatar' }}
+                </span>
+              </span>
+            </label>
+          </div>
+        </div>
       </div>
     </div>
     <div class="field"> 
       <label class="label">Team Name</label>
       <div class="control">
-        <input class="input" type="text" v-model="team.name" required>
+        <input class="input" type="text" v-model="clone.name" required>
       </div>
     </div>
     <div class="field"> 
       <label class="label">Where is your team located?</label>
       <div class="control">
-        <input class="input" type="text" v-model="team.location" required>
+        <input class="input" type="text" v-model="clone.location" required>
       </div>
     </div>
     <div class="field is-grouped is-grouped-right">
@@ -56,6 +65,7 @@
         <button 
           type="submit"
           class="button is-primary"
+          :class="{'is-loading': isSaving}"
           :disabled="disableSubmit"
         >
           Save Team
@@ -70,14 +80,13 @@ import { defineComponent } from 'vue'
 import { Team } from '@/types'
 import { mapStores } from 'pinia'
 import { useTeamsStore } from '@/store/teams'
+import { TEAM_AVATAR_PLACEHOLDER } from '@/consts'
 import Notification from './Notification.vue'
-import {
-  TEAM_AVATAR_PLACEHOLDER,
-  TEAM_AVATAR_MAX_FILE_SIZE
-} from '@/const'
 import log from '@/services/logger'
 
 const MODULE_ID = 'components/TeamForm'
+const AVATAR_PLACEHOLDER = TEAM_AVATAR_PLACEHOLDER
+const AVATAR_MAX_FILE_SIZE = 200 * 1000 // 200kb
 
 export default defineComponent({
   components: { Notification },
@@ -89,16 +98,23 @@ export default defineComponent({
   },
   data() {
     return {
+      clone: { ...this.team },
       success: '',
       error: '',
       isSaving: false,
+      kAvatarMaxSize: AVATAR_MAX_FILE_SIZE,
+      kAvatarPlaceholder: AVATAR_PLACEHOLDER,
       avatarPreviewUrl: ''
     }
   },
   computed: {
     ...mapStores(useTeamsStore),
     teamImageUrl():string { 
-      return this.team.avatar_url || this.avatarPreviewUrl || TEAM_AVATAR_PLACEHOLDER
+      let result = this.avatarPreviewUrl || AVATAR_PLACEHOLDER
+      if (this.team.avatar && this.team.avatar.url) {
+        result = this.team.avatar.url
+      }
+      return result
     },
     disableSubmit():boolean {
       return !this.team.name || !this.team.location
@@ -110,26 +126,37 @@ export default defineComponent({
       this.error = ''
     },
     validateFileSize(file:File):boolean {
-      return file.size < TEAM_AVATAR_MAX_FILE_SIZE
+      return file.size < AVATAR_MAX_FILE_SIZE
+    },
+    removeAvatar() {
+      if (this.clone.avatar && confirm("Are you sure you want to remove the Team Avatar?")) {
+        this.isSaving = true
+        this.teamsStore.removeTeamAvatar(this.clone)
+          .then(result => {
+            if (result) {
+              Object.assign(this.team, result)
+              this.clone = { ...this.team }
+            }
+          })
+          .finally(()=> {
+            this.isSaving = false
+          })
+      }
     },
     showAvatarPreview (event:Event){
       const avatar:HTMLInputElement = this.$refs.file_avatar as HTMLInputElement
       const file: File = (avatar.files as FileList)[0]
-      if(file) {
-        var url = URL.createObjectURL(file)
-        this.avatarPreviewUrl = url
-      }
-      else {
-        this.avatarPreviewUrl = ''
-      }
+      this.avatarPreviewUrl = file ? URL.createObjectURL(file) : AVATAR_PLACEHOLDER
     },
     submitTeamForm() {
       const avatar:HTMLInputElement = this.$refs.file_avatar as HTMLInputElement
-      const file: File = (avatar.files as FileList)[0]
+      const file:File = avatar && (avatar.files as FileList)[0]
       if (!file || this.validateFileSize(file)) {
         this.isSaving = true
-        this.teamsStore.saveTeam(this.team, file)
+        this.teamsStore.saveTeam(this.clone, file)
           .then(result => {
+            Object.assign(this.team, result)
+            this.clone = { ...this.team}
             this.success = 'Team Saved'
             this.$emit("team-saved", result)
           })
@@ -141,7 +168,7 @@ export default defineComponent({
           })
       }
       else {
-        this.error = "The Avatar file size cannot exceed 200kb"
+        this.error = `The Avatar file size cannot exceed ${AVATAR_MAX_FILE_SIZE}kb.`
       }
     }
   }

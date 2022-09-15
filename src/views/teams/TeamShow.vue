@@ -1,8 +1,10 @@
 <template>
   <section v-if="team">
-    <header class="header p-4 has-background-white">
-      <figure class="image is-64x64 is-pulled-left mr-4">
-        <img :src="avatar">
+    <header class="header p-4 has-background-white is-clearfix">
+      <figure 
+        class="image is-pulled-left mr-4"
+        :style="{backgroundImage: `url(${avatar})`}  "
+      >
       </figure>
       <h1 class="title is-4">
         {{ team.name }}
@@ -32,7 +34,7 @@ import { useTeamsStore } from '@/store/teams'
 import { Team } from '@/types'
 import { canEditTeam } from '@/helpers/authHelper'
 import Loading from '@/components/Loading.vue'
-import { TEAM_AVATAR_PLACEHOLDER } from '@/const'
+import { TEAM_AVATAR_PLACEHOLDER } from '@/consts'
 import log from '@/services/logger'
 
 const MODULE_ID ='components/teams/TeamShow'
@@ -48,13 +50,13 @@ export default defineComponent({
     ...mapStores(useTeamsStore),
     avatar():string {
       let result = TEAM_AVATAR_PLACEHOLDER
-      if (this.team && 'avatar_url' in this.team) {
-        result = this.team.avatar_url
+      if (this.team && this.team.avatar) {
+        result = this.team.avatar.url
       }
       return result
     },
     canEdit():boolean {
-      // pinia bug - get type error when trying to reference mapState/mapStore from computed prop
+      // pinia issue - get type error when trying to reference mapState/mapStore from computed prop
       const store = useUserStore()
       return !!this.team && !!store.profile && canEditTeam(store.profile, this.team)
     },
@@ -81,4 +83,11 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.image {
+  border-radius: 8px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 80px;
+  width: 80px;
+}
 </style>

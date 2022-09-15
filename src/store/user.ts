@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
-import {OAuth, Team, UserProfile, Guild, TeamRole  } from '@/types'
+import {OAuth, Team, UserProfile, Guild } from '@/types'
+import { TeamRole } from '@/enums'
 import auth from '@/services/auth'
 import discord from '@/services/discord'
 import firestore from '@/services/firestore'
