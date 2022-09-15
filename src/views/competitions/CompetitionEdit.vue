@@ -1,30 +1,28 @@
 <template>
-  <main>
-    <section class="p-4">
-      <header class="mb-4">
-        <nav class="breadcrumb" aria-label="breadcrumbs">
-          <ul>
-            <li>
-              <router-link :to="{ name: 'comp-show', params: { id: $route.params.id }}">
-                &lt; Back
-              </router-link>
-            </li>
-          </ul>
-        </nav>
-        <h1 class="title is-3">Edit Competition</h1>
-      </header>
-      <article>
-        <div v-if="errors.list">
-        </div>
-        <competition-form
-          v-else-if="competition"
-          :competition="competition"
-          @cancel="onCancel"
-        />
-        <loading v-else />
-      </article>
-    </section>
-  </main>
+  <section class="p-4">
+    <header class="mb-4">
+      <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+          <li>
+            <router-link :to="{ name: 'comp-show', params: { id: $route.params.id }}">
+              &lt; Back
+            </router-link>
+          </li>
+        </ul>
+      </nav>
+      <h1 class="title is-3">Edit Competition</h1>
+    </header>
+    <article>
+      <div v-if="errors.list">
+      </div>
+      <competition-form
+        v-else-if="competition"
+        :competition="competition"
+        @cancel="onCancel"
+      />
+      <loading v-else />
+    </article>
+  </section>
 </template>
 
 <script lang="ts">

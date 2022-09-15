@@ -1,5 +1,5 @@
 <template>
-  <div class="teams">
+  <section class="teams">
     <aside class="aside menu p-2 has-background-grey-light">
       <p class="menu-label">My Teams</p>
       <ul 
@@ -43,7 +43,7 @@
     <article class="article">
       <router-view  />
     </article>
-  </div>
+  </section>
 </template>
 
 <script lang="ts">

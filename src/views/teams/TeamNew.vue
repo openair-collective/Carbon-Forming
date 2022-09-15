@@ -1,27 +1,25 @@
 <template>
-  <main>
-    <section class="p-4">
-      <header class="mb-4">
-        <nav class="breadcrumb" aria-label="breadcrumbs">
-        <ul>
-          <li>
-            <router-link :to="{ name: 'teams'}">
-              &lt; Back to teams
-            </router-link>
-          </li>
-        </ul>
-      </nav>
-      <h1 class="title is-3">Create Team</h1>
-      </header>
-      <article>
-        <team-form
-          :team="team"
-          @team-saved="onTeamSaved"
-          @cancel="onCancel"
-        />
-      </article>
-    </section>
-  </main>
+  <section class="p-4">
+    <header class="mb-4">
+      <nav class="breadcrumb" aria-label="breadcrumbs">
+      <ul>
+        <li>
+          <router-link :to="{ name: 'teams'}">
+            &lt; Back to teams
+          </router-link>
+        </li>
+      </ul>
+    </nav>
+    <h1 class="title is-3">Create Team</h1>
+    </header>
+    <article>
+      <team-form
+        :team="team"
+        @team-saved="onTeamSaved"
+        @cancel="onCancel"
+      />
+    </article>
+  </section>
 </template>
 
 <script lang="ts">

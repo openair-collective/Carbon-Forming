@@ -47,19 +47,32 @@
         </table>
       </div>
       <h2 class="title is-4">Design Document</h2>
-      <div v-if="project.design_doc_url" class="box box--with-border">
-        <a :href="project.design_doc_url" target="_blank">
-          {{ project.design_doc_url }}
-        </a>
-      </div>
-      <div v-if="project.design_doc" class="box box--with-border">
-        <a
-          :href="project.design_doc.url" 
-          class="button is-info" 
-          target="_blank"
-        >
-          Review Document
-        </a>
+      <div class="box box--with-border">
+        <template v-if="project.design_doc_url">
+          <a :href="project.design_doc_url" target="_blank">
+            {{ project.design_doc_url }}
+          </a>
+        </template>
+        <template v-if="project.design_doc">
+          <a
+            :href="project.design_doc.url" 
+            class="button is-info" 
+            target="_blank"
+          >
+            Review Document
+          </a>
+        </template>
+        <template v-if="!project.design_doc && !project.design_doc_url">
+          <router-link 
+            :to="{ 
+              name: 'team-project-edit', 
+              params: { project_id: $route.params.project_id }
+            }"
+            class="button is-text"
+          >
+            Add a Document
+          </router-link>
+        </template>
       </div>
       <h2 class="title is-4">OpenAir Github Link</h2>
       <div class="box box--with-border"></div>

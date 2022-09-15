@@ -1,26 +1,24 @@
 <template>
-  <main>
-    <section class="p-4">
-      <header class="mb-4">
-        <nav class="breadcrumb" aria-label="breadcrumbs">
-          <ul>
-            <li>
-              <router-link :to="{ name: 'competitions'}">
-                &lt; Back to competitions
-              </router-link>
-            </li>
-          </ul>
-        </nav>
-        <h1 class="title is-3">Create Competition</h1>
-      </header>
-      <article>
-        <competition-form
-          :competition="competition"
-          @cancel="onCancel"
-        />
-      </article>
-    </section>
-  </main>
+  <section class="p-4">
+    <header class="mb-4">
+      <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+          <li>
+            <router-link :to="{ name: 'competitions'}">
+              &lt; Back to competitions
+            </router-link>
+          </li>
+        </ul>
+      </nav>
+      <h1 class="title is-3">Create Competition</h1>
+    </header>
+    <article>
+      <competition-form
+        :competition="competition"
+        @cancel="onCancel"
+      />
+    </article>
+  </section>
 </template>
 
 <script lang="ts">
