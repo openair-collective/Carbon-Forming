@@ -98,7 +98,7 @@ export default defineComponent({
   },
   data() {
     return {
-      clone: { ...this.team },
+      clone: { ...this.team }, // clone so we can modify
       success: '',
       error: '',
       isSaving: false,
@@ -129,14 +129,20 @@ export default defineComponent({
       return file.size < AVATAR_MAX_FILE_SIZE
     },
     removeAvatar() {
+      this.clearMessages()
       if (this.clone.avatar && confirm("Are you sure you want to remove the Team Avatar?")) {
         this.isSaving = true
+        const avatar = { ...this.clone.avatar }
         this.teamsStore.removeTeamAvatar(this.clone)
           .then(result => {
             if (result) {
+              this.success = 'Team Avatar removed'
               Object.assign(this.team, result)
               this.clone = { ...this.team }
             }
+          })
+          .catch(error => {
+            this.error = 'Error removing Avatar. Please try again.'
           })
           .finally(()=> {
             this.isSaving = false
@@ -157,7 +163,7 @@ export default defineComponent({
           .then(result => {
             Object.assign(this.team, result)
             this.clone = { ...this.team}
-            this.success = 'Team Saved'
+            this.success = 'Team saved'
             this.$emit("team-saved", result)
           })
           .catch(error => {

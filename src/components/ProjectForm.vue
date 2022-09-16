@@ -242,14 +242,20 @@ export default defineComponent({
       }
     },
     removeDesignDoc() {
+      this.clearMessages()
       if (this.clone.design_doc && confirm("Are you sure you want to remove the Document?")) {
         this.isSaving = true
         this.projectsStore.removeProjectDesignDoc(this.clone)
           .then(result => {
             if (result) {
+              this.success = 'Design document removed'
+              this.docFile = undefined
               Object.assign(this.project, result)
               this.clone = { ...this.project }
             }
+          })
+          .catch(error => {
+            this.error = 'Error removing Design Doc. Please try again.'
           })
           .finally(()=> {
             this.isSaving = false
@@ -264,7 +270,7 @@ export default defineComponent({
           .then(result => {
             Object.assign(this.project, result)
             this.clone = { ...this.project }
-            this.success = 'Project Saved'
+            this.success = 'Project saved'
             this.$emit("project-saved", this.project)
           })
           .catch(error => {
