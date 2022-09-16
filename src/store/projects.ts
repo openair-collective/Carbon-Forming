@@ -23,17 +23,16 @@ export const useProjectsStore = defineStore('projects', {
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
-        log.error(MODULE_ID, '#saveTeam > ' + message)
+        log.error(MODULE_ID, '#saveProject > ' + message)
       }
     },
-    async deleteTeam(project:Project):Promise<void> {
+    async deleteProject(project:Project):Promise<void> {
       try {
         await firestore.deleteProject(project)
-        await this.removeProjectDesignDoc(project)
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
-        log.error(MODULE_ID, '#deleteTeam > ' + message)
+        log.error(MODULE_ID, '#deleteProject > ' + message)
       }
     },
     async saveProjectDesignDoc(project:Project, doc:File):Promise<Project|undefined> {

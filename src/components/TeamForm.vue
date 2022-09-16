@@ -111,13 +111,13 @@ export default defineComponent({
     ...mapStores(useTeamsStore),
     teamImageUrl():string { 
       let result = this.avatarPreviewUrl || AVATAR_PLACEHOLDER
-      if (this.team.avatar && this.team.avatar.url) {
-        result = this.team.avatar.url
+      if (this.clone.avatar && this.clone.avatar.url) {
+        result = this.clone.avatar.url
       }
       return result
     },
     disableSubmit():boolean {
-      return !this.team.name || !this.team.location
+      return !this.clone.name || !this.clone.location
     }
   },
   methods: {

@@ -107,8 +107,10 @@ export const useUserStore = defineStore('user', {
       if (this.oauth && this.profile) {
         try {
           await firestore.addTeamToUser(team, this.profile)
+          team.members = team.members || {}
           team.members[this.profile.id] = role || TeamRole.default
           let patch = this.teams ? this.teams.slice() : []
+          patch.push(team)
           this.teams = patch
         }
         catch(error) {
@@ -126,7 +128,7 @@ export const useUserStore = defineStore('user', {
           await firestore.removeTeamFromUser(team, this.profile)
           delete team.members[this.profile.id]
           let patch = this.teams ? this.teams.slice() : []
-          patch.splice(patch.indexOf(team), 1)
+          patch = patch.splice(patch.indexOf(team), 1)
           this.teams = patch
         }
         catch(error) {

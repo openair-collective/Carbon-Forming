@@ -17,6 +17,7 @@ import {
   writeBatch,
   connectFirestoreEmulator,
   deleteField,
+  deleteDoc,
 } from "firebase/firestore"
 
 const MODULE_ID = 'services/firestore'
@@ -124,42 +125,9 @@ class FirestoreService {
   }
 
   async deleteTeam(team:Team):Promise<void> {
-
-    const batch = writeBatch(db)
-
-    // delete Team doc
-    batch.delete(doc(db, KEY_TEAMS, team.id))
-
-    // delete Team from User docs user/{user_id}/teams/{team_id}
-    const usersQuery = query(collection(db, KEY_USERS), where(`teams.${team.id}`, '==', true))
-    const usersSnap = await getDocs(usersQuery)
-    usersSnap.forEach(doc => {
-      batch.update(doc.ref, { teams: 
-        {
-          [`${team.id}`] : deleteField() 
-        }
-      })
-    })
-    // delete Projects that belong to the Team
-    const projectsQuery = query(collection(db, KEY_PROJECTS), where('team_id', '==', [`${team.id}`]))
-    const projectsSnap = await getDocs(projectsQuery)
-    const projectIDs:string[] = []
-    projectsSnap.forEach(doc => {
-      projectIDs.push(doc.id)
-      batch.delete(doc.ref)
-    })
-    // create update object for deleted projects
-    const projectsUpdate = projectIDs.reduce((prev, value) => { 
-      return {...prev, [value]: deleteField() }
-    }, {})
-    // delete Project references from Competitions
-    const compsRef = query(collection(db, KEY_COMPETITIONS))
-    const compsSnap = await getDocs(compsRef)
-    compsSnap.forEach(doc => {
-      batch.update(doc.ref, { projects: projectsUpdate })
-    })
-
-    return await batch.commit() 
+    // firestore triggers update/deletion of Team relationships
+    const teamsRef = doc(db, KEY_TEAMS, team.id)
+    await deleteDoc(teamsRef)
   }
 
   async getTeam(team_id:string):Promise<Team> {
@@ -196,26 +164,9 @@ class FirestoreService {
   }
 
   async deleteProject(project:Project):Promise<void> {
-    const batch = writeBatch(db)
-
-    const projectRef = doc(db, KEY_PROJECTS, project.id)
-    const projectDoc = await getDoc(projectRef)
-    const projectData = projectDoc.data()
-    // delete the Project
-    batch.delete(projectRef)
-
-    // delete Project from all Competitions
-    const compsQuery = query(collection(db, KEY_COMPETITIONS), where(`projects.${project.id}`, '==', true))
-    const compsSnap = await getDocs(compsQuery)
-    compsSnap.forEach(doc => {
-      batch.update(doc.ref, { projects: 
-        {
-          [`${project.id}`]: deleteField() 
-        }
-      })
-    })
-
-    return await batch.commit() 
+    // firestore triggers update/deletion of project relationships
+    const projetRef = doc(db, KEY_PROJECTS, project.id)
+    await deleteDoc(projetRef)
   }
 
   async getProject(project_id:string):Promise<Project> {
@@ -301,23 +252,9 @@ class FirestoreService {
   }
 
   async deleteCompetition(comp:Competition):Promise<void> {
-    const batch = writeBatch(db)
-
-    // delete Comp doc
-    batch.delete(doc(db, KEY_COMPETITIONS, comp.id))
-
-    // delete Comps from Project docs project/{project_id}/competitions/{comp_id}
-    const q = query(collection(db, KEY_PROJECTS), where(`competitions.${comp.id}`, '==', true))
-    const snap = await getDocs(q)
-    snap.forEach(doc => {
-      batch.update(doc.ref, { competitions: 
-        {
-          [`${comp.id}`]: deleteField()
-        }
-      })
-    })
-
-    return await batch.commit() 
+    // firestore triggers update/deletion of competition relationships
+    const compRef = doc(db, KEY_COMPETITIONS, comp.id)
+    await deleteDoc(compRef)
   }
 
   async getCompetition(comp_id:string):Promise<Competition> {
