@@ -1,8 +1,8 @@
 import { UserProfile, Team, Guild } from '@/types'
 import { DISCORD_ADMIN_ID } from '@/consts'
 
-export function canEditTeam(user:UserProfile, team:Team):boolean {
-  return team.id in user.teams
+export function canEditTeam(profile:UserProfile, team:Team):boolean {
+  return team.id in profile.teams
 }
 
 export function canCreateCompetition(guild:Guild):boolean {

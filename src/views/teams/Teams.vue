@@ -25,20 +25,6 @@
           </router-link>
         </li>
       </ul>
-      <p class="menu-label">All Teams</p>
-      <ul 
-        v-if="otherTeams && otherTeams.length"
-        class="menu-list"
-      >
-        <li 
-          v-for="(team, i) in otherTeams"
-          :key="i"
-        >
-          <router-link :to="{ name: 'team-show', params: { id: team.id } }">
-            {{ team.name }}
-          </router-link>
-        </li>
-      </ul>
     </aside>
     <article class="article">
       <router-view  />
@@ -60,21 +46,12 @@ export default defineComponent({
   computed: {
     ...mapStores(useUserStore, useTeamsStore),
     ...mapState(useUserStore, { userTeams: 'teams' }),
-    ...mapState(useTeamsStore, { teams: 'list' }),
     defaultTeam():Team|undefined {
       let result
       if (this.userTeams && this.userTeams.length) {
         result = this.userTeams[0]
       }
       return result
-    },
-    otherTeams():Team[] {
-      let list = this.teams || []
-      let ids = this.userTeams ? this.userTeams.map(t => t.id) : []
-      if (ids.length && list) {
-        list = list.filter(t => ids.indexOf(t.id) == -1)
-      }
-      return list
     }
   },
   beforeRouteUpdate(to) {
@@ -85,9 +62,6 @@ export default defineComponent({
   created() {
     if (!this.userTeams) {
       this.userStore.fetchTeams()
-    }
-    if (!this.teams) {
-      this.teamsStore.fetchList()
     }
   },
   mounted() {

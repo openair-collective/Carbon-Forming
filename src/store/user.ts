@@ -109,7 +109,7 @@ export const useUserStore = defineStore('user', {
           await firestore.addTeamToUser(team, this.profile)
           team.members = team.members || {}
           team.members[this.profile.id] = role || TeamRole.default
-          let patch = this.teams ? this.teams.slice() : []
+          let patch = this.teams || []
           patch.push(team)
           this.teams = patch
         }
