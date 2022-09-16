@@ -117,7 +117,7 @@ export const useTeamsStore = defineStore('teams', {
     },
     async saveTeamAvatar(team:Team, avatar:File):Promise<Team|undefined> {
       try {
-        const response = await storage.saveFile(avatar)
+        const response = await storage.saveFile(avatar, team.id)
         team.avatar = response
         return await this.saveTeam(team)
       }

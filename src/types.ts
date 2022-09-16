@@ -63,4 +63,5 @@ export declare interface Modal {
 export declare interface FileUpload {
   filename:string
   url:string
+  path:string
 }

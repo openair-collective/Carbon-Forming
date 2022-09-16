@@ -38,7 +38,7 @@ export const useProjectsStore = defineStore('projects', {
     },
     async saveProjectDesignDoc(project:Project, doc:File):Promise<Project|undefined> {
       try {
-        const response = await storage.saveFile(doc)
+        const response = await storage.saveFile(doc, project.id)
         project.design_doc = response
         return await this.saveProject(project)
       }

@@ -19,16 +19,17 @@ if (import.meta.env.DEV) {
 
 class FirebaseService {
 
-  async saveFile(file:File):Promise<FileUpload> {
+  async saveFile(file:File, dir:string=''):Promise<FileUpload> {
     const filename = `${Date.now()}.${file.name}`
-    const storageRef = ref(storage, filename)
-    const response = await uploadBytes(storageRef, file)
+    const path = `${dir}/${filename}`
+    const storageRef = ref(storage, path)
+    await uploadBytes(storageRef, file)
     const url = await getDownloadURL(storageRef)
-    return { filename, url }
+    return { filename, url, path}
   }
 
   async removeFile(file:FileUpload):Promise<void> {
-    const storageRef = ref(storage, file.filename)
+    const storageRef = ref(storage, file.path || file.filename)
     return deleteObject(storageRef)
   }
 }
