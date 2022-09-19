@@ -43,6 +43,7 @@ export default defineComponent({
 
     // setup a listener for Firebase Auth changes
     let unsubscribe = authRef.onAuthStateChanged(user => {
+      unsubscribe()
       if (user) {
         this.userStore.fetchUser(user.uid, user.photoURL || '')
           .then(result => this.userStore.fetchUserGuild())
@@ -57,10 +58,11 @@ export default defineComponent({
             }
           })
           .catch(error => {
-            unsubscribe()
             log.error(MODULE_ID, error)
-            this.error = 'There was an issue with your login <PROMPT FOR LOGIN>'
           })
+      }
+      else {
+        this.logout()
       }
     })
 
@@ -70,9 +72,14 @@ export default defineComponent({
     }
     else if(!this.oauth && !this.profile) {
       unsubscribe()
+      this.logout()
+    }
+  },
+  methods: {
+    logout() {
       this.userStore.logout()
         .then(()=> {
-          this.$router.replace({name: 'login'})
+          this.$router.replace({ name: 'login' })
         })
     }
   }

@@ -58,9 +58,6 @@ export default defineComponent({
     canEdit():boolean {
       let result = false
       if (this.team && this.userStore.profile) {
-        console.info(this.team)
-        console.info(this.userStore.profile)
-        console.info(canEditTeam(this.userStore.profile, this.team))
         result = canEditTeam(this.userStore.profile, this.team)
       }
       return result

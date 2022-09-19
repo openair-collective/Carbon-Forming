@@ -42,7 +42,6 @@ export const useUserStore = defineStore('user', {
     async logout():Promise<void> {
       localStorage.removeItem(KEY_OAUTH)
       localStorage.removeItem(KEY_GUILD)
-      // need some kind of reset function here
       this.oauth = null
       this.profile = null
       this.guild = null
@@ -103,12 +102,14 @@ export const useUserStore = defineStore('user', {
         throw new Error(`${MODULE_ID} #fetchTeams > User must be authenticated and profile fetched`)
       }
     },
-    async addTeam(team:Team, role?:TeamRole):Promise<void> {
+    async addTeam(team:Team, role:TeamRole=TeamRole.default):Promise<void> {
       if (this.oauth && this.profile) {
         try {
-          await firestore.addTeamToUser(team, this.profile)
+          await firestore.addTeamToUser(team, this.profile, role)
           team.members = team.members || {}
-          team.members[this.profile.id] = role || TeamRole.default
+          team.members[this.profile.id] = role
+          this.profile.teams = this.profile.teams || {}
+          this.profile.teams[team.id] = true
           let patch = this.teams || []
           patch.push(team)
           this.teams = patch
@@ -127,6 +128,7 @@ export const useUserStore = defineStore('user', {
         try {
           await firestore.removeTeamFromUser(team, this.profile)
           delete team.members[this.profile.id]
+          delete this.profile.teams[team.id]
           let patch = this.teams ? this.teams.slice() : []
           patch = patch.splice(patch.indexOf(team), 1)
           this.teams = patch

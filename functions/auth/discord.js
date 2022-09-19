@@ -1,4 +1,5 @@
 const functions = require('firebase-functions')
+const { admin } = require('../admin.js')
 const cookieParser = require('cookie-parser')
 const crypto = require('crypto')
 
