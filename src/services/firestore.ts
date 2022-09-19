@@ -18,7 +18,11 @@ import {
   connectFirestoreEmulator,
   deleteField,
   deleteDoc,
+  Timestamp,
+  DocumentSnapshot,
+  DocumentReference,
 } from "firebase/firestore"
+import { parse } from "path"
 
 const MODULE_ID = 'services/firestore'
 const KEY_USERS = 'users'
@@ -31,6 +35,18 @@ const db = getFirestore(app)
 
 if (import.meta.env.DEV) {
   connectFirestoreEmulator(db, 'localhost', 8080)
+}
+
+function timestampToDate(timestamp:Timestamp):Date|undefined {
+  return timestamp ? timestamp.toDate() : undefined
+}
+
+function parseCompetition(comp:DocumentSnapshot):Competition {
+  let data = comp.data() || {} 
+  let obj = Object.assign({ id: comp.id }, data) as Competition
+  obj.start_date = timestampToDate(data.start_date)
+  obj.end_date = timestampToDate(data.end_date)
+  return obj
 }
 
 class FirestoreService {
@@ -246,7 +262,7 @@ class FirestoreService {
     }
     else {
       let docRef = await addDoc(collection(db, KEY_COMPETITIONS), comp)
-      result = Object.assign(comp, { id: docRef.id }) as Competition
+      result = Object.assign({ id: docRef.id }, comp) as Competition
     }
     return result
   }
@@ -258,9 +274,9 @@ class FirestoreService {
   }
 
   async getCompetition(comp_id:string):Promise<Competition> {
-    const teamRef = doc(db, KEY_COMPETITIONS, comp_id)
-    const team = await getDoc(teamRef)
-    return Object.assign({ id: team.id }, team.data()) as Competition
+    const compRef = doc(db, KEY_COMPETITIONS, comp_id)
+    const comp = await getDoc(compRef)
+    return parseCompetition(comp)
   }
 
   async getCompetitions():Promise<Competition[]> {
@@ -268,7 +284,7 @@ class FirestoreService {
     const competitionsRef = collection(db, KEY_COMPETITIONS)
     const docsSnap = await getDocs(competitionsRef)
     if (docsSnap.size) {
-      result = docsSnap.docs.map(comp => Object.assign({ id: comp.id }, comp.data()) as Competition)
+      result = docsSnap.docs.map(comp => parseCompetition(comp) )
     }
     return result
   }

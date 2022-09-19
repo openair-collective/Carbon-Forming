@@ -167,6 +167,7 @@ export default defineComponent({
             this.$emit("team-saved", result)
           })
           .catch(error => {
+            this.error = 'Error saving team. Please try again.'
             log.error(MODULE_ID, error)
           })
           .finally(() => {

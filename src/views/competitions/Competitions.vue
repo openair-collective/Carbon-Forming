@@ -26,12 +26,19 @@
             @click="$router.push({ name: 'comp-show', params: { id: comp.id } })" 
             class="box"
           >
-            <router-link 
-              :to="{ name: 'comp-show', params: { id: comp.id } }"
-              class="button is-text" 
-            > 
-              <h2 class="title is-4">{{ comp.name }}</h2>
+            <router-link :to="{ name: 'comp-show', params: { id: comp.id } }"> 
+              <h3 class="title is-3">{{ comp.name }}</h3>
+              <h4 class="subtitle is-4">$X,XXX in prizes to be won</h4>
             </router-link>
+            <div class="duration mt-6">
+              <p v-if="comp.start_date && comp.end_date" >
+                {{ kDayMonth(comp.start_date) }} - {{ kDayMonthYear(comp.end_date) }}
+              </p>
+              <p v-else>
+                Time TBD
+              </p>
+            </div>
+            <div class="clock"></div>
           </div>
         </div>
       </div>
@@ -43,6 +50,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { mapState, mapStores } from 'pinia'
+import { dayMonth, dayMonthYear } from '@/utils/date'
 import { useUserStore } from '@/store/user'
 import { useCompetitionsStore } from '@/store/competitions'
 import { canCreateCompetition } from '@/helpers/authHelper'
@@ -50,6 +58,12 @@ import Loading from '@/components/Loading.vue'
 
 export default defineComponent({
   components: { Loading },
+  data() {
+    return {
+      kDayMonth: dayMonth,
+      kDayMonthYear: dayMonthYear
+    }
+  },
   computed: {
     ...mapStores(useCompetitionsStore, useUserStore),
     ...mapState(useCompetitionsStore, ['list']),
@@ -69,4 +83,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
+  .box {
+    cursor:pointer;
+  }
 </style>

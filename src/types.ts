@@ -43,8 +43,8 @@ export declare interface Competition {
   id: string
   name:string
   description:string
-  start:number
-  end:number
+  start_date?:Date
+  end_date?:Date
 }
 
 export declare interface Material {
