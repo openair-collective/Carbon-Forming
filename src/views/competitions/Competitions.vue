@@ -30,7 +30,7 @@
               <h3 class="title is-3">{{ comp.name }}</h3>
               <h4 class="subtitle is-4">$X,XXX in prizes to be won</h4>
             </router-link>
-            <div class="duration mt-6">
+            <div class="duration mt-6 mb-4">
               <p v-if="comp.start_date && comp.end_date" >
                 {{ kDayMonth(comp.start_date) }} - {{ kDayMonthYear(comp.end_date) }}
               </p>
@@ -38,7 +38,7 @@
                 Time TBD
               </p>
             </div>
-            <div class="clock"></div>
+            <countdown-timer :date="comp.start_date" />
           </div>
         </div>
       </div>
@@ -55,9 +55,10 @@ import { useUserStore } from '@/store/user'
 import { useCompetitionsStore } from '@/store/competitions'
 import { canCreateCompetition } from '@/helpers/authHelper'
 import Loading from '@/components/Loading.vue'
+import CountdownTimer from '@/components/CountdownTimer.vue'
 
 export default defineComponent({
-  components: { Loading },
+  components: { Loading, CountdownTimer },
   data() {
     return {
       kDayMonth: dayMonth,

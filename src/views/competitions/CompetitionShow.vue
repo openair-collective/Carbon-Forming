@@ -10,22 +10,40 @@
           </li>
         </ul>
       </nav>
-      <h1 class="title is-2">{{ competition.name }}</h1>
-      <div class="field is-grouped mb-4">
-        <div class="control">
-          <button
-            class="button is-primary"
-          >
-            Enter this competition
-          </button>
+      <div class="columns">
+        <div class="column">
+          <h1 class="title is-2">{{ competition.name }}</h1>
+          <div class="field is-grouped mb-4">
+            <div class="control">
+              <button
+                class="button is-primary"
+              >
+                Enter this competition
+              </button>
+            </div>
+            <div class="control">
+              <router-link 
+                v-if="canEdit"
+                :to="{ name: 'comp-edit', params: {id: competition.id }}"
+                class="button is-info is-outlined">
+                Edit this competition
+              </router-link>
+            </div>
+          </div>
         </div>
-        <div class="control">
-          <router-link 
-            v-if="canEdit"
-            :to="{ name: 'comp-edit', params: {id: competition.id }}"
-            class="button is-info is-outlined">
-            Edit this competition
-          </router-link>
+        <div class="column">
+          <div class="is-pulled-right">
+            <p 
+              v-if="competition.start_date && competition.end_date"
+              class="is-size-4 mb-2"
+            >
+              {{ kDayMonth(competition.start_date) }} - {{ kDayMonthYear(competition.end_date) }}
+            </p>
+            <p v-else>
+              Time TBD
+            </p>
+            <countdown-timer :date="competition.start_date" />
+          </div>
         </div>
       </div>
       <div class="tabs mb-0 pb-0">
@@ -55,7 +73,7 @@
           {{ competition.description }}
         </div>
         <div class="column">
-          <table class="table">
+          <table class="table is-fullwidth">
             <tr>
               <td>First Prize</td>
               <td>$1,000</td>
@@ -103,7 +121,9 @@ import { mapState, mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
 import { useCompetitionsStore } from '@/store/competitions'
 import { canCreateCompetition } from '@/helpers/authHelper'
+import { dayMonth, dayMonthYear } from '@/utils/date'
 import Loading from '@/components/Loading.vue'
+import CountdownTimer from '@/components/CountdownTimer.vue'
 import log from '@/services/logger'
 
 const MODULE_ID ='views/competition'
@@ -114,10 +134,12 @@ const TABS = {
 }
 
 export default defineComponent({
-  components: { Loading },
+  components: { Loading, CountdownTimer },
   data() {
     return {
       kTabs: TABS,
+      kDayMonth: dayMonth,
+      kDayMonthYear: dayMonthYear,
       competition: undefined as Competition|undefined,
       projects: undefined as Project[]|undefined,
       activeTab: TABS.DETAILS,
