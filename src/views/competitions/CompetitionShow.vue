@@ -77,7 +77,7 @@
       class="article has-background-white-bis px-5 py-5"
     >
       <h2 class="title is-4">Submitted Projects</h2>
-      <div v-if="competition.projects && competition.projects.length">
+      <div v-if="projects && projects.length">
         <div v-if="errors.projects">
           {{ errors.projects }}
         </div>
