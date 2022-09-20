@@ -14,12 +14,12 @@
       </div>
       <hr/>
       <h2 class="title is-4">Bill of Materials</h2>
-        <p class="mb-2">Please list all of the materials used in the construction of your project. (Required)</p>
+        <p class="mb-2">Please list all of the materials used in the construction of your project.</p>
         <div>
           <table class="table is-fullwidth">
             <thead>
               <tr>
-                <th style="width:20%">Item Name*</th>
+                <th>Item Name*</th>
                 <th style="width:15%">Price*</th>
                 <th style="width:10%">Quantity*</th>
                 <th>Purchase Link</th>
@@ -32,7 +32,18 @@
                 :key="'m'+ i"
               >
                 <td><input type="text" class="input" v-model="m.name" /></td>
-                <td><input type="number" class="input" step="0.01" v-model="m.cost" /></td>
+                <td>
+                  <div class="field has-addons">
+                    <p class="control">
+                      <a class="button is-static">
+                        $
+                      </a>
+                    </p>
+                    <p class="control">
+                      <input type="number" class="input" min="0.00" step="1.00" v-model="m.cost" />
+                    </p>
+                  </div>
+                </td>
                 <td><input type="number" class="input" v-model="m.quantity" /></td>
                 <td><input type="text" class="input" v-model="m.link" /></td>
                 <td>
