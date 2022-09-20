@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
-import {OAuth, Team, UserProfile, Guild  } from '@/types'
+import {OAuth, Team, UserProfile, Guild } from '@/types'
+import { TeamRole } from '@/enums'
 import auth from '@/services/auth'
 import discord from '@/services/discord'
 import firestore from '@/services/firestore'
@@ -7,24 +8,32 @@ import log from '@/services/logger'
 
 const MODULE_ID = 'store/user'
 const KEY_OAUTH = 'oauth'
-let localOAuth = localStorage.getItem(KEY_OAUTH)
+const KEY_GUILD = 'guild'
+const localOAuth = localStorage.getItem(KEY_OAUTH)
+const localGuild = localStorage.getItem(KEY_GUILD)
 
 interface UserState {
   oauth: OAuth | null
   profile: UserProfile | null
-  guild: Guild | null
-  teams: Team[]
+  guild: Guild | null,
+  teams: Team[] | null
 }
 
 export const useUserStore = defineStore('user', {
   state: (): UserState => ({
     oauth: localOAuth ? JSON.parse(localOAuth) as OAuth : null,
     profile: null,
-    guild: null,
-    teams: [] as Team[]
+    guild: localGuild ? JSON.parse(localGuild) as Guild : null,
+    teams: null
   }),
   getters: {
-    isAuthenticated: (state) => { return state.oauth }
+    isAuthenticated: (state):boolean => {
+      let result = false
+      if(state.oauth && state.profile && state.guild) {
+        result = true
+      }
+      return result
+    }
   },
   actions: {
     login() {
@@ -32,11 +41,10 @@ export const useUserStore = defineStore('user', {
     },
     async logout():Promise<void> {
       localStorage.removeItem(KEY_OAUTH)
-      // need some kind of reset function here
+      localStorage.removeItem(KEY_GUILD)
       this.oauth = null
       this.profile = null
       this.guild = null
-      this.teams = [] as Team[]
       return await auth.logout()
     },
     async exchangeToken(code:string, status:string):Promise<void> {
@@ -50,13 +58,12 @@ export const useUserStore = defineStore('user', {
         log.error(MODULE_ID, '#exchangeToken > ' + message)
       }
     },
-    async fetchUser(uid:string, photoUrl:string=''):Promise<void> {
+    async fetchUser(id:string, photoUrl:string=''):Promise<void> {
       try {
-        const response = await firestore.userProfile(uid)
-        response.id = uid
+        const response = await firestore.getUserProfile(id)
+        response.id = id
         response.avatar = photoUrl
-        this.profile = response
-        await this.fetchTeams()
+        this.profile = response as UserProfile
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
@@ -66,8 +73,11 @@ export const useUserStore = defineStore('user', {
     async fetchUserGuild():Promise<void> {
       if (this.oauth && this.oauth.discord_access_token) {
         try {
-          const response = await discord.userGuildMember(this.oauth.discord_access_token)
-          this.guild = response as Guild
+          if (!this.guild) {
+            const response = await discord.userGuildMember(this.oauth.discord_access_token)
+            localStorage.setItem(KEY_GUILD, JSON.stringify(response))
+            this.guild = response as Guild
+          }
         }
         catch(error) {
           let message = (error instanceof Error) ? error.message : String(error)
@@ -81,23 +91,28 @@ export const useUserStore = defineStore('user', {
     async fetchTeams():Promise<void> {
       if (this.oauth && this.profile) {
         try {
-          const response = await firestore.userTeams(this.profile.id)
-          this.teams = response as Team[]
+          this.teams = await firestore.getUserTeams(this.profile)
         }
         catch(error) {
           let message = (error instanceof Error) ? error.message : String(error)
-          log.error(MODULE_ID, '#fetchTeams > ' + message)
+          log.error(MODULE_ID, '#fetchUserGuild > ' + message)
         }
       }
       else {
         throw new Error(`${MODULE_ID} #fetchTeams > User must be authenticated and profile fetched`)
-      } 
+      }
     },
-    async addTeam(team_id:string):Promise<void> {
+    async addTeam(team:Team, role:TeamRole=TeamRole.default):Promise<void> {
       if (this.oauth && this.profile) {
         try {
-          await firestore.addTeamToUser(team_id, this.profile.id)
-          return this.fetchTeams()
+          await firestore.addTeamToUser(team, this.profile, role)
+          team.members = team.members || {}
+          team.members[this.profile.id] = role
+          this.profile.teams = this.profile.teams || {}
+          this.profile.teams[team.id] = true
+          let patch = this.teams || []
+          patch.push(team)
+          this.teams = patch
         }
         catch(error) {
           let message = (error instanceof Error) ? error.message : String(error)
@@ -108,11 +123,15 @@ export const useUserStore = defineStore('user', {
         throw new Error(`${MODULE_ID} #addTeam > User must be authenticated and profile fetched`)
       } 
     },
-    async removeTeam(team_id:string):Promise<void> {
+    async removeTeam(team:Team):Promise<void> {
       if (this.oauth && this.profile) {
         try {
-          await firestore.removeTeamFromUser(team_id, this.profile.id)
-          return this.fetchTeams()
+          await firestore.removeTeamFromUser(team, this.profile)
+          delete team.members[this.profile.id]
+          delete this.profile.teams[team.id]
+          let patch = this.teams ? this.teams.slice() : []
+          patch = patch.splice(patch.indexOf(team), 1)
+          this.teams = patch
         }
         catch(error) {
           let message = (error instanceof Error) ? error.message : String(error)

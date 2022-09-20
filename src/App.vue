@@ -1,8 +1,8 @@
 <template>
-  <nav-bar v-if="profile" />
-  <article class="article">
-    <router-view />
-  </article>
+  <nav-bar v-if="isAuthenticated" />
+  <main class="main">
+    <router-view class="content" />
+  </main>
 </template>
 
 <script lang="ts">
@@ -10,6 +10,7 @@ import { defineComponent } from 'vue'
 import NavBar from '@/components/NavBar.vue'
 import { mapState } from 'pinia'
 import { useUserStore } from '@/store/user'
+import log from '@/services/logger'
 
 const MODULE_ID = 'app'
 
@@ -19,13 +20,18 @@ export default defineComponent({
     NavBar
   },
   computed: {
-    ...mapState(useUserStore, ['profile'])
+    ...mapState(useUserStore, ['isAuthenticated'])
   }
 })
 </script>
 
 <style scoped>
-.article {
-  padding: 2em;
+.main {
+  display: flex;
+  flex-direction: row;
+}
+.content {
+  flex: 2;
+  min-height: calc(100vh - 56px);
 }
 </style>

@@ -1,28 +1,99 @@
 import type { RouteRecordRaw } from 'vue-router'
-import type { App } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '@/views/Home.vue'
-import Competitions from '@/views/Competitions.vue'
-import Team from '@/views/Team.vue'
+import Dashboard from '@/views/Dashboard.vue'
+import Competitions from '@/views/competitions/Competitions.vue'
+import CompetitionShow from '@/views/competitions/CompetitionShow.vue'
+import CompetitionNew from '@/views/competitions/CompetitionNew.vue'
+import CompetitionEdit from '@/views/competitions/CompetitionEdit.vue'
+import Teams from '@/views/teams/Teams.vue'
+import TeamShow from '@/views/teams/TeamShow.vue'
+import TeamNew from '@/views/teams/TeamNew.vue'
+import TeamEdit from '@/views/teams/TeamEdit.vue'
+import TeamProjects from '@/views/team_projects/TeamProjects.vue'
+import TeamProjectNew from '@/views/team_projects/TeamProjectNew.vue'
+import TeamProjectEdit from '@/views/team_projects/TeamProjectEdit.vue'
+import TeamProject from '@/views/team_projects/TeamProject.vue'
 import Login from '@/views/Login.vue'
 import AuthCallback from '@/views/AuthCallback.vue'
+import Onboarding from '@/views/Onboarding.vue'
 import { useUserStore } from '@/store/user'
 
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    name: 'home',
-    component: Home
+    name: 'root',
+    component: Dashboard, // has router-view -- wraps team and competition views
+    redirect: to => { return '/teams' },
+    children: [
+      {
+        path: '/teams/new',
+        name: 'teams-new',
+        component: TeamNew
+      },
+      {
+        path: '/teams',
+        name: 'teams',
+        component: Teams, // has router-view -- wraps team instances with / sidebar
+        children: [
+          {
+            path: ':id',
+            component: TeamShow, // has router-view -- container team children
+            children: [
+              {
+                path: '',
+                name: 'team-show',
+                component: TeamProjects
+              },
+              {
+                path: 'projects/:project_id',
+                name: 'team-project-show',
+                component: TeamProject
+              },
+              {
+                path: 'projects/:project_id/edit',
+                name: 'team-project-edit',
+                component: TeamProjectEdit
+              },
+              {
+                path: 'projects/new',
+                name: 'team-project-new',
+                component: TeamProjectNew
+              }
+            ]
+          }
+        ],
+      },
+      {
+        path: '/teams/:id/edit',
+        name: 'team-edit',
+        component: TeamEdit // edit a team instance directly
+      },
+      {
+        path: '/competitions',
+        name: 'competitions',
+        component: Competitions,
+      },
+      {
+        path: '/competitions/:id',
+        name: 'comp-show',
+        component: CompetitionShow
+      },
+      {
+        path: '/competitions/:id/edit',
+        name: 'comp-edit',
+        component: CompetitionEdit
+      },
+      {
+        path: '/competitions/new',
+        name: 'comp-new',
+        component: CompetitionNew
+      }
+    ]
   },
   {
-    path: '/competitions',
-    name: 'competitions',
-    component: Competitions
-  },
-  {
-    path: '/teams/:id',
-    name: 'team',
-    component: Team
+    path: '/onboarding',
+    name: 'onboarding',
+    component: Onboarding
   },
   {
     path: '/login',
@@ -41,26 +112,16 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, from) => {
   const store = useUserStore()
-  // auth_callback should always load - it manages intermediate Auth states
-  if (to.name === 'auth_callback') {
-    next()
-  }
-  else if (store.oauth && !store.profile && to.name !== 'auth_callback') {
-    next({ name: 'auth_callback'})
-  }
-  else if (!store.oauth && to.name !== 'login') {
-    next({ name: 'login' })
-  }
-  else {
-    next()
-  }
-})
 
-// can set some router hooks here
-export function useRouter(app: App<Element>) {
-  app.use(router)
-}
+  if (!store.oauth && to.name !== 'auth_callback' && to.name !== 'login') {
+    return { name: 'login', query: { redirect: to.path }}
+  }
+  else if (!store.profile && to.name !== 'auth_callback' && to.name !== 'login') {
+    return { name: 'auth_callback', query: { redirect: to.path }}
+  }
+
+})
 
 export default router

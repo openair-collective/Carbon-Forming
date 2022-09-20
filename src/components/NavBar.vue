@@ -1,23 +1,27 @@
 <template>
-  <nav class="navbar" role="navigation" aria-label="main navigation">
+  <nav class="navbar is-light is-expanded" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
       <div class="navbar-item">
-        <h1>Carbon Forming</h1>
+        <h1 class="title is-4">
+          <router-link :to="{ name: 'root'}">
+            Carbon Forming
+          </router-link>
+        </h1>
       </div>
     </div>
     <div class="navbar-menu">
-      <div class="navbar-start">
-        <router-link :to="{name: 'home'}" class="navbar-item" >Home</router-link>
-        <router-link 
-          v-if="profile"
-          :to="{name: 'competitions'}" 
-          class="navbar-item"
-        >
-            Competitions
-        </router-link>
-      </div>
+      <div class="navbar-start"></div>
       <div v-if="profile" class="navbar-end">
-        <button @click="logout" class="navbar-item" >Logout</button>
+        <div class="navbar-item">
+          <div class="buttons">
+            <button @click="logout" class="button is-text">Logout</button>
+          </div>
+        </div>
+        <div class="navbar-item">
+          <div class="image image--avatar is-48x48">
+            <img class="is-rounded" :src="profile.avatar" />
+          </div>
+        </div>
       </div>
     </div>
   </nav>
@@ -25,7 +29,6 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import auth from '@/services/auth'
 import { mapState, mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
 
@@ -46,49 +49,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.navbar {
-  background-color: #eee;
-  min-height: 3.25rem;
-  position: relative;
-  z-index: 30;
-  align-items: stretch;
-  display: flex;
-}
-.navbar a {
-  text-decoration: none;
-}
-.navbar a.router-link-active {
-  background-color: white;
-}
-.navbar-brand {
-  align-items: stretch;
-  display: flex;
-  flex-shrink: 0;
-  min-height: 3.25rem;
-}
-.navbar-brand h1 {
-  margin: 0;
-}
-.navbar-menu {
-  flex-grow: 1;
-  flex-shrink: 0;
-  align-items: stretch;
-  display: flex;
-}
-.navbar-start {
-  justify-content: flex-start;
-  margin-right: auto;
-  align-items: stretch;
-  display: flex;
-}
-.navbar-item {
-  color: #4a4a4a;
-  display: flex;
-  position: relative;
-  flex-grow: 0;
-  flex-shrink: 0;
-  align-items: center;
-  line-height: 1.5;
-  padding: .5rem .75rem;
-}
+  .image--avatar img {
+    max-height: none;
+  }
 </style>
