@@ -137,7 +137,7 @@ You will want to run these two commands in seperate terminal instances
    ```
 1. Run the Firebase emulators and import the seed data
    ```sh
-    npx firebase emulators:start --import ./seed
+    npx firebase emulators:start
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
