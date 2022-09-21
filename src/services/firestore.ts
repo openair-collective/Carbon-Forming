@@ -21,8 +21,7 @@ import {
   Timestamp,
   DocumentSnapshot,
   DocumentReference,
-} from "firebase/firestore"
-import { parse } from "path"
+} from "firebase/firestore" 
 
 const MODULE_ID = 'services/firestore'
 const KEY_USERS = 'users'
@@ -54,7 +53,8 @@ class FirestoreService {
   async getUserProfile(id:string):Promise<UserProfile> {
     const ref = doc(db, KEY_USERS, id)
     const docSnap = await getDoc(ref)
-    return Object.assign(docSnap.data() as UserProfile, { id })
+    let data = docSnap.data() || {}
+    return Object.assign(data, { id }) as UserProfile
   }
 
   async saveUserProfile(user:UserProfile):Promise<UserProfile> {
@@ -149,7 +149,8 @@ class FirestoreService {
   async getTeam(team_id:string):Promise<Team> {
     const teamRef = doc(db, KEY_TEAMS, team_id)
     const team = await getDoc(teamRef)
-    return Object.assign({ id: team.id }, team.data()) as Team
+    let data = team.data() || {}
+    return Object.assign(data, { id: team.id }) as Team
   }
 
   async getTeams():Promise<Team[]> {
@@ -186,9 +187,10 @@ class FirestoreService {
   }
 
   async getProject(project_id:string):Promise<Project> {
-    const teamRef = doc(db, KEY_PROJECTS, project_id)
-    const team = await getDoc(teamRef)
-    return Object.assign({ id: team.id }, team.data()) as Project
+    const projectRef = doc(db, KEY_PROJECTS, project_id)
+    const project = await getDoc(projectRef)
+    let data = project.data() || {}
+    return Object.assign(data, { id: project.id }) as Project
   }
 
   async getProjects():Promise<Project[]> {
