@@ -50,9 +50,7 @@ export const useTeamsStore = defineStore('teams', {
         if (avatar) {
           await this.saveTeamAvatar(team, avatar)
         }
-        if (!this.list) {
-          await this.fetchList()
-        }
+        await this.fetchList()
         return team
       }
       catch(error) {
@@ -63,6 +61,7 @@ export const useTeamsStore = defineStore('teams', {
     async deleteTeam(team:Team):Promise<void> {
       try {
         await firestore.deleteTeam(team)
+        await this.fetchList()
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)

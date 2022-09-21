@@ -33,9 +33,7 @@ export const useCompetitionsStore = defineStore('competitions', {
       try {
          const response = await firestore.saveCompetition(comp)
          comp = { ...comp, ...response }
-         if (!this.list) {
-           await this.fetchList()
-         }
+         await this.fetchList()
          return comp
       }
       catch(error) {
