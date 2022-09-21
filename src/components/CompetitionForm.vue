@@ -86,8 +86,8 @@ export default defineComponent({
       success: '',
       error: '',
       isSaving: false,
-      startDate: this.competition.start_date ? dateForInput(this.competition.start_date) : dateForInput(new Date()),
-      endDate: this.competition.end_date ? dateForInput(this.competition.end_date) : dateForInput(new Date())
+      startDate: this.competition.start_date && dateForInput(this.competition.start_date),
+      endDate: this.competition.end_date && dateForInput(this.competition.end_date)
     }
   },
   computed: {
