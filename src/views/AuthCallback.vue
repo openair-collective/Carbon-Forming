@@ -38,37 +38,43 @@ export default defineComponent({
     ...mapState(useUserStore, ['profile', 'oauth', 'isAuthenticated']),
     ...mapStores(useUserStore),
   },
-  created() {
+  async created() {
     if (this.error) return
 
     // setup a listener for Firebase Auth changes
-    let unsubscribe = authRef.onAuthStateChanged(user => {
-      unsubscribe()
+    let unsubscribe = authRef.onAuthStateChanged(async user => {
       if (user) {
-        this.userStore.fetchUser(user.uid, user.photoURL || '')
-          .then(result => this.userStore.fetchUserGuild())
-          .then(result => {
-            const userTeams = this.profile && this.profile.teams
-            if (userTeams && !isEmpty(userTeams)) {
-              let redirect = this.$route.query.redirect as string || '/'
-              this.$router.replace({ path: redirect })
-            }
-            else {
-              this.$router.replace({ name: 'onboarding'})
-            }
-          })
-          .catch(error => {
-            log.error(MODULE_ID, error)
-          })
+        try {
+          await this.userStore.fetchUser(user.uid, user.photoURL || '')
+          await this.userStore.fetchUserGuild()
+          const userTeams = this.profile && this.profile.teams
+          if (userTeams && !isEmpty(userTeams)) {
+            let redirect = this.$route.query.redirect as string || '/'
+            this.$router.replace({ path: redirect })
+          }
+          else {
+            this.$router.replace({ name: 'onboarding'})
+          }
+        }
+        catch(error) {
+          unsubscribe()
+          let message = (error instanceof Error) ? error.message : String(error)
+          log.error(MODULE_ID, '#removeTeam > ' + message)
+          log.error(MODULE_ID, message)
+        }
       }
       else {
-        this.logout()
+        // force a logout - something is wrong with our stored credentials
+        if (this.oauth && this.profile) {
+          unsubscribe()
+          this.logout()
+        }
       }
     })
 
     // complete the authentication process if code and state exist
     if (this.code && this.state) {
-      this.userStore.exchangeToken(this.code, this.state)
+      await this.userStore.exchangeToken(this.code, this.state)
     }
     else if(!this.oauth && !this.profile) {
       unsubscribe()
