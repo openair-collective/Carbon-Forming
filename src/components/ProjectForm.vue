@@ -44,7 +44,7 @@
                     </p>
                   </div>
                 </td>
-                <td><input type="number" class="input" v-model="m.quantity" /></td>
+                <td><input type="number" class="input" v-model="m.quantity" min="1" /></td>
                 <td><input type="text" class="input" v-model="m.link" /></td>
                 <td>
                     <a
