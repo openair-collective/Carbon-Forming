@@ -1,6 +1,6 @@
 <template>
   <section v-if="team">
-    <header class="header p-4 has-background-white is-clearfix">
+    <header class="header px-4 pt-4 pb-0 has-background-white is-clearfix">
       <figure 
         class="image is-pulled-left mr-4"
         :style="{backgroundImage: `url(${avatar})`}  "
@@ -18,8 +18,24 @@
       </router-link>
       </h1>
       <h2 class="subtitle">{{ team.location }}</h2>
+      <div class="tabs mb-0 pb-0">
+        <ul>
+          <li 
+            @click="onTabClick(kTabs.PROJECTS)"
+            :class="{'is-active': activeTab === kTabs.PROJECTS}"
+          >
+            <a>Projects</a>
+          </li>
+          <li
+            @click="onTabClick(kTabs.COMPS)"
+            :class="{'is-active': activeTab === kTabs.COMPS}"
+          >
+            <a>Competitions Entered</a>
+          </li>
+        </ul>
+      </div>
     </header>
-    <article class="article p-4 has-background-white-bis">
+    <article class="article has-background-white-bis p-5 my-0">
       <router-view :team="team" />
     </article>
   </section>
@@ -39,11 +55,18 @@ import log from '@/services/logger'
 
 const MODULE_ID ='components/teams/TeamShow'
 
+const TABS = {
+  PROJECTS: 0,
+  COMPS: 1
+}
+
 export default defineComponent({
   components: { Loading },
   data() {
     return {
-      team: undefined as Team | undefined
+      kTabs: TABS,
+      team: undefined as Team | undefined,
+      activeTab: TABS.PROJECTS
     }
   },
   computed: {
@@ -78,6 +101,11 @@ export default defineComponent({
     setTeamByID(id:string) {
       this.teamsStore.getTeamById(id)
         .then(result => this.team = result)
+    },
+    onTabClick(tab:number) {
+      this.activeTab = tab
+      let name = tab === TABS.PROJECTS ? 'team-show' : 'team-competitions'
+      this.$router.push({ name })
     }
   }
 })

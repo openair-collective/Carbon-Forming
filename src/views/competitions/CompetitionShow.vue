@@ -37,12 +37,12 @@
               v-if="competition.start_date && competition.end_date"
               class="is-size-4 mb-2"
             >
-              {{ kDayMonth(competition.start_date) }} - {{ kDayMonthYear(competition.end_date) }}
+              {{ kDayMonth(kfsTimestampToDate(competition.start_date)) }} - {{ kDayMonthYear(kfsTimestampToDate(competition.end_date)) }}
             </p>
             <p v-else>
               Time TBD
             </p>
-            <countdown-timer :date="competition.start_date" />
+            <countdown-timer :date="kfsTimestampToDate(competition.start_date)" />
           </div>
         </div>
       </div>
@@ -55,7 +55,7 @@
             <a>Competition Details</a>
           </li>
           <li
-            @click="activeTab = kTabs.PROJECTS"
+            @click="(activeTab = kTabs.PROJECTS) && setProjects()"
             :class="{'is-active': activeTab === kTabs.PROJECTS}"
           >
             <a>Submitted Projects</a>
@@ -95,20 +95,13 @@
       class="article has-background-white-bis px-5 py-5"
     >
       <h2 class="title is-4">Submitted Projects</h2>
-      <div v-if="projects && projects.length">
-        <div v-if="errors.projects">
-          {{ errors.projects }}
+        <project-list
+          v-if="competition.projects && competition.projects.length"
+          :list="competition.projects"
+        />
+        <div v-else>
+          No projects
         </div>
-        <ul v-else-if="projects && projects.length">
-          <li v-for="(project, i) in projects" :key="'project_'+ i" >
-            {{ project.name }}
-          </li>
-        </ul>
-        <loading v-else />
-      </div>
-      <div v-else>
-        No projects
-      </div>
     </article>
   </section>
   <loading v-else />
@@ -121,9 +114,10 @@ import { mapState, mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
 import { useCompetitionsStore } from '@/store/competitions'
 import { canCreateCompetition } from '@/helpers/authHelper'
-import { dayMonth, dayMonthYear } from '@/utils/date'
+import { dayMonth, dayMonthYear, fsTimestampToDate } from '@/utils/date'
 import Loading from '@/components/Loading.vue'
 import CountdownTimer from '@/components/CountdownTimer.vue'
+import ProjectList from '@/components/ProjectList.vue'
 import log from '@/services/logger'
 
 const MODULE_ID ='views/competition'
@@ -134,25 +128,16 @@ const TABS = {
 }
 
 export default defineComponent({
-  components: { Loading, CountdownTimer },
+  components: { Loading, CountdownTimer, ProjectList },
   data() {
     return {
       kTabs: TABS,
       kDayMonth: dayMonth,
       kDayMonthYear: dayMonthYear,
+      kfsTimestampToDate: fsTimestampToDate,
       competition: undefined as Competition|undefined,
-      projects: undefined as Project[]|undefined,
       activeTab: TABS.DETAILS,
-      errors: {
-        projects: ''
-      }
-    }
-  },
-  watch: {
-    activeTab(newTab) {
-      if (newTab === TABS.PROJECTS && this.competition && !this.projects) {
-        this.setCompetitionProjects(this.competition)
-      }
+      projects: [] as Project[]
     }
   },
   computed: { 
@@ -167,7 +152,7 @@ export default defineComponent({
       return result
     }
   },
-  created() {
+  async created() {
     const id = this.$route.params.id as string
     if (!this.list || !this.list.length) {
       this.competitionsStore.fetchList()
@@ -181,16 +166,10 @@ export default defineComponent({
     setCompetitonByID(id:string) {
       this.competition = this.list &&  this.list.find(t => t.id === id)
     },
-    setCompetitionProjects(comp:Competition) {
-      this.errors.projects = ''
-      this.competitionsStore.getCompetitionProjects(comp)
-        .then(result => {
-          this.projects = result
-        })
-        .catch(error => {
-          this.errors.projects = '<ERROR SHOW PROMPT>'
-          log.error(MODULE_ID, '#setTeamProjects > Error' + error)
-        })
+    setProjects() {
+      if (this.competition && !this.competition.projects) {
+        this.competitionsStore.fetchCompetitionProjects(this.competition)
+      }
     }
   }
 })

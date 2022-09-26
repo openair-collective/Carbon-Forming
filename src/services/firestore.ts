@@ -12,15 +12,11 @@ import {
   collection,
   doc,
   query,
-  runTransaction,
   where,
   writeBatch,
   connectFirestoreEmulator,
   deleteField,
-  deleteDoc,
-  Timestamp,
-  DocumentSnapshot,
-  DocumentReference,
+  deleteDoc
 } from "firebase/firestore" 
 
 const MODULE_ID = 'services/firestore'
@@ -28,24 +24,14 @@ const KEY_USERS = 'users'
 const KEY_TEAMS = 'teams'
 const KEY_PROJECTS = 'projects'
 const KEY_COMPETITIONS = 'competitions'
+const KEY_COMP_PROJECTS = 'competition_projects'
+const KEY_TEAM_PROJECTS = 'team_projects'
 
 const app = getApps().length > 0 ? getApp() : initializeApp(FIREBASE_CONFIG)
 const db = getFirestore(app)
 
 if (import.meta.env.DEV) {
   connectFirestoreEmulator(db, 'localhost', 8080)
-}
-
-function timestampToDate(timestamp:Timestamp):Date|undefined {
-  return timestamp ? timestamp.toDate() : undefined
-}
-
-function parseCompetition(comp:DocumentSnapshot):Competition {
-  let data = comp.data() || {} 
-  let obj = Object.assign({ id: comp.id }, data) as Competition
-  obj.start_date = timestampToDate(data.start_date)
-  obj.end_date = timestampToDate(data.end_date)
-  return obj
 }
 
 class FirestoreService {
@@ -194,64 +180,35 @@ class FirestoreService {
   }
 
   async getProjects():Promise<Project[]> {
-    let result = [] as Array<Project>
+    let result = [] as Project[]
     const ref = collection(db, KEY_PROJECTS)
     const docsSnap = await getDocs(ref)
     if (docsSnap.size) {
-      result = docsSnap.docs.map(comp => Object.assign({ id: comp.id }, comp.data()) as Project)
+      result = docsSnap.docs.map(project => Object.assign({ id: project.id }, project.data()) as Project)
     }
     return result
   }
 
   async getTeamProjects(team:Team):Promise<Project[]> {
-    const ref = collection(db, KEY_PROJECTS)
-    const q = query(ref, where("team_id", "==", team.id))
-    const snap = await getDocs(q)
-    return snap.docs.map(project => Object.assign({ id: project.id }, project.data()) as Project)
+    let result = [] as Project[]
+    const ref = doc(db, KEY_TEAM_PROJECTS, team.id)
+    const snap = await getDoc(ref)
+    const data = snap.data()
+    if (data) {
+      result = Object.values(data) as Project[]
+    }
+    return result
   }
 
   async getCompetitionProjects(comp:Competition):Promise<Project[]> {
-    const q = query(collection(db, KEY_PROJECTS), where(`competitions.${comp.id}`, '==', true))
-    const snap = await getDocs(q)
-    return snap.docs.map(project => Object.assign({ id: project.id }, project.data()) as Project)
-  }
-
-  async addProjectToCompetition(project:Project, comp:Competition):Promise<void> {
-    const batch = writeBatch(db)
-    const projectRef = doc(db, KEY_PROJECTS, project.id)
-    batch.set(projectRef, { competitions: 
-      {
-        [`${comp.id}`]: true
-      }
-    })
-    const compRef = doc(db, KEY_PROJECTS, comp.id)
-    batch.set(compRef, { projects: 
-      {
-        [`${project.id}`]: true
-      }
-    }, { merge: true })
-    await batch.commit()
-  }
-
-  async removeProjectFromCompetitions(project:Project, comp:Competition):Promise<void> {
-    const batch = writeBatch(db)
-    const projectRef = doc(db, KEY_PROJECTS, project.id)
-    batch.update(projectRef, { competitions: 
-      {
-        [`${comp.id}`]: deleteField() 
-      }
-    })
-    const q = query(collection(db, KEY_COMPETITIONS), where(`projects.${project.id}`, '==', true))
-    const snap = await getDocs(q)
-    snap.forEach(doc => {
-      batch.update(doc.ref, { projects: 
-        {
-          [`${project.id}`] : deleteField()
-        }
-      })
-    })
-
-    return await batch.commit()
+    let result = [] as Project[]
+    const ref = doc(db, KEY_COMP_PROJECTS, comp.id)
+    const snap = await getDoc(ref)
+    const data = snap.data()
+    if (data) {
+      result = Object.values(data) as Project[]
+    }
+    return result
   }
 
   async saveCompetition(comp:Competition):Promise<Competition> {
@@ -278,15 +235,28 @@ class FirestoreService {
   async getCompetition(comp_id:string):Promise<Competition> {
     const compRef = doc(db, KEY_COMPETITIONS, comp_id)
     const comp = await getDoc(compRef)
-    return parseCompetition(comp)
+    return Object.assign({ id: comp.id }, comp.data()) as Competition
   }
 
   async getCompetitions():Promise<Competition[]> {
-    let result = [] as Array<Competition>
+    let result = [] as Competition[]
     const competitionsRef = collection(db, KEY_COMPETITIONS)
     const docsSnap = await getDocs(competitionsRef)
     if (docsSnap.size) {
-      result = docsSnap.docs.map(comp => parseCompetition(comp) )
+      result = docsSnap.docs.map(comp => Object.assign({ id: comp.id }, comp.data()) as Competition)
+    }
+    return result
+  }
+
+  async getCompetitionsById(comp_ids:string[]):Promise<Competition[]> {
+    let result = [] as Competition[]
+    let itemRefs = comp_ids.map(id => {
+      let ref = doc(db, KEY_COMPETITIONS, id)
+      return getDoc(ref)
+    })
+    let docs = await Promise.all(itemRefs)
+    if (docs.length) {
+      result = docs.map(comp => Object.assign({ id: comp.id }, comp.data()) as Competition)
     }
     return result
   }

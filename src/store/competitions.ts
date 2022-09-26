@@ -11,13 +11,8 @@ interface State {
 
 export const useCompetitionsStore = defineStore('competitions', {
   state: (): State => ({
-    list: undefined,
+    list: undefined
   }),
-  getters: {
-    getCompetitionById: (state) => {
-      return (compId:string) => state.list?.find((comp:Competition) => comp.id === compId)
-    }
-  },
   actions: {
     async fetchList():Promise<void> {
       try {
@@ -27,6 +22,17 @@ export const useCompetitionsStore = defineStore('competitions', {
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
         log.error(MODULE_ID, '#fetchList > ' + message)
+      }
+    },
+    async fetchCompetitionProjects(comp:Competition):Promise<Project[]|undefined> {
+      try {
+        let response = await firestore.getCompetitionProjects(comp)
+        comp.projects = response
+        return comp.projects
+      }
+      catch(error) {
+        let message = (error instanceof Error) ? error.message : String(error)
+        log.error(MODULE_ID, '#fetchCompetitionProjects > ' + message)
       }
     },
     async saveCompetition(comp:Competition):Promise<Competition|undefined> {
@@ -41,14 +47,39 @@ export const useCompetitionsStore = defineStore('competitions', {
         log.error(MODULE_ID, '#saveCompetition > ' + message)
       }
     },
-    async getCompetitionProjects(comp:Competition):Promise<Project[]|undefined> {
+    async getCompetitions(comp_ids?:string[]):Promise<Competition[]|undefined> {
       try {
-        const response = await firestore.getCompetitionProjects(comp)
-        return response
+        let result = [] as Competition[]
+        if (this.list && comp_ids) {
+            // see if we already have them cached locally
+            this.list.forEach(comp => {
+              if (comp_ids.indexOf(comp.id) !== -1) {
+                result.push(comp)
+              }
+            })
+            // fetch comps we don't have cached
+            if (result.length !== comp_ids.length) {
+              const filtered = result.filter(c => comp_ids.indexOf(c.id) == -1).map(c => c.id)
+              const response = await firestore.getCompetitionsById(filtered)
+              result = result.concat(response)
+            }
+        }
+        else if (comp_ids) {
+          const response = await firestore.getCompetitionsById(comp_ids)
+          result = response
+          if (!this.list) {
+            this.list = response
+          }
+        }
+        else {
+          await this.fetchList()
+          result = this.list || []
+        }
+        return result
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
-        log.error(MODULE_ID, '#getCompetitionProjects > ' + message)
+        log.error(MODULE_ID, '#getCompetitionsByIds > ' + message)
       }
     }
   }

@@ -13,8 +13,8 @@
     </header>
     <article class="article p-4">
       <h2 class="title is-4">Competition</h2>
-      <div v-if="project.competition_id" class="box box--with-border">
-        <router-link :to="{ name: 'competitions', params: { id: project.competition_id}}">
+      <div v-if="project.competition" class="box box--with-border">
+        <router-link :to="{ name: 'competitions', params: { id: project.competition.id}}">
           Competition Link
         </router-link>
       </div>

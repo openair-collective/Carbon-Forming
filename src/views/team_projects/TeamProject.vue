@@ -24,13 +24,13 @@ import { mapStores } from 'pinia'
 import { Team, Project } from '@/types'
 import ProjectView from '@/components/Project.vue'
 import Loading from '@/components/Loading.vue'
-import { useTeamsStore } from '@/store/teams'
+import { useProjectsStore } from '@/store/projects'
 import log from '@/services/logger'
 
 const MODULE_ID = 'views/TeamProject'
 
 export default defineComponent({
-  components: { ProjectView, Loading },
+  components: { Loading, ProjectView },
   props: {
     team: {
       type: Object as () => Team,
@@ -39,28 +39,21 @@ export default defineComponent({
   },
   data() {
     return {
-      projects: [] as Project[],
+      project: undefined as Project | undefined,
       error:''
     }
   },
   computed: {
-    ...mapStores(useTeamsStore),
-    project():Project|undefined {
-      if (this.projects) {
-        const id = this.$route.params.project_id
-        return this.projects.find(p => p.id === id) as Project
-      }
-    }
+    ...mapStores(useProjectsStore)
   },
   created() {
-    this.error = ''
-    this.teamsStore.getTeamProjects(this.team)
+    let project_id = this.$route.params.project_id as string
+    this.projectsStore.getProjectById(project_id)
       .then(result => {
-        this.projects = result as Project[]
+        this.project = result
       })
-      .catch(error => {
-        this.error = '<ERROR SHOW PROMPT>'
-        log.error(MODULE_ID, '#created > Error' + error)
+      .catch(error => { 
+        this.error = error
       })
   }
 })

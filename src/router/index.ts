@@ -13,6 +13,7 @@ import TeamProjects from '@/views/team_projects/TeamProjects.vue'
 import TeamProjectNew from '@/views/team_projects/TeamProjectNew.vue'
 import TeamProjectEdit from '@/views/team_projects/TeamProjectEdit.vue'
 import TeamProject from '@/views/team_projects/TeamProject.vue'
+import TeamCompetitions from '@/views/team_competitions/TeamCompetitions.vue'
 import Login from '@/views/Login.vue'
 import AuthCallback from '@/views/AuthCallback.vue'
 import Onboarding from '@/views/Onboarding.vue'
@@ -58,6 +59,11 @@ const routes: RouteRecordRaw[] = [
                 path: 'projects/new',
                 name: 'team-project-new',
                 component: TeamProjectNew
+              },
+              {
+                path: 'competitions',
+                name: 'team-competitions',
+                component: TeamCompetitions
               }
             ]
           }

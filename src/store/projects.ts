@@ -7,14 +7,29 @@ import log from '@/services/logger'
 const MODULE_ID = 'store/projects'
 
 interface State {
+  projects: { [key:Project['id']]: Project }
 }
 
 export const useProjectsStore = defineStore('projects', {
-  state: (): State => ({}),
+  state: (): State => ({
+    projects: {}
+  }),
   actions: {
+    async getProjectById(project_id:string):Promise<Project|undefined> {
+      try {
+        if (!this.projects[project_id]) {
+          this.projects[project_id] = await firestore.getProject(project_id)
+        }
+        return this.projects[project_id]
+      }
+      catch(error) {
+        let message = (error instanceof Error) ? error.message : String(error)
+        log.error(MODULE_ID, '#getProjectById > ' + message)
+      }  
+    },
     async saveProject(project:Project, design_doc?:File):Promise<Project|undefined> {
       try {
-        const response = await firestore.saveProject(project) as Project
+        const response = await firestore.saveProject(project)
         project = { ...project, ...response }
         if (design_doc) {
           await this.saveProjectDesignDoc(project, design_doc)
@@ -50,7 +65,7 @@ export const useProjectsStore = defineStore('projects', {
       try {
         if (project.design_doc) {
           const avatar_response = await storage.removeFile(project.design_doc)
-          project.design_doc = null
+          project.design_doc = undefined
           return await this.saveProject(project)
         }
       }
