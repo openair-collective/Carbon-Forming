@@ -26,7 +26,7 @@ export declare interface Team {
   location:string
   avatar?:FileUpload | undefined
   members: { [key:string]: TeamRole }
-  projects: Project[]
+  projects?: Project[]
 }
 
 export declare interface Project {
@@ -40,16 +40,14 @@ export declare interface Project {
   competition?:Competition
 }
 
-
 export declare interface Competition {
   id: string
   name:string
   description:string
   start_date?:Date
   end_date?:Date
-  projects: Project[]
+  projects?: Project[]
 }
-
 
 export declare interface Material {
   name: string

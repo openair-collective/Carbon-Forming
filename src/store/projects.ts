@@ -15,18 +15,6 @@ export const useProjectsStore = defineStore('projects', {
     projects: {}
   }),
   actions: {
-    async getProjectById(project_id:string):Promise<Project|undefined> {
-      try {
-        if (!this.projects[project_id]) {
-          this.projects[project_id] = await firestore.getProject(project_id)
-        }
-        return this.projects[project_id]
-      }
-      catch(error) {
-        let message = (error instanceof Error) ? error.message : String(error)
-        log.error(MODULE_ID, '#getProjectById > ' + message)
-      }  
-    },
     async saveProject(project:Project, design_doc?:File):Promise<Project|undefined> {
       try {
         const response = await firestore.saveProject(project)

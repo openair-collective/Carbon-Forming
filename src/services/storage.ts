@@ -8,7 +8,7 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage"
-import { Team, Project, FileUpload } from '@/types'
+import { FileUpload } from '@/types'
 
 const app = getApps().length > 0 ? getApp() : initializeApp(FIREBASE_CONFIG)
 const storage = getStorage()

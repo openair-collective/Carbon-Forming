@@ -81,7 +81,7 @@ export const useTeamsStore = defineStore('teams', {
         if (!team.projects) {
           await this.fetchTeamProjects(team)
         }
-        return team.projects.find(p => p.id === project_id)
+        return team.projects && team.projects.find(p => p.id === project_id)
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
@@ -103,8 +103,10 @@ export const useTeamsStore = defineStore('teams', {
     async deleteTeamProject(team:Team, project:Project):Promise<void> {
       try {
         await firestore.deleteProject(project)
-        let idx = team.projects.indexOf(project)
-        team.projects = team.projects.splice(idx, 0)
+        if (team.projects) {
+          let idx = team.projects.indexOf(project)
+          team.projects = team.projects.splice(idx, 1)
+        }
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)

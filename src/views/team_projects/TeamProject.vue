@@ -24,7 +24,7 @@ import { mapStores } from 'pinia'
 import { Team, Project } from '@/types'
 import ProjectView from '@/components/Project.vue'
 import Loading from '@/components/Loading.vue'
-import { useProjectsStore } from '@/store/projects'
+import { useTeamsStore } from '@/store/teams'
 import log from '@/services/logger'
 
 const MODULE_ID = 'views/TeamProject'
@@ -44,17 +44,11 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapStores(useProjectsStore)
+    ...mapStores(useTeamsStore)
   },
-  created() {
+  async created() {
     let project_id = this.$route.params.project_id as string
-    this.projectsStore.getProjectById(project_id)
-      .then(result => {
-        this.project = result
-      })
-      .catch(error => { 
-        this.error = error
-      })
+    this.project = await this.teamsStore.getTeamProjectById(this.team, project_id)
   }
 })
 
