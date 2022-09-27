@@ -64,9 +64,10 @@ A platform to support the evolution of distributed DIY carbon removal technology
 
 ### Built With
 
-* [![Vite][Vite]][Vite-url]
-* [![Vue][Vue.js]][Vue-url]
-* [![Firebase][Firebase]][Firebase-url]
+[![Vue][Vue.js]][Vue-url]
+[![Bulma][Bulma]][Bulma-url]
+[![Vite][Vite]][Vite-url]
+[![Firebase][Firebase]][Firebase-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -190,4 +191,6 @@ TBD
 [Vite-url]: https://vitejs.dev/
 [Vue.js]: https://img.shields.io/badge/Vue.js-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D
 [Vue-url]: https://vuejs.org/
+[Bulma]: https://img.shields.io/badge/Bulma-35495E?style=for-the-badge&logo=bulma&logoColor=00d1b2
+[Bulma-url]: https://bulma.io/
 
