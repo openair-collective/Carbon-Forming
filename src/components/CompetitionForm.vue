@@ -57,12 +57,14 @@ import { defineComponent } from 'vue'
 import { Competition } from '@/types'
 import { mapStores } from 'pinia'
 import { useCompetitionsStore } from '@/store/competitions'
+import { fsTimestampToDate } from '@/utils/date'
 import Notification from './Notification.vue'
 import log from '@/services/logger'
 
 const MODULE_ID = 'components/CompetitionForm'
 
-function dateForInput(date:Date):string {
+function dateForInput(stamp:any):string {
+  const date = fsTimestampToDate(stamp)
   return date.toISOString().split('T')[0]
 }
 
@@ -100,8 +102,10 @@ export default defineComponent({
     },
     submitForm() {
       this.isSaving = true
-      this.clone.start_date = dateForSave(this.startDate)
-      this.clone.end_date = dateForSave(this.endDate)
+      if (this.startDate && this.endDate) {
+        this.clone.start_date = dateForSave(this.startDate)
+        this.clone.end_date = dateForSave(this.endDate)
+      }
       this.competitionsStore.saveCompetition(this.clone)
         .then(result => {
           Object.assign(this.competition, result)

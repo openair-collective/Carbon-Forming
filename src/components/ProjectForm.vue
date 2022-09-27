@@ -174,7 +174,7 @@ import { useTeamsStore } from '@/store/teams'
 import { useProjectsStore } from '@/store/projects'
 import Notification from '@/components/Notification.vue'
 
-const MODULE_ID = 'components/TeamForm'
+const MODULE_ID = 'components/ProjectForm'
 const DESIGN_DOC_MAX_FILE_SIZE = 200 * 1000 // 200k
 
 function initMaterial():Material {

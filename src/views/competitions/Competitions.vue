@@ -13,31 +13,7 @@
       </h1>
     </header>
     <article class="article p-4 has-background-white-bis">
-      <div 
-        v-if="list"
-        class="is-flex is-flex-wrap-wrap"
-      >
-        <div  
-          v-for="(comp, i) in list" 
-          :key="i"
-          @click="$router.push({ name: 'comp-show', params: { id: comp.id } })" 
-          class="box mb-4 mr-4"
-        >
-          <router-link :to="{ name: 'comp-show', params: { id: comp.id } }"> 
-            <h3 class="title is-3">{{ comp.name }}</h3>
-            <h4 class="subtitle is-4">$X,XXX in prizes to be won</h4>
-          </router-link>
-          <div class="duration mt-6 mb-4">
-            <p v-if="comp.start_date && comp.end_date" >
-              {{ kDayMonth(comp.start_date) }} - {{ kDayMonthYear(comp.end_date) }}
-            </p>
-            <p v-else>
-              Time TBD
-            </p>
-          </div>
-          <countdown-timer :date="comp.start_date" />
-        </div>
-      </div>
+      <competition-list v-if="list" :list="list" />
       <loading v-else />
     </article>
   </section>
@@ -46,21 +22,14 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { mapState, mapStores } from 'pinia'
-import { dayMonth, dayMonthYear } from '@/utils/date'
 import { useUserStore } from '@/store/user'
 import { useCompetitionsStore } from '@/store/competitions'
 import { canCreateCompetition } from '@/helpers/authHelper'
 import Loading from '@/components/Loading.vue'
-import CountdownTimer from '@/components/CountdownTimer.vue'
+import CompetitionList from '@/components/CompetitionList.vue'
 
 export default defineComponent({
-  components: { Loading, CountdownTimer },
-  data() {
-    return {
-      kDayMonth: dayMonth,
-      kDayMonthYear: dayMonthYear
-    }
-  },
+  components: { Loading, CompetitionList },
   computed: {
     ...mapStores(useCompetitionsStore, useUserStore),
     ...mapState(useCompetitionsStore, ['list']),

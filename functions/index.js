@@ -8,7 +8,11 @@ module.exports = {
   token: functions.https.onRequest(token),
   redirect: functions.https.onRequest(redirect),
   deleteUser: triggers.deleteUser,
+  updateTeam: triggers.updateTeam,
   deleteTeam: triggers.deleteTeam,
+  createProject: triggers.createProject,
+  updateProject: triggers.updateProject,
   deleteProject: triggers.deleteProject,
+  updateCompetition: triggers.updateCompetition,
   deleteCompetition: triggers.deleteCompetition
 }

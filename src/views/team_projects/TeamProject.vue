@@ -30,7 +30,7 @@ import log from '@/services/logger'
 const MODULE_ID = 'views/TeamProject'
 
 export default defineComponent({
-  components: { ProjectView, Loading },
+  components: { Loading, ProjectView },
   props: {
     team: {
       type: Object as () => Team,
@@ -39,29 +39,16 @@ export default defineComponent({
   },
   data() {
     return {
-      projects: [] as Project[],
+      project: undefined as Project | undefined,
       error:''
     }
   },
   computed: {
-    ...mapStores(useTeamsStore),
-    project():Project|undefined {
-      if (this.projects) {
-        const id = this.$route.params.project_id
-        return this.projects.find(p => p.id === id) as Project
-      }
-    }
+    ...mapStores(useTeamsStore)
   },
-  created() {
-    this.error = ''
-    this.teamsStore.getTeamProjects(this.team)
-      .then(result => {
-        this.projects = result as Project[]
-      })
-      .catch(error => {
-        this.error = '<ERROR SHOW PROMPT>'
-        log.error(MODULE_ID, '#created > Error' + error)
-      })
+  async created() {
+    let project_id = this.$route.params.project_id as string
+    this.project = await this.teamsStore.getTeamProjectById(this.team, project_id)
   }
 })
 

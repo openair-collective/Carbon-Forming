@@ -26,10 +26,9 @@
 import { defineComponent } from 'vue'
 import { Team, Project } from '@/types'
 import { mapStores } from 'pinia'
-import { useTeamsStore } from '@/store/teams'
 import ProjectForm from '@/components/ProjectForm.vue'
 import Loading from '@/components/Loading.vue'
-import log from '@/services/logger'
+import { useTeamsStore } from '@/store/teams'
 
 const MODULE_ID = 'views/TeamProjectEdit'
 
@@ -50,20 +49,9 @@ export default defineComponent({
   computed: {
     ...mapStores(useTeamsStore)
   },
-  created() {
-    this.teamsStore.getTeamProjects(this.team)
-      .then(result => {
-        if (result) {
-          let project_id = this.$route.params.project_id
-          this.project = result.find(p => p.id === project_id)
-        }
-        else {
-          this.error = "Could not find Team Project to edit <ADD PROMPT>"
-        }
-      })
-      .catch((error) => {
-        log.error(MODULE_ID, '#created > Error fetching team projects' + error)
-      })
+  async created() {
+    let project_id = this.$route.params.project_id as string
+    this.project = await this.teamsStore.getTeamProjectById(this.team, project_id)
   },
   methods: {
     onCancel() {

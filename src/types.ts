@@ -24,19 +24,20 @@ export declare interface Team {
   id:string
   name:string
   location:string
-  avatar?:FileUpload | null
+  avatar?:FileUpload | undefined
   members: { [key:string]: TeamRole }
+  projects?: Project[]
 }
 
 export declare interface Project {
   id: string
   name:string
-  design_doc?:FileUpload | null
+  design_doc?:FileUpload | undefined
   design_doc_url?:string
   terms:boolean
-  materials: Material[]
-  team_id:string
-  competition_id:string
+  materials:Material[]
+  team:Team
+  competition?:Competition
 }
 
 export declare interface Competition {
@@ -45,6 +46,7 @@ export declare interface Competition {
   description:string
   start_date?:Date
   end_date?:Date
+  projects?: Project[]
 }
 
 export declare interface Material {

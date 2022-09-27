@@ -15,3 +15,9 @@ export function dayMonthYear(value:Date):string {
   const year = value.getFullYear()
   return `${dayMonth(value)} ${year}`
 }
+
+export function fsTimestampToDate(stamp:any) {
+  return new Date(
+    stamp.seconds * 1000 + stamp.nanoseconds / 1000000
+  )
+}

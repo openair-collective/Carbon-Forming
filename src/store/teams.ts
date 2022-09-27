@@ -8,14 +8,12 @@ import log from '@/services/logger'
 const MODULE_ID = 'store/teams'
 
 interface State {
-  list: Team[] | null,
-  projects: { [key:string] : Project[] }
+  list: Team[] | null
 }
 
 export const useTeamsStore = defineStore('teams', {
   state: (): State => ({
-    list: null,
-    projects: {}
+    list: null
   }),
   actions: {
     async fetchList():Promise<void> {
@@ -50,7 +48,6 @@ export const useTeamsStore = defineStore('teams', {
         if (avatar) {
           await this.saveTeamAvatar(team, avatar)
         }
-        await this.fetchList()
         return team
       }
       catch(error) {
@@ -68,17 +65,34 @@ export const useTeamsStore = defineStore('teams', {
         log.error(MODULE_ID, '#deleteTeam > ' + message)
       }
     },
+    async fetchTeamProjects(team:Team):Promise<Project[]|undefined> {
+      try {
+        let response = await firestore.getTeamProjects(team)
+        team.projects = response
+        return team.projects
+      }
+      catch(error) {
+        let message = (error instanceof Error) ? error.message : String(error)
+        log.error(MODULE_ID, '#fetchTeamProjects > ' + message)
+      }
+    },
+    async getTeamProjectById(team:Team, project_id:string):Promise<Project|undefined> {
+      try {
+        if (!team.projects) {
+          await this.fetchTeamProjects(team)
+        }
+        return team.projects && team.projects.find(p => p.id === project_id)
+      }
+      catch(error) {
+        let message = (error instanceof Error) ? error.message : String(error)
+        log.error(MODULE_ID, '#getTeamProjectById > ' + message)
+      }
+    },
     async saveTeamProject(team:Team, project:Project, design_doc?:File):Promise<Project|undefined> {
       try {
-        project.team_id = team.id
+        project.team = team
         let response = await useProjectsStore().saveProject(project, design_doc)
         project = {...project, ...response}
-        if (!this.projects[team.id]) {
-          await this.getTeamProjects(team)
-        }
-        else {
-          this.projects[team.id].push(project)
-        }
         return project
       }
       catch(error) {
@@ -88,29 +102,15 @@ export const useTeamsStore = defineStore('teams', {
     },
     async deleteTeamProject(team:Team, project:Project):Promise<void> {
       try {
-        project.team_id = team.id
-        let response = await firestore.deleteProject(project)
-        if (this.projects[team.id]) {
-          this.projects[team.id] = this.projects[team.id].filter(p => p.id !== project.id)
+        await firestore.deleteProject(project)
+        if (team.projects) {
+          let idx = team.projects.indexOf(project)
+          team.projects = team.projects.splice(idx, 1)
         }
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
         log.error(MODULE_ID, '#deleteTeamProject > ' + message)
-      }
-    },
-    async getTeamProjects(team:Team):Promise<Project[]|undefined> {
-      try {
-        let result = this.projects[team.id]
-        if (!result) {
-          let response = await firestore.getTeamProjects(team) as Project[]
-          result = this.projects[team.id] = response
-        }
-        return result
-      }
-      catch(error) {
-        let message = (error instanceof Error) ? error.message : String(error)
-        log.error(MODULE_ID, '#getTeamProjects > ' + message)
       }
     },
     async saveTeamAvatar(team:Team, avatar:File):Promise<Team|undefined> {
@@ -128,7 +128,7 @@ export const useTeamsStore = defineStore('teams', {
       try {
         if (team.avatar) {
           const avatar_response = await storage.removeFile(team.avatar)
-          team.avatar = null
+          team.avatar = undefined
           return await this.saveTeam(team)
         }
       }

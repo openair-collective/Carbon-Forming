@@ -38,10 +38,10 @@ export default defineComponent({
   computed: {
     project():Project {
       return {
-        name: undefined as string | undefined,
+        name: '',
         terms: false,
         design_doc: null as FileUpload | null,
-        design_doc_url: null as string | null,
+        design_doc_url: '',
         materials: [] as Material[]
       } as Project
     }

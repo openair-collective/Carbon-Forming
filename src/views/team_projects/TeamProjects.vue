@@ -4,7 +4,6 @@
       <h3 class="title is-3">
         Projects
         <router-link
-          v-if="projects && projects.length"
           :to="{ name: 'team-project-new' }"
           class="button is-info is-small is-outlined ml-2"
         >
@@ -13,14 +12,8 @@
       </h3>
     </header>
     <article>
-      <div v-if="errors.projects">
-        {{ errors.projects }}
-      </div>
-      <div v-else-if="projects" class="box box--with-border">
-        <table 
-          v-if="projects.length"
-          class="table is-fullwidth"
-        >
+      <div v-if="team.projects" class="box box--with-border">
+        <table class="table is-fullwidth">
           <thead>
             <tr>
               <th>Project Name</th>
@@ -29,7 +22,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(project, i) in projects" :key="'project_'+ i">
+            <tr v-for="(project, i) in team.projects" :key="'project_'+ i">
               <td>
                 <router-link :to="{ name: 'team-project-show', params: { project_id: project.id }}">
                 {{ project.name }}
@@ -37,10 +30,10 @@
               </td>
               <td>
                 <router-link
-                  v-if="project.competition_id"
-                  :to="{ name: 'comp-show', params: { id: project.competition_id }}"
+                  v-if="project.competition"
+                  :to="{ name: 'comp-show', params: { id: project.competition.id }}"
                   >
-                  {{ project.competition_id }}
+                  {{ project.competition.name }}
                 </router-link>
                 <button 
                   v-else
@@ -53,26 +46,26 @@
             </tr>
           </tbody>
         </table>
-        <div v-else>
-          <h4 class="title is-5">No projects yet</h4>
-          <button 
-            @click="onCreateProject" 
-            class="button is-info"
-          >
-            Create your first project
-          </button>
-        </div>
       </div>
-      <loading v-else />
+      <div v-else>
+        <h4 class="title is-5">No projects yet</h4>
+        <button 
+          @click="onCreateProject" 
+          class="button is-info"
+        >
+          Create your first project
+        </button>
+      </div>
     </article>
   </section>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Team, Project } from '@/types'
+import { Team, Project, Competition } from '@/types'
 import { mapStores } from 'pinia'
 import { useTeamsStore } from '@/store/teams'
+import { useCompetitionsStore } from '@/store/competitions'
 import Loading from '@/components/Loading.vue'
 import log from '@/services/logger'
 
@@ -86,38 +79,18 @@ export default defineComponent({
       required: true
     }
   },
-  data() {
-    return {
-      projects: undefined as Project[]|undefined,
-      errors: {
-        projects: ''
-      }
-    }
-  },
-  watch: {
-    team(newVal) {
-      if (newVal) {
-        this.setProjects()
-      }
-    }
-  },
   computed: { 
-    ...mapStores(useTeamsStore)
+    ...mapStores(useTeamsStore, useCompetitionsStore),
+    projects() {
+      return Object.values(this.team.projects)
+    }
   },
   created() {
-    this.setProjects()
+    if (!this.team.projects) {
+      this.teamsStore.fetchTeamProjects(this.team)
+    }
   },
   methods: {
-    setProjects() {
-      this.teamsStore.getTeamProjects(this.team)
-      .then(result => {
-        this.projects = result as Project[]
-      })
-      .catch(error => {
-        this.errors.projects = '<ERROR SHOW PROMPT>'
-        log.error(MODULE_ID, '#setTeamProjects > Error' + error)
-      })
-    },
     onCreateProject() {
       this.$router.push({ name: 'team-project-new' })
     }
