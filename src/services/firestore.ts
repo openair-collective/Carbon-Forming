@@ -27,11 +27,43 @@ const KEY_COMPETITIONS = 'competitions'
 const KEY_COMP_PROJECTS = 'competition_projects'
 const KEY_TEAM_PROJECTS = 'team_projects'
 
-const app = getApps().length > 0 ? getApp() : initializeApp(FIREBASE_CONFIG)
-const db = getFirestore(app)
+export const app = getApps().length > 0 ? getApp() : initializeApp(FIREBASE_CONFIG)
+export const db = getFirestore(app)
 
 if (import.meta.env.DEV) {
   connectFirestoreEmulator(db, 'localhost', 8080)
+}
+
+const TEAM_PARAMS_BLACKLIST = [ 'id', 'projects']
+
+function team_params(team:Team):Team {
+  const clone:Team = { ...team, ...{}}
+  TEAM_PARAMS_BLACKLIST.forEach(key => delete clone[key as keyof Team])
+  return clone
+}
+
+const PROJECT_PARAMS_BLACKLIST = [ 'id']
+
+function project_params(project:Project):Project {
+  const clone = { ...project, ...{}}
+  PROJECT_PARAMS_BLACKLIST.forEach(key => delete clone[key as keyof Project])
+  return clone
+}
+
+const COMP_PARAMS_BLACKLIST = [ 'id', 'projects']
+
+function comp_params(comp:Competition):Competition {
+  const clone = { ...comp, ...{}}
+  COMP_PARAMS_BLACKLIST.forEach(key => delete clone[key as keyof Competition])
+  return clone
+}
+
+const USER_PROFILE_PARAMS_BLACKLIST = [ 'id', 'avatar']
+
+function user_profile_params(profile:UserProfile):UserProfile {
+  const clone = { ...profile, ...{}}
+  USER_PROFILE_PARAMS_BLACKLIST.forEach(key => delete clone[key as keyof UserProfile])
+  return clone
 }
 
 class FirestoreService {
@@ -45,17 +77,13 @@ class FirestoreService {
 
   async saveUserProfile(user:UserProfile):Promise<UserProfile> {
     let result = user
+    const clone = user_profile_params(user)
     if (user.id) {
-      const clone = Object.assign({}, user) as UserProfile
-      const blacklist:string[] = ['avatar', 'id']
-      blacklist.forEach((prop) => {
-        delete clone[prop as keyof UserProfile]
-      })
       let ref = doc(db, KEY_USERS, user.id)
-      await setDoc(ref, clone as object, { merge: true })
+      await setDoc(ref, clone, { merge: true })
     }
     else {
-      const docRef = await addDoc(collection(db, KEY_USERS), user)
+      const docRef = await addDoc(collection(db, KEY_USERS), clone)
       result = Object.assign(user, { id: docRef.id }) as UserProfile
     }
     return result
@@ -113,14 +141,13 @@ class FirestoreService {
 
   async saveTeam(team:Team):Promise<Team> {
     let result = team
+    const clone = team_params(team)
     if (team.id) {
       const ref = doc(db, KEY_TEAMS, team.id)
-      const clone = Object.assign({}, team)
-      delete clone['id' as keyof Team]
-      await setDoc(ref, clone as object, { merge: true })
+      await setDoc(ref, clone, { merge: true })
     }
     else {
-      const docRef = await addDoc(collection(db, KEY_TEAMS), team)
+      const docRef = await addDoc(collection(db, KEY_TEAMS), clone)
       result = Object.assign(team, { id: docRef.id }) as Team
     }
     return result
@@ -153,14 +180,20 @@ class FirestoreService {
 
   async saveProject(project:Project):Promise<Project> {
     let result = project
+    const clone = project_params(project)
+    // avoid recursively saving projects on parents
+    if (clone.team) {
+      delete clone.team.projects
+    }
+    if (clone.competition) {
+      delete clone.competition.projects
+    }
     if (project.id) {
       const ref = doc(db, KEY_PROJECTS, project.id)
-      const clone = Object.assign({}, project) as Project
-      delete clone['id' as keyof Project]
       await updateDoc(ref, clone as object)
     }
     else {
-      const docRef = await addDoc(collection(db, KEY_PROJECTS), project)
+      const docRef = await addDoc(collection(db, KEY_PROJECTS), clone)
       result = Object.assign({ id: docRef.id }, project) as Project
     }
     return result
@@ -213,14 +246,13 @@ class FirestoreService {
 
   async saveCompetition(comp:Competition):Promise<Competition> {
     let result = comp
+    const clone = comp_params(comp)
     if (comp.id) {
       const ref = doc(db, KEY_COMPETITIONS, comp.id)
-      const clone = Object.assign({}, comp)
-      delete clone['id' as keyof Competition]
-      await setDoc(ref, comp, { merge: true })
+      await setDoc(ref, clone, { merge: true })
     }
     else {
-      let docRef = await addDoc(collection(db, KEY_COMPETITIONS), comp)
+      let docRef = await addDoc(collection(db, KEY_COMPETITIONS), clone)
       result = Object.assign({ id: docRef.id }, comp) as Competition
     }
     return result

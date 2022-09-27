@@ -8,8 +8,6 @@ import ProjectModal from '@/modals/ProjectModal.vue'
 
 import './_bulma.scss'
 
-
-
 const pinia = createPinia()
 const app = createApp(App)
 app.use(pinia)
@@ -20,3 +18,6 @@ const modal = createApp(Modal)
 modal.use(pinia)
 modal.component('ProjectModal', ProjectModal)
 modal.mount('#modals')
+
+import { projectsSync } from '@/services/firestore_sync'
+let unsubscribe = projectsSync(pinia)
