@@ -19,5 +19,5 @@ modal.use(pinia)
 modal.component('ProjectModal', ProjectModal)
 modal.mount('#modals')
 
-import { projectsSync } from '@/services/firestore_sync'
+import { projectsSync } from '@/jobs/firestore_sync'
 let unsubscribe = projectsSync(pinia)
