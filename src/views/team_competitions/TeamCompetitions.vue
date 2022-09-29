@@ -19,7 +19,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { Team, CompetitionAggregate } from '@/types'
+import { Team, Competition } from '@/types'
 import CompetitionList from '@/components/CompetitionList.vue'
 
 export default defineComponent({
@@ -31,14 +31,15 @@ export default defineComponent({
     }
   },
   computed: {
-    list():CompetitionAggregate[] {
-      const projects = Object.values(this.team.projects)
-      let comps = [] as CompetitionAggregate[]
-      projects.forEach(p => {
-        if (p.competition) {
-          comps.push(p.competition)
-        }
+    list():Competition[] {
+      let comps = [] as Competition[]
+      if (this.team.projects) {
+        this.team.projects.forEach(p => {
+          if (p.competition) {
+            comps.push(p.competition)
+          }
       })
+      }
       return comps
     }
   }

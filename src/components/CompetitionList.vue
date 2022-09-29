@@ -4,7 +4,7 @@
       v-for="(comp, i) in list" 
       :key="i"
       @click="$router.push({ name: 'comp-show', params: { id: comp.id } })" 
-      class="box mb-4 mr-4"
+      class="box box--comp mb-4 mr-4"
     >
       <router-link :to="{ name: 'comp-show', params: { id: comp.id } }"> 
         <h3 class="title is-3">{{ comp.name }}</h3>
@@ -25,7 +25,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { CompetitionAggregate } from '@/types'
+import { Competition } from '@/types'
 import { dayMonth, dayMonthYear, fsTimestampToDate } from '@/utils/date'
 import CountdownTimer from '@/components/CountdownTimer.vue'
 
@@ -33,7 +33,7 @@ export default defineComponent({
   components: { CountdownTimer },
   props: {
     list: {
-      type: Array as PropType<CompetitionAggregate[]>,
+      type: Array as PropType<Competition[]>,
       required: true
     }
   },
@@ -48,7 +48,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-  .box {
+  .box--comp {
     cursor:pointer;
   }
 </style>
