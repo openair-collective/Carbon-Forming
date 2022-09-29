@@ -59,6 +59,8 @@ export declare interface Material {
 export declare interface Modal {
   title:string
   component:string,
+  fullscreen?:boolean,
+  close?:boolean,
   meta?:object
 }
 

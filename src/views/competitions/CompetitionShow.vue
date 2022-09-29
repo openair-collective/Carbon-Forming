@@ -16,6 +16,7 @@
           <div class="field is-grouped mb-4">
             <div class="control">
               <button
+                @click="onEnterCompetition"
                 class="button is-primary"
               >
                 Enter this competition
@@ -113,6 +114,7 @@ import { Competition, Project } from '@/types'
 import { mapState, mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
 import { useCompetitionsStore } from '@/store/competitions'
+import { useModalStore } from '@/store/modal'
 import { canCreateCompetition } from '@/helpers/authHelper'
 import { dayMonth, dayMonthYear, fsTimestampToDate } from '@/utils/date'
 import Loading from '@/components/Loading.vue'
@@ -141,7 +143,7 @@ export default defineComponent({
     }
   },
   computed: { 
-    ...mapStores(useCompetitionsStore, useUserStore),
+    ...mapStores(useCompetitionsStore, useUserStore, useModalStore),
     ...mapState(useCompetitionsStore, ['list']),
     ...mapState(useUserStore, ['guild']),
     canEdit():boolean {
@@ -169,6 +171,16 @@ export default defineComponent({
     setProjects() {
       if (this.competition && !this.competition.projects) {
         this.competitionsStore.fetchCompetitionProjects(this.competition)
+      }
+    },
+    onEnterCompetition() {
+      this.modalStore.options = {
+        component: 'CompetitionSubmission',
+        title: '',
+        fullscreen: true,
+        meta: {
+          competition: this.competition
+        }
       }
     }
   }

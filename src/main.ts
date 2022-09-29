@@ -4,7 +4,6 @@ import './style.css'
 import App from './App.vue'
 import router from './router'
 import Modal from './Modal.vue'
-import ProjectModal from '@/modals/ProjectModal.vue'
 
 import './_bulma.scss'
 
@@ -16,7 +15,6 @@ app.mount('#app')
 
 const modal = createApp(Modal)
 modal.use(pinia)
-modal.component('ProjectModal', ProjectModal)
 modal.mount('#modals')
 
 import { projectsSync } from '@/jobs/firestore_sync'
