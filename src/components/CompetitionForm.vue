@@ -79,7 +79,10 @@ export default defineComponent({
   props: {
     competition: {
       type: Object as () => Competition,
-      required: true
+      default: {
+        name: '',
+        description: ''
+      }
     }
   },
   data() {

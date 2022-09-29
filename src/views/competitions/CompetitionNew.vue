@@ -13,10 +13,7 @@
       <h1 class="title is-3">Create Competition</h1>
     </header>
     <article>
-      <competition-form
-        :competition="competition"
-        @cancel="onCancel"
-      />
+      <competition-form @cancel="onCancel" />
     </article>
   </section>
 </template>
@@ -31,13 +28,6 @@ const MODULE_ID = 'views/CompetitionNew'
 
 export default defineComponent({
   components: { CompetitionForm },
-  computed: {
-    competition():Competition {
-      return {
-        name: '',
-      } as Competition
-    }
-  },
   methods: {
     onCancel() {
       this.$router.replace({ name: 'competitions'})

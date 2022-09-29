@@ -167,7 +167,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Team, Project, Material } from '@/types'
+import { Team, Project, Material, FileUpload } from '@/types'
 import log from '@/services/logger'
 import { mapStores } from 'pinia'
 import { useTeamsStore } from '@/store/teams'
@@ -195,7 +195,13 @@ export default defineComponent({
     },
     project: {
       type: Object as () => Project,
-      required: true
+      default: {
+        name: '',
+        terms: false,
+        design_doc: undefined as FileUpload | undefined,
+        design_doc_url: '',
+        materials: [] as Material[]
+      }
     }
   },
   data() {

@@ -93,7 +93,11 @@ export default defineComponent({
   props: {
     team: {
       type: Object as () => Team,
-      required: true
+      default: {
+        name: '', 
+        location: '',
+        members: []
+      }
     }
   },
   data() {
