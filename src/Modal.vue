@@ -38,12 +38,12 @@ import { useModalStore } from '@/store/modal';
 import { mapStores, mapState } from 'pinia'
 import { defineComponent } from 'vue'
 
-import CompetitionSubmission from '@/modals/CompetitionSubmission.vue'
+import EnterCompetition from '@/modals/EnterCompetition.vue'
 import Message from '@/modals/Message.vue'
 
 export default defineComponent({
   components: { 
-    CompetitionSubmission, 
+    EnterCompetition, 
     Message
   }, 
   name: 'app-modal',

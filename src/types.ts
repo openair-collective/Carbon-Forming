@@ -9,6 +9,7 @@ export declare interface OAuth {
 export declare interface UserProfile {
   id: string
   avatar:string
+  username:string
   teams:{ [key:Team['id']]: boolean }
 }
 
@@ -21,32 +22,37 @@ export declare interface Guild {
 }
 
 export declare interface Team {
-  id:string
+  id?:string
   name:string
   location:string
-  avatar?:FileUpload | undefined
-  members: { [key:string]: TeamRole }
-  projects?: Project[]
+  about:string
+  avatar:FileUpload | null
+  members: { [key:UserProfile['id']]: TeamRole }
+  discord_members: string[]
+  projects: Project[]
 }
 
 export declare interface Project {
-  id: string
+  id?: string
   name:string
-  design_doc?:FileUpload | undefined
-  design_doc_url?:string
+  design_doc:FileUpload | null
+  design_doc_url:string
   terms:boolean
   materials:Material[]
-  team:Team
-  competition?:Competition
+  team:Team | null
+  competition:Competition | null
 }
 
 export declare interface Competition {
-  id: string
+  id?: string
   name:string
   description:string
-  start_date?:Date
-  end_date?:Date
-  projects?: Project[]
+  rules:string
+  criteria:string
+  prizes:string[]
+  start_date:Date | null
+  end_date:Date | null
+  projects: Project[] | null
 }
 
 export declare interface Material {

@@ -2,7 +2,7 @@
   <section class="is-flex is-flex-direction-column">
     <header class="box has-text-centered m-0">
       <h1 class="title is-6">Competition Submission</h1>
-      <h2 class="title is-2">{{ competition.name }}</h2>
+      <h2 class="title is-2">{{ competition && competition.name }}</h2>
     </header>
     <article class="is-flex-grow-1 px-4 py-6 has-background-white-bis">
       <loading v-if="step === eSteps.UNKNOWN" />
@@ -56,10 +56,14 @@
         <h3 class="title is-4 mb-6 has-text-centered">
           Upload your project
         </h3>
-        <project-form
-          v-if="team"
-          :team="team"
-          @project-saved="onProjectSaved"
+        <notification 
+          v-if="error"
+          :error="error" 
+          @remove="error = ''" 
+        />
+        <project-input
+          :project="project"
+          ref="project_input"
           class="p-4"
         />
       </div>
@@ -73,12 +77,19 @@
                 v-if="step === eSteps.CREATE_PROJECT"
                 @click="back"
                 class="button is-outlined"
+                :disabled="isSaving"
               >
                 Back
               </button>
             </div>
             <div class="control">
-              <button @click="cancel" class="button is-outlined">Cancel</button>
+              <button 
+                @click="cancel"
+                class="button is-outlined"
+                :disabled="isSaving"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
@@ -93,6 +104,8 @@
             v-if="step === eSteps.CREATE_PROJECT"
             @click="submitProject"
             class="button is-pulled-right"
+            :class="{'is-loading': isSaving}"
+            :disabled="disableProjectSubmit"
           >
             Submit your project
           </button>
@@ -100,6 +113,7 @@
             v-else
             @click="step = eSteps.CREATE_PROJECT"
             class="button is-pulled-right"
+            :class="{'is-loading': isSaving}"
             :disabled="!team"
           >
             Next: Upload your Project
@@ -113,12 +127,18 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { mapStores } from 'pinia'
-import { Competition, Team, Project } from '@/types'
+import { Competition, Team, Project, Material } from '@/types'
 import { useUserStore } from '@/store/user'
 import { useModalStore } from '@/store/modal'
+import { useTeamsStore } from '@/store/teams'
+import { useCompetitionsStore } from '@/store/competitions'
 import TeamForm from '@/components/TeamForm.vue'
-import ProjectForm from '@/components/ProjectForm.vue'
+import ProjectInput from '@/components/project/ProjectInput.vue'
 import Loading from '@/components/Loading.vue'
+import Notification from '@/components/Notification.vue'
+import log from '@/services/logger'
+
+const MODULE_ID = 'modals/EnterCompetition'
 
 enum STEPS {
   UNKNOWN,
@@ -131,12 +151,11 @@ enum STEPS {
 const CANCEL_WARNING = "Are you sure you want to exit? Your data will be lost."
 
 export default defineComponent({
-  components: { Loading, TeamForm, ProjectForm },
+  components: { Loading, Notification, TeamForm, ProjectInput },
   props: {
     meta: {
       type: Object as () => { 
-        competition:Competition, 
-        project?: Project
+        competition:Competition
       },
       required: true
     }
@@ -145,20 +164,38 @@ export default defineComponent({
     return {
       eSteps: STEPS,
       step: STEPS.UNKNOWN,
-      competition: this.meta.competition,
-      project: this.meta.project,
-      team: undefined as Team | undefined
+      error: '',
+      isSaving: false,
+      competition: this.meta.competition as Competition | null,
+      team: null as Team | null,
+      project: {
+        name: '',
+        design_doc: null,
+        design_doc_url: '',
+        terms: false,
+        materials: [] as Material[],
+        team: null,
+        competition: null
+      } as Project
     }
   },
   computed: {
-    ...mapStores(useUserStore, useModalStore)
+    ...mapStores(useUserStore, useModalStore, useTeamsStore, useCompetitionsStore),
+    disableProjectSubmit():boolean {
+      return !this.team || !this.competition || !this.project.name || !this.project.terms
+    }
   },
   async created() {
-    if (!this.userStore.teams) {
+    if (!this.competition) {
+      throw new Error(`${MODULE_ID} > #created - A competition instance must be defined on modal.meta`)
+    }
+    else {
+      if (!this.userStore.teams) {
       await this.userStore.fetchTeams()
     }
-    if (this.userStore.teams && this.userStore.teams.length) {
-      this.step = STEPS.CHOOSE_TEAM
+      if (this.userStore.teams && this.userStore.teams.length) {
+        this.step = STEPS.CHOOSE_TEAM
+      }
     }
   },
   methods: {
@@ -179,18 +216,35 @@ export default defineComponent({
     setTeam(team:Team) {
       this.team = team
     },
-    onProjectSaved(project:Project) {
-      this.project = project
-    },
     submitProject() {
-      // add project to competition... then
-      this.modalStore.options = {
-        title: 'Project Submitted',
-        component: 'Message',
-        meta: {
-          message: `Well done, you're in ${this.competition.name}`
-        },
-        close: true
+      if (this.team && this.competition) {
+        const inputRef = this.$refs.project_input as InstanceType<typeof ProjectInput>
+        const comp = this.competition
+        this.project.competition = comp
+        this.teamsStore.saveTeamProject(this.team, this.project, inputRef.docFile)
+          .then(result => {
+            this.project = { ...this.project, ...result}
+            if (comp.projects) {
+              comp.projects.push(this.project)
+            }
+            else {
+              comp.projects = [this.project]
+            }
+            this.modalStore.options = {
+                title: 'Project Submitted',
+                component: 'Message',
+                meta: {
+                  message: `Well done, you're in ${comp.name}`
+                },
+                close: true
+              }
+          })
+          .catch(error => {
+            log.error(MODULE_ID, error)
+          })
+          .finally(() => {
+            this.isSaving = false
+          })
       }
     }
   }
@@ -207,7 +261,6 @@ article {
   overflow: hidden;
   overflow-y: auto;
 }
-
 header,
 footer {
   z-index: 1;

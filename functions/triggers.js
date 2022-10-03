@@ -132,13 +132,23 @@ exports.deleteCompetition = functions.firestore
 exports.createProject = functions.firestore
   .document('projects/{projectID}')
   .onCreate(async (snap, context) => {
+    const batch = db.batch()
+
     const data = snap.data()
+    
     const teamProjectsRef = db.collection(KEY_TEAM_PROJECTS).doc(`${data.team.id}`)
-    await teamProjectsRef.set({
+    batch.set(teamProjectsRef, {
         [`${snap.id}`]: Object.assign({ id: snap.id }, data)
       }, 
       { merge: true }
     )
+    const compProjectsRef = db.collection(KEY_COMP_PROJECTS).doc(`${data.competition.id}`)
+    batch.set(compProjectsRef, {
+        [`${snap.id}`]: Object.assign({ id: snap.id }, data)
+      }, 
+      { merge: true }
+    )
+    batch.commit()
   })
 
 exports.updateProject = functions.firestore

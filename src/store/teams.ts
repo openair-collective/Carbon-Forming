@@ -4,6 +4,7 @@ import firestore from '@/services/firestore'
 import storage from '@/services/storage'
 import { useProjectsStore } from '@/store/projects'
 import log from '@/services/logger'
+import { TeamRole } from '@/enums'
 
 const MODULE_ID = 'store/teams'
 
@@ -93,6 +94,11 @@ export const useTeamsStore = defineStore('teams', {
         project.team = team
         let response = await useProjectsStore().saveProject(project, design_doc)
         project = {...project, ...response}
+        team.projects = team.projects || [project]
+        let idx  = team.projects.indexOf(project)
+        if (!idx) {
+          team.projects.push(project)
+        }
         return project
       }
       catch(error) {
@@ -105,7 +111,9 @@ export const useTeamsStore = defineStore('teams', {
         await firestore.deleteProject(project)
         if (team.projects) {
           let idx = team.projects.indexOf(project)
-          team.projects = team.projects.splice(idx, 1)
+          if (idx !== -1) {
+            team.projects = team.projects.splice(idx, 1)
+          }
         }
       }
       catch(error) {

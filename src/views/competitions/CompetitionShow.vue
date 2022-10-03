@@ -175,7 +175,7 @@ export default defineComponent({
     },
     onEnterCompetition() {
       this.modalStore.options = {
-        component: 'CompetitionSubmission',
+        component: 'EnterCompetition',
         title: '',
         fullscreen: true,
         meta: {
