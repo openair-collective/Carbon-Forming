@@ -55,6 +55,49 @@
         <input class="input" type="text" v-model="clone.location" required>
       </div>
     </div>
+    <hr/>
+    <div class="field"> 
+      <h2 class="title is-4">Team Members</h2>
+      <h3 class="subtitle">Add the discord handle of your team members</h3>
+      <div
+        v-for="(val, i) in clone.discord_usernames"
+        :key="i"
+        class="field is-grouped"
+      >
+        <div class="control">
+          <input
+          class="input" 
+          type="text" 
+          v-model="clone.discord_usernames[i]" /> 
+        </div>
+        <div 
+          class="control"
+        >
+          <button
+            @click.prevent="clone.discord_usernames.splice(i, 1)" 
+            class="button is-text">
+            remove
+          </button>
+        </div>
+      </div>
+      <a
+        @click="clone.discord_usernames.push('')"
+        class="button is-primary m-2"
+      >
+        + Add More Members
+      </a>
+    </div>
+    <hr/>
+    <div class="field"> 
+      <label class="label">About your team</label>
+      <div class="control">
+        <textarea 
+          v-model="clone.about"
+          class="textarea" 
+          :placeholder="kAboutPlacehoder"
+          required></textarea>
+      </div>
+    </div>
     <div class="field is-grouped is-grouped-right">
       <div class="control">
         <button @click="$emit('cancel')" class="button is-outlined">
@@ -87,27 +130,33 @@ import log from '@/services/logger'
 const MODULE_ID = 'components/TeamForm'
 const AVATAR_PLACEHOLDER = TEAM_AVATAR_PLACEHOLDER
 const AVATAR_MAX_FILE_SIZE = 200 * 1000 // 200kb
+const ABOUT_PLACEHOLDER = 'Tell us a bit about your team, what your areas of speciality are and what sort of projects you focus on.'
+
+const DEFAULT_TEAM = {
+  name: '', 
+  location: '',
+  about: '',
+  members: {},
+  discord_usernames: [''] as string[]
+}
 
 export default defineComponent({
   components: { Notification },
   props: {
     team: {
       type: Object as () => Team,
-      default: {
-        name: '', 
-        location: '',
-        members: []
-      }
+      default: DEFAULT_TEAM
     }
   },
   data() {
     return {
-      clone: { ...this.team }, // clone so we can modify
+      clone: { ...DEFAULT_TEAM, ...this.team }, // clone so we can modify
       success: '',
       error: '',
       isSaving: false,
       kAvatarMaxSize: AVATAR_MAX_FILE_SIZE,
       kAvatarPlaceholder: AVATAR_PLACEHOLDER,
+      kAboutPlacehoder: ABOUT_PLACEHOLDER,
       avatarPreviewUrl: ''
     }
   },
@@ -163,6 +212,7 @@ export default defineComponent({
       const file:File = avatar && (avatar.files as FileList)[0]
       if (!file || this.validateFileSize(file)) {
         this.isSaving = true
+        this.clone.discord_usernames = this.clone.discord_usernames.filter(u => u)
         this.teamsStore.saveTeam(this.clone, file)
           .then(result => {
             Object.assign(this.team, result)

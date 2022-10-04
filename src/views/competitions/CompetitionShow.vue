@@ -1,5 +1,5 @@
 <template>
-  <section v-if="competition">
+  <section v-if="competition" class="is-flex is-flex-direction-column">
     <header class="header px-4 pt-4 pb-0">
       <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
@@ -66,7 +66,7 @@
     </header>
     <article 
       v-if="activeTab === kTabs.DETAILS"
-      class="article has-background-white-bis p-5 my-0"
+      class="article p-5 is-flex-grow-1 has-background-white-bis "
     >
       <div class="columns">
         <div class="column is-8">
@@ -93,7 +93,7 @@
     </article>
     <article 
       v-else-if="activeTab === kTabs.PROJECTS"
-      class="article has-background-white-bis px-5 py-5"
+      class="article p-5 is-flex-grow-1 has-background-white-bis"
     >
       <h2 class="title is-4">Submitted Projects</h2>
         <project-list
@@ -189,4 +189,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
+  .article aside {
+  }
 </style>

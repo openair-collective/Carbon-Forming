@@ -1,5 +1,5 @@
 <template>
-  <section>
+  <section class="is-flex is-flex-direction-column">
     <header class="header p-4 has-background-white">
       <h1 class="title is-4">
         Competitions
@@ -12,7 +12,7 @@
         </router-link>
       </h1>
     </header>
-    <article class="article p-4 has-background-white-bis">
+    <article class="article p-4 is-flex-grow-1 has-background-white-bis">
       <competition-list v-if="list" :list="list" />
       <loading v-else />
     </article>

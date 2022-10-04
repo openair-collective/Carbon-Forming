@@ -7,6 +7,7 @@ import CompetitionNew from '@/views/competitions/CompetitionNew.vue'
 import CompetitionEdit from '@/views/competitions/CompetitionEdit.vue'
 import Teams from '@/views/teams/Teams.vue'
 import TeamShow from '@/views/teams/TeamShow.vue'
+import TeamDetail from '@/views/teams/TeamDetail.vue'
 import TeamNew from '@/views/teams/TeamNew.vue'
 import TeamEdit from '@/views/teams/TeamEdit.vue'
 import TeamProjects from '@/views/team_projects/TeamProjects.vue'
@@ -34,38 +35,41 @@ const routes: RouteRecordRaw[] = [
       {
         path: '/teams',
         name: 'teams',
-        component: Teams, // has router-view -- wraps team instances with / sidebar
+        component: Teams
+      },
+      {
+        path: '/teams/:id',
+        component: TeamShow, // has router-view -- container team children
         children: [
           {
-            path: ':id',
-            component: TeamShow, // has router-view -- container team children
-            children: [
-              {
-                path: '',
-                name: 'team-show',
-                component: TeamProjects
-              },
-              {
-                path: 'projects/:project_id',
-                name: 'team-project-show',
-                component: TeamProject
-              },
-              {
-                path: 'projects/:project_id/edit',
-                name: 'team-project-edit',
-                component: TeamProjectEdit
-              },
-              {
-                path: 'projects/new',
-                name: 'team-project-new',
-                component: TeamProjectNew
-              },
-              {
-                path: 'competitions',
-                name: 'team-competitions',
-                component: TeamCompetitions
-              }
-            ]
+            path: '',
+            name: 'team-show',
+            component: TeamDetail
+          },
+          {
+            path: 'projects',
+            name: 'team-projects',
+            component: TeamProjects
+          },
+          {
+            path: 'projects/:project_id',
+            name: 'team-project-show',
+            component: TeamProject
+          },
+          {
+            path: 'projects/:project_id/edit',
+            name: 'team-project-edit',
+            component: TeamProjectEdit
+          },
+          {
+            path: 'projects/new',
+            name: 'team-project-new',
+            component: TeamProjectNew
+          },
+          {
+            path: 'competitions',
+            name: 'team-competitions',
+            component: TeamCompetitions
           }
         ],
       },

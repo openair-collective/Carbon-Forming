@@ -10,7 +10,7 @@ export declare interface UserProfile {
   id: string
   avatar:string
   username:string
-  teams:{ [key:Team['id']]: boolean }
+  teams:{ [key:string]: boolean }
 }
 
 export declare interface Guild {
@@ -28,7 +28,7 @@ export declare interface Team {
   about:string
   avatar:FileUpload | null
   members: { [key:UserProfile['id']]: TeamRole }
-  discord_members: string[]
+  discord_usernames: string[] // 
   projects: Project[]
 }
 

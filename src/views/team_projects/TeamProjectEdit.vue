@@ -1,25 +1,23 @@
 <template>
-  <main>
-    <section class="p-4">
-      <nav class="breadcrumb" aria-label="breadcrumbs">
-        <ul>
-          <li>
-            <router-link :to="{ name: 'team-project-show', params: { project_id: $route.params.project_id }}">
-              &lt; Back
-            </router-link>
-          </li>
-        </ul>
-      </nav>
-      <h1 class="title is-3">Edit Project</h1>
-      <project-form
-        v-if="project"
-        :team="team"
-        :project="project"
-        @cancel="onCancel"
-      />
-      <loading v-else />
-    </section>
-  </main>
+  <section>
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+      <ul>
+        <li>
+          <router-link :to="{ name: 'team-project-show', params: { project_id: $route.params.project_id }}">
+            &lt; Back
+          </router-link>
+        </li>
+      </ul>
+    </nav>
+    <h1 class="title is-3">Edit Project</h1>
+    <project-form
+      v-if="project"
+      :team="team"
+      :project="project"
+      @cancel="onCancel"
+    />
+    <loading v-else />
+  </section>
 </template>
 
 <script lang="ts">

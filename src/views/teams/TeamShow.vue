@@ -1,6 +1,15 @@
 <template>
-  <section v-if="team">
+  <section v-if="team" class="is-flex is-flex-direction-column">
     <header class="header px-4 pt-4 pb-0 has-background-white is-clearfix">
+      <nav class="breadcrumb" aria-label="breadcrumbs">
+        <ul>
+          <li>
+            <router-link :to="{ name: 'teams' }">
+              &lt; Back to Teams
+            </router-link>
+          </li>
+        </ul>
+      </nav>
       <figure 
         class="image is-pulled-left mr-4"
         :style="{backgroundImage: `url(${avatar})`}  "
@@ -21,23 +30,33 @@
       <div class="tabs mb-0 pb-0">
         <ul>
           <li 
-            @click="onTabClick(kTabs.PROJECTS)"
-            :class="{'is-active': activeTab === kTabs.PROJECTS}"
+            @click="onTabClick(eTabs.DETAILS)"
+            :class="{'is-active': activeTab === eTabs.DETAILS}"
+          >
+            <a>Team Details</a>
+          </li>
+          <li 
+            @click="onTabClick(eTabs.PROJECTS)"
+            :class="{'is-active': activeTab === eTabs.PROJECTS}"
           >
             <a>Projects</a>
           </li>
           <li
-            @click="onTabClick(kTabs.COMPS)"
-            :class="{'is-active': activeTab === kTabs.COMPS}"
+            @click="onTabClick(eTabs.COMPS)"
+            :class="{'is-active': activeTab === eTabs.COMPS}"
           >
-            <a>Competitions Entered</a>
+            <a>Competitions</a>
           </li>
         </ul>
       </div>
     </header>
-    <article class="article has-background-white-bis p-5 my-0">
+    <article 
+      v-if="team"
+      class="article has-background-white-bis p-5 my-0 is-flex-grow-1"
+    >
       <router-view :team="team" />
     </article>
+    <loading v-else />
   </section>
   <loading v-else />
 </template>
@@ -55,18 +74,19 @@ import log from '@/services/logger'
 
 const MODULE_ID ='components/teams/TeamShow'
 
-const TABS = {
-  PROJECTS: 0,
-  COMPS: 1
+enum TABS {
+  DETAILS,
+  PROJECTS,
+  COMPS
 }
 
 export default defineComponent({
   components: { Loading },
   data() {
     return {
-      kTabs: TABS,
+      eTabs: TABS,
       team: undefined as Team | undefined,
-      activeTab: TABS.PROJECTS
+      activeTab: TABS.DETAILS
     }
   },
   computed: {
@@ -92,6 +112,13 @@ export default defineComponent({
   created() {
     const id = this.$route.params.id as string
     this.setTeamByID(id)
+    const name = this.$route.name
+    if (name === 'team-projects') {
+      this.activeTab = this.eTabs.PROJECTS
+    }
+    if (name === 'team-competitions') {
+      this.activeTab = this.eTabs.COMPS
+    }
   },
   beforeRouteUpdate(to) {
     const id = to.params.id as string
@@ -104,8 +131,16 @@ export default defineComponent({
     },
     onTabClick(tab:number) {
       this.activeTab = tab
-      let name = tab === TABS.PROJECTS ? 'team-show' : 'team-competitions'
-      this.$router.push({ name })
+      if (this.team) {
+        let path = { name: 'team-show', params: { id: this.team.id }}
+        if (tab === TABS.PROJECTS) {
+          path.name = 'team-projects'
+        }
+        if (tab === TABS.COMPS) {
+          path.name = 'team-competitions'
+        }
+        this.$router.push(path)
+      }
     }
   }
 })

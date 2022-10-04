@@ -1,14 +1,8 @@
 <template>
-  <section class="p-4">
+  <section>
     <header class="header mb-4">
       <h3 class="title is-3">
         Projects
-        <router-link
-          :to="{ name: 'team-project-new' }"
-          class="button is-info is-small is-outlined ml-2"
-        >
-          New Project
-        </router-link>
       </h3>
     </header>
     <article>
@@ -49,12 +43,6 @@
       </div>
       <div v-else>
         <h4 class="title is-5">No projects yet</h4>
-        <button 
-          @click="onCreateProject" 
-          class="button is-info"
-        >
-          Create your first project
-        </button>
       </div>
     </article>
   </section>
@@ -69,7 +57,7 @@ import { useCompetitionsStore } from '@/store/competitions'
 import Loading from '@/components/Loading.vue'
 import log from '@/services/logger'
 
-const MODULE_ID ='components/team'
+const MODULE_ID ='components/team_projects/TeamProjects'
 
 export default defineComponent({
   components: { Loading },
@@ -88,11 +76,6 @@ export default defineComponent({
   created() {
     if (!this.team.projects) {
       this.teamsStore.fetchTeamProjects(this.team)
-    }
-  },
-  methods: {
-    onCreateProject() {
-      this.$router.push({ name: 'team-project-new' })
     }
   }
 })
