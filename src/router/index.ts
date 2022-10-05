@@ -33,6 +33,11 @@ const routes: RouteRecordRaw[] = [
         component: Teams
       },
       {
+        path: '/my-teams',
+        name: 'my-teams',
+        component: Teams
+      },
+      {
         path: '/teams/new',
         name: 'teams-new',
         component: TeamNew

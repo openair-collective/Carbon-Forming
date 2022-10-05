@@ -4,8 +4,8 @@
       <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
           <li>
-            <router-link :to="{ name: 'teams' }">
-              &lt; Back to Teams
+            <router-link :to="{ path: backButtonPath }">
+              &lt; {{ backButtonLabel }}
             </router-link>
           </li>
         </ul>
@@ -63,6 +63,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { RouteLocationNormalized } from 'vue-router'
 import { mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
 import { useTeamsStore } from '@/store/teams'
@@ -80,13 +81,21 @@ enum TABS {
   COMPS
 }
 
+const TEAM_PATHS = {
+  TEAM: 'team-show',
+  PROJECTS: 'team-projects',
+  COMPS: 'team-comps'
+}
+
 export default defineComponent({
   components: { Loading },
   data() {
     return {
       eTabs: TABS,
-      team: undefined as Team | undefined,
-      activeTab: TABS.DETAILS
+      team: null as Team | null,
+      activeTab: TABS.DETAILS,
+      backButtonLabel: '',
+      backButtonPath: ''
     }
   },
   computed: {
@@ -106,19 +115,29 @@ export default defineComponent({
       return result
     },
     disableEdit():boolean {
-      return this.$route.name !== 'team-show'
+      return this.$route.name !== TEAM_PATHS.TEAM
     }
   },
   created() {
     const id = this.$route.params.id as string
     this.setTeamByID(id)
     const name = this.$route.name
-    if (name === 'team-projects') {
-      this.activeTab = this.eTabs.PROJECTS
+    if (name === TEAM_PATHS.PROJECTS) {
+      this.activeTab = TABS.PROJECTS
     }
-    if (name === 'team-competitions') {
-      this.activeTab = this.eTabs.COMPS
+    if (name === TEAM_PATHS.COMPS) {
+      this.activeTab = TABS.COMPS
     }
+  },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      (vm as any).backButtonPath = from.path
+      let label = "Back to Teams"
+      if (from.path === '/my-teams') {
+        label = "Back to My Teams"
+      }
+      (vm as any).backButtonLabel = label
+    })
   },
   beforeRouteUpdate(to) {
     const id = to.params.id as string
@@ -127,17 +146,17 @@ export default defineComponent({
   methods: {
     setTeamByID(id:string) {
       this.teamsStore.getTeamById(id)
-        .then(result => this.team = result)
+        .then(result => this.team = result || null)
     },
     onTabClick(tab:number) {
       this.activeTab = tab
       if (this.team) {
-        let path = { name: 'team-show', params: { id: this.team.id }}
+        let path = { name: TEAM_PATHS.TEAM, params: { id: this.team.id }}
         if (tab === TABS.PROJECTS) {
-          path.name = 'team-projects'
+          path.name = TEAM_PATHS.PROJECTS
         }
         if (tab === TABS.COMPS) {
-          path.name = 'team-competitions'
+          path.name = TEAM_PATHS.COMPS
         }
         this.$router.push(path)
       }
