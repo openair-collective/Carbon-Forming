@@ -28,17 +28,23 @@ const routes: RouteRecordRaw[] = [
     redirect: to => { return '/teams' },
     children: [
       {
-        path: '/teams/new',
-        name: 'teams-new',
-        component: TeamNew
-      },
-      {
         path: '/teams',
         name: 'teams',
         component: Teams
       },
       {
+        path: '/teams/new',
+        name: 'teams-new',
+        component: TeamNew
+      },
+      {
+        path: '/teams/:id/edit',
+        name: 'team-edit',
+        component: TeamEdit // edit a team instance directly
+      },
+      {
         path: '/teams/:id',
+        name: 'team-parent',
         component: TeamShow, // has router-view -- container team children
         children: [
           {
@@ -72,11 +78,6 @@ const routes: RouteRecordRaw[] = [
             component: TeamCompetitions
           }
         ],
-      },
-      {
-        path: '/teams/:id/edit',
-        name: 'team-edit',
-        component: TeamEdit // edit a team instance directly
       },
       {
         path: '/competitions',
