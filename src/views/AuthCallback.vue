@@ -64,8 +64,8 @@ export default defineComponent({
         }
       }
       else {
-        // force a logout - something is wrong with our stored credentials
-        if (this.oauth && this.profile) {
+        if (this.oauth) {
+          // force a logout - something is wrong with our stored credentials
           unsubscribe()
           this.logout()
         }
