@@ -14,7 +14,7 @@ export default defineConfig(({command, mode }) => {
     },
     build: {
       minify: mode === 'development',
-      sourcemap: mode === 'development'
+      // sourcemap: mode === 'development' // disabled for now: https://github.com/vitejs/vite/issues/10256
     }
   }
 })
