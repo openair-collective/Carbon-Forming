@@ -15,7 +15,7 @@
 import { defineComponent, PropType } from 'vue'
 import { Team, Competition } from '@/types'
 import { useTeamsStore } from '@/store/teams'
-import CompetitionList from '@/components/CompetitionList.vue'
+import CompetitionList from '@/components/competition/CompetitionList.vue'
 import { mapStores } from 'pinia'
 
 export default defineComponent({

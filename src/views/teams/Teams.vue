@@ -27,9 +27,9 @@ import { mapState, mapStores } from 'pinia'
 import { Team } from '@/types'
 import { useUserStore } from '@/store/user'
 import { useTeamsStore } from '@/store/teams'
-import TeamList from '@/components/TeamList.vue'
-import log from '@/services/logger'
+import TeamList from '@/components/team/TeamList.vue'
 import Loading from '@/components/Loading.vue'
+import log from '@/services/logger'
 
 const MODULE_ID ='views/teams'
 

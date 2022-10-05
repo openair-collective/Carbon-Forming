@@ -26,7 +26,7 @@ import { useUserStore } from '@/store/user'
 import { useCompetitionsStore } from '@/store/competitions'
 import { canCreateCompetition } from '@/helpers/authHelper'
 import Loading from '@/components/Loading.vue'
-import CompetitionList from '@/components/CompetitionList.vue'
+import CompetitionList from '@/components/competition/CompetitionList.vue'
 
 export default defineComponent({
   components: { Loading, CompetitionList },

@@ -12,7 +12,7 @@ import { defineComponent } from 'vue'
 import { mapStores } from 'pinia'
 import { Team } from '@/types'
 import { useUserStore } from '@/store/user'
-import TeamForm from '@/components/TeamForm.vue'
+import TeamForm from '@/components/team/TeamForm.vue'
 import log from '@/services/logger'
 
 const MODULE_ID = 'view/Onboarding'

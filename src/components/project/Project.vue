@@ -85,7 +85,7 @@ import { defineComponent } from 'vue'
 import { Project } from '@/types'
 import log from '@/services/logger'
 
-const MODULE_ID ='components/project'
+const MODULE_ID ='components/project/Project'
 
 export default defineComponent({
   props: {

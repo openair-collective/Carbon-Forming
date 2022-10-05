@@ -22,7 +22,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Team, Project, Material, FileUpload } from '@/types';
-import ProjectForm from '@/components/ProjectForm.vue';
+import ProjectForm from '@/components/project/ProjectForm.vue';
 
 export default defineComponent({
   components: { ProjectForm },
