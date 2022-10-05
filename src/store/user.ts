@@ -103,7 +103,7 @@ export const useUserStore = defineStore('user', {
       }
     },
     async addTeam(team:Team, role:TeamRole=TeamRole.default):Promise<void> {
-      if (this.oauth && this.profile) {
+      if (team.id && this.oauth && this.profile) {
         try {
           await firestore.addTeamToUser(team, this.profile, role)
           team.members = team.members || {}
@@ -120,11 +120,11 @@ export const useUserStore = defineStore('user', {
         }
       }
       else {
-        throw new Error(`${MODULE_ID} #addTeam > User must be authenticated and profile fetched`)
+        throw new Error(`${MODULE_ID} #addTeam > Team must have a valid id. User must also be authenticated and profile fetched`)
       } 
     },
     async removeTeam(team:Team):Promise<void> {
-      if (this.oauth && this.profile) {
+      if (team.id && this.oauth && this.profile) {
         try {
           await firestore.removeTeamFromUser(team, this.profile)
           delete team.members[this.profile.id]
@@ -139,7 +139,7 @@ export const useUserStore = defineStore('user', {
         }
       }
       else {
-        throw new Error(`${MODULE_ID} #removeTeam > User must be authenticated and profile fetched`)
+        throw new Error(`${MODULE_ID} #removeTeam > Team must have a valid id. User must also be authenticated and profile fetched`)
       } 
     }
   }
