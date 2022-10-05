@@ -55,8 +55,8 @@ import { mapStores } from 'pinia'
 import { useTeamsStore } from '@/store/teams'
 import { useCompetitionsStore } from '@/store/competitions'
 import Loading from '@/components/Loading.vue'
-import log from '@/services/logger'
 
+import log from '@/services/logger'
 const MODULE_ID ='components/team_projects/TeamProjects'
 
 export default defineComponent({
@@ -69,8 +69,12 @@ export default defineComponent({
   },
   computed: { 
     ...mapStores(useTeamsStore, useCompetitionsStore),
-    projects() {
-      return Object.values(this.team.projects)
+    projects():Project[] {
+      let result = [] as Project[]
+      if (this.team.projects) {
+        result = Object.values(this.team.projects)
+      }
+      return result
     }
   },
   created() {

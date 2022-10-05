@@ -44,9 +44,16 @@ export default defineComponent({
   computed: {
     ...mapStores(useTeamsStore)
   },
-  async created() {
+  created() {
     let project_id = this.$route.params.project_id as string
-    this.project = await this.teamsStore.getTeamProjectById(this.team, project_id)
+    this.teamsStore.getTeamProjectById(this.team, project_id)
+      .then(result => {
+        console.info(result)
+        this.project = result
+      })
+      .catch(error => {
+        console.info(error)
+      })
   }
 })
 

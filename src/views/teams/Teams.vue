@@ -23,7 +23,7 @@
 
 <script lang="ts">
 import { defineComponent, watch } from 'vue'
-import { mapState, mapStores } from 'pinia'
+import { mapStores } from 'pinia'
 import { Team } from '@/types'
 import { useUserStore } from '@/store/user'
 import { useTeamsStore } from '@/store/teams'
@@ -66,13 +66,19 @@ export default defineComponent({
     if (!this.userStore.teams) {
       this.userStore.fetchTeams()
     }
+    let tab = this.$route.path === '/teams' ? TABS.TEAMS : TABS.MY_TEAMS
+    this.onTabClick(tab)
   },
   methods: {
     onCreateNewTeam() {
       this.$router.push({ name: 'teams-new'})
     },
     onTabClick (tab:TABS) {
-      this.activeTab = tab
+      if (this.activeTab !== tab) {
+        let path = tab === TABS.TEAMS ? '/teams' : '/my-teams'
+        this.$router.push({ path })
+        this.activeTab = tab
+      }
     }
   }
 })
