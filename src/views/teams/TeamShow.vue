@@ -84,7 +84,7 @@ enum TABS {
 const TEAM_PATHS = {
   TEAM: 'team-show',
   PROJECTS: 'team-projects',
-  COMPS: 'team-comps'
+  COMPS: 'team-competitions'
 }
 
 export default defineComponent({
@@ -154,12 +154,15 @@ export default defineComponent({
     onTabClick(tab:number) {
       this.activeTab = tab
       if (this.team) {
-        let path = { name: TEAM_PATHS.TEAM, params: { id: this.team.id }}
+        let path
         if (tab === TABS.PROJECTS) {
-          path.name = TEAM_PATHS.PROJECTS
+          path =  { name: TEAM_PATHS.PROJECTS }
         }
-        if (tab === TABS.COMPS) {
-          path.name = TEAM_PATHS.COMPS
+        else  if (tab === TABS.COMPS) {
+          path = { name: TEAM_PATHS.COMPS }
+        }
+        else {
+          path = { name: TEAM_PATHS.TEAM, params: { id: this.team.id }}
         }
         this.$router.push(path)
       }
