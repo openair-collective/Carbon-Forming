@@ -1,5 +1,8 @@
 <template>
-  <section v-if="competition" class="is-flex is-flex-direction-column">
+  <section 
+    v-if="competition"
+    class="is-flex is-flex-direction-column"
+  >
     <header class="header px-4 pt-4 pb-0">
       <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
@@ -70,22 +73,29 @@
     >
       <div class="columns">
         <div class="column is-8">
-          <h2 class="title is-4">Competition Details</h2>
-          {{ competition.description }}
+          <h2 class="title is-4 mb-2">Competition Details</h2>
+          <div class="mb-4">{{ competition.description }}</div>
+          <h2 class="title is-4 mb-2">Competition Rules</h2>
+          <div class="mb-4">{{ competition.rules }}</div>
+          <h2 class="title is-4 mb-2">Judging Criteria</h2>
+          <div class="mb-4">{{ competition.criteria }}</div>
         </div>
-        <div class="column">
+        <div
+          v-if="!competition.prizesDisabled"
+          class="column"
+        >
           <table class="table is-fullwidth">
             <tr>
               <td>First Prize</td>
-              <td>$1,000</td>
+              <td>{{ competition.prizes.first }}</td>
             </tr>
             <tr>
               <td>Second Prize</td>
-              <td>$500</td>
+              <td>{{ competition.prizes.second }}</td>
             </tr>
             <tr>
-              <td>Third Prize</td>
-              <td>$50</td>
+              <td>Runner Up</td>
+              <td>{{ competition.prizes.third }}</td>
             </tr>
           </table>
         </div>

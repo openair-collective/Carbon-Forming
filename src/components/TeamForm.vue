@@ -136,9 +136,11 @@ const DEFAULT_TEAM = {
   name: '', 
   location: '',
   about: '',
+  avatar: null,
   members: {},
-  discord_usernames: [''] as string[]
-}
+  recruiting: false,
+  discord_usernames: [''] as string[],
+} as Team
 
 export default defineComponent({
   components: { Notification },

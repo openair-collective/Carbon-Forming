@@ -82,7 +82,7 @@ export const useTeamsStore = defineStore('teams', {
         if (!team.projects) {
           await this.fetchTeamProjects(team)
         }
-        return team.projects && team.projects.find(p => p.id === project_id)
+        return team.projects ? team.projects.find(p => p.id === project_id) : undefined
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
@@ -136,7 +136,7 @@ export const useTeamsStore = defineStore('teams', {
       try {
         if (team.avatar) {
           const avatar_response = await storage.removeFile(team.avatar)
-          team.avatar = undefined
+          team.avatar = null
           return await this.saveTeam(team)
         }
       }

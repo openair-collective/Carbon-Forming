@@ -28,8 +28,9 @@ export declare interface Team {
   about:string
   avatar:FileUpload | null
   members: { [key:UserProfile['id']]: TeamRole }
-  discord_usernames: string[] // 
-  projects: Project[]
+  discord_usernames: string[]
+  recruiting: boolean
+  projects: Project[] | null
 }
 
 export declare interface Project {
@@ -49,7 +50,12 @@ export declare interface Competition {
   description:string
   rules:string
   criteria:string
-  prizes:string[]
+  prizesDisabled: boolean
+  prizes: {
+    first:string
+    second:string
+    third:string
+  }
   start_date:Date | null
   end_date:Date | null
   projects: Project[] | null
