@@ -39,11 +39,11 @@ import { Team, Project, Material, FileUpload } from '@/types'
 import { mapStores } from 'pinia'
 import { useTeamsStore } from '@/store/teams'
 import { useProjectsStore } from '@/store/projects'
-import ProjectInput from './project/ProjectInput.vue'
+import ProjectInput from '@/components/project/ProjectInput.vue'
 import Notification from '@/components/Notification.vue'
 
 import log from '@/services/logger'
-const MODULE_ID = 'components/ProjectForm'
+const MODULE_ID = 'components/project/ProjectForm'
 
 function initMaterial():Material {
   return {

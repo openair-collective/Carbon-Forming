@@ -21,7 +21,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Competition } from '@/types'
-import CompetitionForm from '@/components/CompetitionForm.vue'
+import CompetitionForm from '@/components/competition/CompetitionForm.vue'
 import log from '@/services/logger'
 
 const MODULE_ID = 'views/CompetitionNew'

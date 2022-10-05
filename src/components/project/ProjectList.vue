@@ -5,13 +5,13 @@
       :key="i"
       @click="$router.push({ 
         name: 'team-project-show', 
-        params: { id: project.team.id, project_id: project.id }
+        params: { id: project.team?.id, project_id: project.id }
       })" 
       class="box box--project mb-4 mr-4"
     >
       <router-link :to="{ 
         name: 'team-project-show', 
-        params: { id: project.team.id, project_id: project.id }
+        params: { id: project.team?.id, project_id: project.id }
       }"> 
         <h3 class="title is-3">{{ project.name }}</h3>
       </router-link>

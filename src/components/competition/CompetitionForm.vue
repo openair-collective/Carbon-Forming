@@ -126,10 +126,10 @@ import { Competition } from '@/types'
 import { mapStores } from 'pinia'
 import { useCompetitionsStore } from '@/store/competitions'
 import { fsTimestampToDate } from '@/utils/date'
-import Notification from './Notification.vue'
+import Notification from '@/components/Notification.vue'
 import log from '@/services/logger'
 
-const MODULE_ID = 'components/CompetitionForm'
+const MODULE_ID = 'components/competition/CompetitionForm'
 
 function dateForInput(stamp:any):string {
   const date = fsTimestampToDate(stamp)

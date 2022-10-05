@@ -124,7 +124,7 @@ import { Team } from '@/types'
 import { mapStores } from 'pinia'
 import { useTeamsStore } from '@/store/teams'
 import { TEAM_AVATAR_PLACEHOLDER } from '@/consts'
-import Notification from './Notification.vue'
+import Notification from '@/components/Notification.vue'
 import log from '@/services/logger'
 
 const MODULE_ID = 'components/TeamForm'

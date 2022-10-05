@@ -25,7 +25,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Team } from '@/types'
-import TeamForm from '@/components/TeamForm.vue'
+import TeamForm from '@/components/team/TeamForm.vue'
 import { useTeamsStore } from '@/store/teams'
 import { mapStores } from 'pinia'
 import log from '@/services/logger'

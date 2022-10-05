@@ -28,7 +28,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Competition } from '@/types'
-import CompetitionForm from '@/components/CompetitionForm.vue'
+import CompetitionForm from '@/components/competition/CompetitionForm.vue'
 import Loading from '@/components/Loading.vue'
 import { mapState, mapStores } from 'pinia'
 import { useCompetitionsStore } from '@/store/competitions'

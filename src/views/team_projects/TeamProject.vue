@@ -20,12 +20,12 @@
 import { defineComponent } from 'vue'
 import { mapStores } from 'pinia'
 import { Team, Project } from '@/types'
-import ProjectView from '@/components/Project.vue'
+import ProjectView from '@/components/project/Project.vue'
 import Loading from '@/components/Loading.vue'
 import { useTeamsStore } from '@/store/teams'
 import log from '@/services/logger'
 
-const MODULE_ID = 'views/TeamProject'
+const MODULE_ID = 'views/team_projects/TeamProject'
 
 export default defineComponent({
   components: { Loading, ProjectView },

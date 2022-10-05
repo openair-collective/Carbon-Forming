@@ -24,7 +24,7 @@
 import { defineComponent } from 'vue'
 import { Team, Project } from '@/types'
 import { mapStores } from 'pinia'
-import ProjectForm from '@/components/ProjectForm.vue'
+import ProjectForm from '@/components/project/ProjectForm.vue'
 import Loading from '@/components/Loading.vue'
 import { useTeamsStore } from '@/store/teams'
 

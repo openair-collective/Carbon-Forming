@@ -129,7 +129,7 @@ import { canCreateCompetition } from '@/helpers/authHelper'
 import { dayMonth, dayMonthYear, fsTimestampToDate } from '@/utils/date'
 import Loading from '@/components/Loading.vue'
 import CountdownTimer from '@/components/CountdownTimer.vue'
-import ProjectList from '@/components/ProjectList.vue'
+import ProjectList from '@/components/project/ProjectList.vue'
 import log from '@/services/logger'
 
 const MODULE_ID ='views/competition'
@@ -199,6 +199,4 @@ export default defineComponent({
 </script>
 
 <style scoped>
-  .article aside {
-  }
 </style>

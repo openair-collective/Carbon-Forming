@@ -25,7 +25,7 @@
 import { defineComponent } from 'vue'
 import { Team } from '@/types'
 import { mapStores } from 'pinia'
-import TeamForm from '@/components/TeamForm.vue'
+import TeamForm from '@/components/team/TeamForm.vue'
 import { useUserStore } from '@/store/user'
 import log from '@/services/logger'
 
