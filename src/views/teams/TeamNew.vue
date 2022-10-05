@@ -14,7 +14,6 @@
     </header>
     <article>
       <team-form
-        :team="team"
         @team-saved="onTeamSaved"
         @cancel="onCancel"
       />
@@ -35,13 +34,7 @@ const MODULE_ID = 'views/TeamNew'
 export default defineComponent({
   components: { TeamForm },
   computed: {
-    ...mapStores(useUserStore),
-    team():Team {
-      return {
-        name: '',
-        location: ''
-      } as Team
-    }
+    ...mapStores(useUserStore)
   },
   methods: {
     onCancel() {

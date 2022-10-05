@@ -1,34 +1,23 @@
 <template>
   <section class="teams">
-    <aside class="aside menu p-2 has-background-grey-light">
-      <p class="menu-label">My Teams</p>
-      <ul 
-        v-if="userTeams && userTeams.length"
-        class="menu-list"
-      >
+    <div class="tabs">
+      <ul>
         <li 
-          v-for="(team, i) in userTeams"
-          :key="i"
+          @click="onTabClick(eTabs.TEAMS)"
+          :class="{'is-active': activeTab === eTabs.TEAMS}"
         >
-        <router-link :to="{ name: 'team-show', params: { id: team.id } }">
-            {{ team.name }}
-          </router-link>
+          <a class="is-size-3">Teams</a>
+        </li>
+        <li
+          @click="onTabClick(eTabs.MY_TEAMS)"
+          :class="{'is-active': activeTab === eTabs.MY_TEAMS}"
+        >
+          <a class="is-size-3">My Teams</a>
         </li>
       </ul>
-      <ul class="menu-list my-4">
-        <li>
-          <router-link 
-            :to="{ name: 'teams-new'}"
-            class="button is-small is-info is-outlined"
-          >
-            Create New Team
-          </router-link>
-        </li>
-      </ul>
-    </aside>
-    <article class="article">
-      <router-view  />
-    </article>
+    </div>
+    <team-list v-if="activeList" :list="activeList" class="p-4" />
+    <loading v-else />
   </section>
 </template>
 
@@ -38,55 +27,52 @@ import { mapState, mapStores } from 'pinia'
 import { Team } from '@/types'
 import { useUserStore } from '@/store/user'
 import { useTeamsStore } from '@/store/teams'
+import TeamList from '@/components/TeamList.vue'
 import log from '@/services/logger'
+import Loading from '@/components/Loading.vue'
 
 const MODULE_ID ='views/teams'
 
+enum TABS {
+  TEAMS,
+  MY_TEAMS
+}
+
 export default defineComponent({
+  components: { TeamList, Loading },
+  data() {
+    return {
+      eTabs: TABS,
+      activeTab: TABS.TEAMS
+    }
+  },
   computed: {
     ...mapStores(useUserStore, useTeamsStore),
-    ...mapState(useUserStore, { userTeams: 'teams' }),
-    defaultTeam():Team|undefined {
-      let result
-      if (this.userTeams && this.userTeams.length) {
-        result = this.userTeams[0]
+    activeList():Team[] {
+      let result = [] as Team[]
+      if (this.activeTab === TABS.TEAMS) { 
+        result = this.teamsStore.list || []
+      }
+      else {
+        result = this.userStore.teams || []
       }
       return result
     }
   },
-  beforeRouteUpdate(to) {
-    if (to.name === 'teams') {
-      this.showDefaultTeam()
-    }
-  },
   created() {
-    if (!this.userTeams) {
+    if (!this.teamsStore.list) {
+      this.teamsStore.fetchList()
+    }
+    if (!this.userStore.teams) {
       this.userStore.fetchTeams()
     }
   },
-  mounted() {
-    if (this.$route.name === 'teams') {
-      if (this.userTeams && this.userTeams.length) {
-        this.showDefaultTeam()
-      }
-      else {
-        const unwatch = this.$watch('userTeams',(newVal:Team[]) => {
-          if (newVal && newVal.length) {
-            this.showDefaultTeam()
-            unwatch()
-          }
-        })
-      }
-    }
-  },
   methods: {
-    showDefaultTeam() {
-      if (this.defaultTeam) {
-        this.$router.replace({ name: 'team-show', params: { id: this.defaultTeam.id }})
-      }
-    },
     onCreateNewTeam() {
       this.$router.push({ name: 'teams-new'})
+    },
+    onTabClick (tab:TABS) {
+      this.activeTab = tab
     }
   }
 })
@@ -94,21 +80,4 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.teams {
-  display: flex;
-  flex-direction: row;
-}
-.aside {
-  width: 176px;
-  flex:0 1 auto;
-  order: 1;
-}
-.article {
-  flex: 2;
-  order: 2;
-}
-.router-link-active,
-.router-link-exact-active {
-  background-color: hsl(0, 0%, 96%);
-}
 </style>

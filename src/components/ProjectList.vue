@@ -7,7 +7,7 @@
         name: 'team-project-show', 
         params: { id: project.team.id, project_id: project.id }
       })" 
-      class="box mb-4 mr-4"
+      class="box box--project mb-4 mr-4"
     >
       <router-link :to="{ 
         name: 'team-project-show', 
@@ -21,12 +21,12 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { ProjectAggregate } from '@/types'
+import { Project } from '@/types'
 
 export default defineComponent({
   props: {
     list: {
-      type: Array as PropType<ProjectAggregate[]>,
+      type: Array as PropType<Project[]>,
       required: true
     }
   }
@@ -34,7 +34,8 @@ export default defineComponent({
 </script>
 
 <style scoped>
-  .box {
+  .box--project {
     cursor:pointer;
+    max-width: 400px;
   }
 </style>

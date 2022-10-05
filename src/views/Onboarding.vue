@@ -2,7 +2,7 @@
   <main>
     <section class="p-4">
       <h1 class="title is-3">Create your first team</h1>
-      <team-form :team="team" @team-saved="onTeamSaved" />
+      <team-form @team-saved="onTeamSaved" />
     </section>
   </main>
 </template>
@@ -21,8 +21,7 @@ export default defineComponent({
   components: { TeamForm },
   data() {
     return {
-      isSaving: false,
-      team: { name: '', location: '' } as Team
+      isSaving: false
     }
   },
   computed: {

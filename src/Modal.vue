@@ -1,7 +1,10 @@
 <template>
   <div
     class="modal app-modal"
-    :class="{'is-active': options}"
+    :class="{
+      'is-active': options,
+      'fullscreen': options && options.fullscreen
+    }"
   >
     <div class="modal-background"></div>
     <div class="modal-card">
@@ -21,7 +24,11 @@
         class="modal-card-body"
         ref="childref"
       />
-      <footer class="modal-card-foot"></footer>
+      <footer v-if="options && options.close" class="modal-card-foot">
+      <button @click="close" class="button">
+        Close
+      </button>
+    </footer>
     </div>
   </div>
 </template>
@@ -31,7 +38,14 @@ import { useModalStore } from '@/store/modal';
 import { mapStores, mapState } from 'pinia'
 import { defineComponent } from 'vue'
 
+import EnterCompetition from '@/modals/EnterCompetition.vue'
+import Message from '@/modals/Message.vue'
+
 export default defineComponent({
+  components: { 
+    EnterCompetition, 
+    Message
+  }, 
   name: 'app-modal',
   computed: {
     ...mapStores(useModalStore),
@@ -50,11 +64,12 @@ export default defineComponent({
     transform: translateY(0%);
   }
   .modal.fullscreen .modal-card {
-    min-width: 95%;
-    height: 95%;
+    min-width: 100%;
+    height: 100%;
+    max-height: 100%;
   }
   .modal.fullscreen .modal-card-body {
-    padding: 1em;
+    padding: 0;
   }
   .modal.fullscreen .modal-card-head {
     padding: 10px;

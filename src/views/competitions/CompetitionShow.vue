@@ -1,5 +1,8 @@
 <template>
-  <section v-if="competition">
+  <section 
+    v-if="competition"
+    class="is-flex is-flex-direction-column"
+  >
     <header class="header px-4 pt-4 pb-0">
       <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
@@ -16,6 +19,7 @@
           <div class="field is-grouped mb-4">
             <div class="control">
               <button
+                @click="onEnterCompetition"
                 class="button is-primary"
               >
                 Enter this competition
@@ -65,26 +69,33 @@
     </header>
     <article 
       v-if="activeTab === kTabs.DETAILS"
-      class="article has-background-white-bis p-5 my-0"
+      class="article p-5 is-flex-grow-1 has-background-white-bis "
     >
       <div class="columns">
         <div class="column is-8">
-          <h2 class="title is-4">Competition Details</h2>
-          {{ competition.description }}
+          <h2 class="title is-4 mb-2">Competition Details</h2>
+          <div class="mb-4">{{ competition.description }}</div>
+          <h2 class="title is-4 mb-2">Competition Rules</h2>
+          <div class="mb-4">{{ competition.rules }}</div>
+          <h2 class="title is-4 mb-2">Judging Criteria</h2>
+          <div class="mb-4">{{ competition.criteria }}</div>
         </div>
-        <div class="column">
+        <div
+          v-if="!competition.prizesDisabled"
+          class="column"
+        >
           <table class="table is-fullwidth">
             <tr>
               <td>First Prize</td>
-              <td>$1,000</td>
+              <td>{{ competition.prizes.first }}</td>
             </tr>
             <tr>
               <td>Second Prize</td>
-              <td>$500</td>
+              <td>{{ competition.prizes.second }}</td>
             </tr>
             <tr>
-              <td>Third Prize</td>
-              <td>$50</td>
+              <td>Runner Up</td>
+              <td>{{ competition.prizes.third }}</td>
             </tr>
           </table>
         </div>
@@ -92,7 +103,7 @@
     </article>
     <article 
       v-else-if="activeTab === kTabs.PROJECTS"
-      class="article has-background-white-bis px-5 py-5"
+      class="article p-5 is-flex-grow-1 has-background-white-bis"
     >
       <h2 class="title is-4">Submitted Projects</h2>
         <project-list
@@ -113,6 +124,7 @@ import { Competition, Project } from '@/types'
 import { mapState, mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
 import { useCompetitionsStore } from '@/store/competitions'
+import { useModalStore } from '@/store/modal'
 import { canCreateCompetition } from '@/helpers/authHelper'
 import { dayMonth, dayMonthYear, fsTimestampToDate } from '@/utils/date'
 import Loading from '@/components/Loading.vue'
@@ -141,7 +153,7 @@ export default defineComponent({
     }
   },
   computed: { 
-    ...mapStores(useCompetitionsStore, useUserStore),
+    ...mapStores(useCompetitionsStore, useUserStore, useModalStore),
     ...mapState(useCompetitionsStore, ['list']),
     ...mapState(useUserStore, ['guild']),
     canEdit():boolean {
@@ -170,6 +182,16 @@ export default defineComponent({
       if (this.competition && !this.competition.projects) {
         this.competitionsStore.fetchCompetitionProjects(this.competition)
       }
+    },
+    onEnterCompetition() {
+      this.modalStore.options = {
+        component: 'EnterCompetition',
+        title: '',
+        fullscreen: true,
+        meta: {
+          competition: this.competition
+        }
+      }
     }
   }
 })
@@ -177,4 +199,6 @@ export default defineComponent({
 </script>
 
 <style scoped>
+  .article aside {
+  }
 </style>

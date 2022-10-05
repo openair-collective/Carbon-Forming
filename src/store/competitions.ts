@@ -53,15 +53,18 @@ export const useCompetitionsStore = defineStore('competitions', {
         if (this.list && comp_ids) {
             // see if we already have them cached locally
             this.list.forEach(comp => {
-              if (comp_ids.indexOf(comp.id) !== -1) {
+              if (comp.id && comp_ids.indexOf(comp.id) !== -1) {
                 result.push(comp)
               }
             })
             // fetch comps we don't have cached
             if (result.length !== comp_ids.length) {
-              const filtered = result.filter(c => comp_ids.indexOf(c.id) == -1).map(c => c.id)
-              const response = await firestore.getCompetitionsById(filtered)
-              result = result.concat(response)
+              const comps = result.filter(c => c.id && comp_ids.indexOf(c.id) == -1)
+              const filtered = comps.map(c => c.id) as string[]
+              if (filtered && filtered.length) {
+                const response = await firestore.getCompetitionsById(filtered)
+                result = result.concat(response)
+              }
             }
         }
         else if (comp_ids) {

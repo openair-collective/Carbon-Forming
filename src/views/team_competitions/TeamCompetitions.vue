@@ -1,17 +1,11 @@
 <template>
   <section>
-    <header class="header">
+    <header class="header mb-4">
       <h3 class="title is-3">
         Competitions Entered
-        <router-link  
-          :to="{ name: 'competitions' }"
-          class="button is-info is-small is-outlined ml-2"
-        >
-          Enter a competition
-        </router-link>
       </h3>
     </header>
-    <article class="article p-5 has-background-white-bis">
+    <article class="article has-background-white-bis">
       <competition-list :list="list" />
     </article>
   </section>
@@ -19,8 +13,10 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { Team, CompetitionAggregate } from '@/types'
+import { Team, Competition } from '@/types'
+import { useTeamsStore } from '@/store/teams'
 import CompetitionList from '@/components/CompetitionList.vue'
+import { mapStores } from 'pinia'
 
 export default defineComponent({
   components: { CompetitionList },
@@ -31,15 +27,22 @@ export default defineComponent({
     }
   },
   computed: {
-    list():CompetitionAggregate[] {
-      const projects = Object.values(this.team.projects)
-      let comps = [] as CompetitionAggregate[]
-      projects.forEach(p => {
-        if (p.competition) {
-          comps.push(p.competition)
-        }
-      })
+    ...mapStores(useTeamsStore),
+    list():Competition[] {
+      let comps = [] as Competition[]
+      if (this.team.projects) {
+        this.team.projects.forEach(p => {
+          if (p.competition) {
+            comps.push(p.competition)
+          }
+        })
+      }
       return comps
+    }
+  },
+  created() {
+    if (!this.team.projects) {
+      this.teamsStore.fetchTeamProjects(this.team)
     }
   }
 })

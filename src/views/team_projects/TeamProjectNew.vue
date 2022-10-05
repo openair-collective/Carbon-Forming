@@ -1,25 +1,22 @@
 <template>
-  <main>
-    <section class="p-4">
-      <nav class="breadcrumb" aria-label="breadcrumbs">
-        <ul>
-          <li>
-          <router-link :to="{ name: 'team-show', params: { id: team.id }}">
-              &lt; Back to projects
-            </router-link>
-          </li>
-        </ul>
-      </nav>
-      <h1 class="title is-3">Add Team Project</h1>
-      <project-form
-        :team="team"
-        :project="project"
-        @project-saved="onProjectSaved"
-        @cancel="onCancel"
-        class="p-4"
-      />
-    </section>
-  </main>
+  <section>
+    <nav class="breadcrumb" aria-label="breadcrumbs">
+      <ul>
+        <li>
+        <router-link :to="{ name: 'team-show', params: { id: team.id }}">
+            &lt; Back to projects
+          </router-link>
+        </li>
+      </ul>
+    </nav>
+    <h1 class="title is-3">Add Team Project</h1>
+    <project-form
+      :team="team"
+      @project-saved="onProjectSaved"
+      @cancel="onCancel"
+      class="p-4"
+    />
+  </section>
 </template>
 
 <script lang="ts">
@@ -33,17 +30,6 @@ export default defineComponent({
     team: {
       type: Object as () => Team,
       required: true
-    }
-  },
-  computed: {
-    project():Project {
-      return {
-        name: '',
-        terms: false,
-        design_doc: null as FileUpload | null,
-        design_doc_url: '',
-        materials: [] as Material[]
-      } as Project
     }
   },
   methods: {

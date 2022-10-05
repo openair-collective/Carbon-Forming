@@ -53,7 +53,7 @@ export const useProjectsStore = defineStore('projects', {
       try {
         if (project.design_doc) {
           const avatar_response = await storage.removeFile(project.design_doc)
-          project.design_doc = undefined
+          project.design_doc = null
           return await this.saveProject(project)
         }
       }
