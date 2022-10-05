@@ -14,6 +14,14 @@
         >
           <a class="is-size-3">My Teams</a>
         </li>
+        <li v-if="activeTab === eTabs.MY_TEAMS">
+          <router-link 
+            :to="{ name: 'teams-new'}"
+            class="button is-info is-outlined is-small"
+          >
+          Create a new team
+          </router-link>
+        </li>
       </ul>
     </div>
     <team-list v-if="activeList" :list="activeList" class="p-4" />

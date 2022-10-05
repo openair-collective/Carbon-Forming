@@ -131,12 +131,15 @@ export default defineComponent({
   },
   beforeRouteEnter(to, from, next) {
     next(vm => {
-      (vm as any).backButtonPath = from.path
-      let label = "Back to Teams"
+      let parent_path = '/teams'
+      let label = 'Back to Teams'
       if (from.path === '/my-teams') {
+        parent_path = from.path
         label = "Back to My Teams"
       }
-      (vm as any).backButtonLabel = label
+      let that = (vm as any)
+      that.backButtonPath = parent_path
+      that.backButtonLabel = label
     })
   },
   beforeRouteUpdate(to) {

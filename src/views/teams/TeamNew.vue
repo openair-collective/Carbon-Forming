@@ -4,8 +4,8 @@
       <nav class="breadcrumb" aria-label="breadcrumbs">
       <ul>
         <li>
-          <router-link :to="{ name: 'teams'}">
-            &lt; Back to teams
+          <router-link :to="{ name: 'my-teams'}">
+            &lt; Back to My Teams
           </router-link>
         </li>
       </ul>
