@@ -16,8 +16,12 @@ import {
   writeBatch,
   connectFirestoreEmulator,
   deleteField,
-  deleteDoc
+  deleteDoc,
+  startAfter,
+  orderBy,
+  limit
 } from "firebase/firestore" 
+import { PAGING_SIZE } from "@/consts"
 
 const MODULE_ID = 'services/firestore'
 const KEY_USERS = 'users'
@@ -91,7 +95,11 @@ class FirestoreService {
 
   async getUserTeams(user:UserProfile):Promise<Team[]> {
     let result = [] as Team[]
-    const q = query(collection(db, KEY_TEAMS), where(`members.${user.id}`, '==', true))
+    const q = query(
+      collection(db, KEY_TEAMS), 
+      where(`members.${user.id}`, '==', true), 
+      orderBy('name')
+    )
     const snap = await getDocs(q)
     if (snap.size) {
       result = snap.docs.map(team => {
@@ -166,10 +174,25 @@ class FirestoreService {
     return Object.assign(data, { id: team.id }) as Team
   }
 
-  async getTeams():Promise<Team[]> {
+  async getTeams(after?:Team):Promise<Team[]> {
     let result = [] as Team[]
     const teamsRef = collection(db, KEY_TEAMS)
-    const docsSnap = await getDocs(teamsRef)
+
+    let q
+    if (after) {
+      q = query(teamsRef, 
+        orderBy("name"),
+        startAfter(after.name),
+        limit(PAGING_SIZE)
+      )
+    }
+    else {
+      q = query(teamsRef,
+        orderBy("name"),
+        limit(PAGING_SIZE)
+      )
+    }
+    const docsSnap = await getDocs(q)
     if (docsSnap.size) {
       result = docsSnap.docs.map(team => {
         return Object.assign({ id: team.id }, team.data()) as Team
@@ -270,25 +293,30 @@ class FirestoreService {
     return Object.assign({ id: comp.id }, comp.data()) as Competition
   }
 
-  async getCompetitions():Promise<Competition[]> {
+  async getCompetitions(after?:Competition):Promise<Competition[]> {
     let result = [] as Competition[]
     const competitionsRef = collection(db, KEY_COMPETITIONS)
-    const docsSnap = await getDocs(competitionsRef)
-    if (docsSnap.size) {
-      result = docsSnap.docs.map(comp => Object.assign({ id: comp.id }, comp.data()) as Competition)
+    let q
+    if (after) {
+      q = query(competitionsRef, 
+        orderBy("name"),
+        orderBy("start_date", "desc"),
+        startAfter(after.name, after.start_date),
+        limit(PAGING_SIZE)
+      )
     }
-    return result
-  }
-
-  async getCompetitionsById(comp_ids:string[]):Promise<Competition[]> {
-    let result = [] as Competition[]
-    let itemRefs = comp_ids.map(id => {
-      let ref = doc(db, KEY_COMPETITIONS, id)
-      return getDoc(ref)
-    })
-    let docs = await Promise.all(itemRefs)
-    if (docs.length) {
-      result = docs.map(comp => Object.assign({ id: comp.id }, comp.data()) as Competition)
+    else {
+      q = query(competitionsRef,
+        orderBy("name"),
+        orderBy("start_date", "desc"),
+        limit(PAGING_SIZE)
+      )
+    }
+    const docsSnap = await getDocs(q)
+    if (docsSnap.size) {
+      result = docsSnap.docs.map(comp => {
+        return Object.assign({ id: comp.id }, comp.data()) as Competition
+      })
     }
     return result
   }

@@ -21,8 +21,10 @@ export declare interface Guild {
   }
 }
 
+// persisted
+
 export declare interface Team {
-  id?:string
+  id:string
   name:string
   location:string
   about:string
@@ -30,22 +32,22 @@ export declare interface Team {
   members: { [key:UserProfile['id']]: TeamRole }
   discord_usernames: string[]
   recruiting: boolean
-  projects: Project[] | null
+  projects?: Project[]
 }
 
 export declare interface Project {
-  id?: string
+  id: string
   name:string
   design_doc:FileUpload | null
   design_doc_url:string
   terms:boolean
   materials:Material[]
-  team:Team | null
-  competition:Competition | null
+  team:Team
+  competition?:Competition
 }
 
 export declare interface Competition {
-  id?: string
+  id: string
   name:string
   description:string
   rules:string
@@ -56,10 +58,12 @@ export declare interface Competition {
     second:string
     third:string
   }
-  start_date:Date | null
-  end_date:Date | null
-  projects: Project[] | null
+  start_date:Timestamp | null
+  end_date:Timestamp | null
+  projects?: Project[]
 }
+
+// end persisted
 
 export declare interface Material {
   name: string
@@ -80,4 +84,9 @@ export declare interface FileUpload {
   filename:string
   url:string
   path:string
+}
+
+export declare interface Timestamp {
+  nanoseconds:number
+  seconds:number
 }

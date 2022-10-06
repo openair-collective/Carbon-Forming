@@ -10,11 +10,19 @@
         })" 
         class="box box--team mb-4 mr-4 is-flex-grow-1"
       >
-        <figure 
-          class="image is-pulled-left mr-4"
-          :style="{backgroundImage: `url(${getTeamAvatar(team)})`}  "
-        >
-        </figure>
+        <div class="is-pulled-left mr-4">
+          <figure 
+            class="image mb-2"
+            :style="{backgroundImage: `url(${getTeamAvatar(team)})`}  "
+          >
+          </figure>
+          <div 
+            v-if="isCurrentUserTeamMember(team)" 
+            class="tag is-normal is-info is-light"
+          >
+            Your Team
+          </div>
+        </div>
         <router-link :to="{ 
           name: 'team-show', 
           params: { id: team.id }
@@ -33,7 +41,8 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { Team } from '@/types'
-
+import { mapStores } from 'pinia'
+import { useUserStore } from '@/store/user'
 import { TEAM_AVATAR_PLACEHOLDER } from '@/consts'
 
 export default defineComponent({
@@ -43,11 +52,23 @@ export default defineComponent({
       required: true
     }
   },
+  computed: {
+    ...mapStores(useUserStore)
+  },
   methods: {
     getTeamAvatar(team:Team):string {
       let result = TEAM_AVATAR_PLACEHOLDER
       if (team.avatar) {
         result = team.avatar.url
+      }
+      return result
+    },
+    isCurrentUserTeamMember(team:Team):boolean {
+      let result = false
+      if(this.userStore.profile) {
+        if (team.members && team.members[this.userStore.profile.id]) {
+          result = true
+        }
       }
       return result
     }
@@ -58,6 +79,7 @@ export default defineComponent({
 <style scoped>
   .box--team {
     cursor:pointer;
+    width: 400px;
     max-width: 400px;
   }
   .image {

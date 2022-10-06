@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { Competition, Project } from '@/types'
 import firestore from '@/services/firestore'
+import { PAGING_SIZE } from '@/consts'
 import log from '@/services/logger'
 
 const MODULE_ID = 'store/competition'
@@ -14,14 +15,30 @@ export const useCompetitionsStore = defineStore('competitions', {
     list: undefined
   }),
   actions: {
-    async fetchList():Promise<void> {
+    async fetch(after?:Competition):Promise<Competition[]|undefined> {
       try {
-        const response = await firestore.getCompetitions()
-        this.list = response as Competition[]
+        let list_patch = this.list?.slice() || [] as Competition[]
+        let result = [] as Competition[]
+        let after_idx = after ? list_patch.indexOf(after) : 0
+        // looking for range that is after_cursor + PAGE_LENGTH
+        if (after_idx !== -1) {
+          let start = after_idx + 1
+          let end = start + PAGING_SIZE
+          let sliced = list_patch.slice(start, end)
+          if (sliced && sliced.length) {
+            result = sliced
+          }
+        }
+        if (!result.length) {
+          result = await firestore.getCompetitions(after)
+          list_patch.splice(after_idx + 1, 0, ...result)
+          this.list = list_patch
+        }
+        return result
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
-        log.error(MODULE_ID, '#fetchList > ' + message)
+        log.error(MODULE_ID, '#fetch > ' + message)
       }
     },
     async fetchCompetitionProjects(comp:Competition):Promise<Project[]|undefined> {
@@ -37,52 +54,46 @@ export const useCompetitionsStore = defineStore('competitions', {
     },
     async saveCompetition(comp:Competition):Promise<Competition|undefined> {
       try {
-         const response = await firestore.saveCompetition(comp)
-         comp = { ...comp, ...response }
-         await this.fetchList()
-         return comp
+        const insert = !comp.id
+        const response = await firestore.saveCompetition(comp)
+        comp = { ...comp, ...response }
+        if (insert) {
+          let list_patch = this.list?.slice() || []
+          const comp_before = list_patch.find(c => {
+            const isBeforeName = comp.name > c.name
+            let isBeforeStart = false
+            if (comp.start_date && c.start_date) {
+              isBeforeStart = comp.start_date.seconds < c.start_date.seconds
+            }
+            return isBeforeName && isBeforeStart
+          })
+          if (comp_before) {
+            let idx = list_patch.indexOf(comp_before)
+            list_patch.splice(idx, 0, comp)
+          }
+          else {
+            list_patch.push(comp)
+          }
+          this.list = list_patch
+        }
+        return comp
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
         log.error(MODULE_ID, '#saveCompetition > ' + message)
       }
     },
-    async getCompetitions(comp_ids?:string[]):Promise<Competition[]|undefined> {
+    async getCompetitionById(comp_id:string):Promise<Competition|undefined> {
       try {
-        let result = [] as Competition[]
-        if (this.list && comp_ids) {
-            // see if we already have them cached locally
-            this.list.forEach(comp => {
-              if (comp.id && comp_ids.indexOf(comp.id) !== -1) {
-                result.push(comp)
-              }
-            })
-            // fetch comps we don't have cached
-            if (result.length !== comp_ids.length) {
-              const comps = result.filter(c => c.id && comp_ids.indexOf(c.id) == -1)
-              const filtered = comps.map(c => c.id) as string[]
-              if (filtered && filtered.length) {
-                const response = await firestore.getCompetitionsById(filtered)
-                result = result.concat(response)
-              }
-            }
-        }
-        else if (comp_ids) {
-          const response = await firestore.getCompetitionsById(comp_ids)
-          result = response
-          if (!this.list) {
-            this.list = response
-          }
-        }
-        else {
-          await this.fetchList()
-          result = this.list || []
+        let result = this.list ? this.list.find(c => c.id === comp_id) : null
+        if(!result) {
+          result = await firestore.getCompetition(comp_id)
         }
         return result
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
-        log.error(MODULE_ID, '#getCompetitionsByIds > ' + message)
+        log.error(MODULE_ID, '#getCompetitionById > ' + message)
       }
     }
   }

@@ -122,7 +122,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Competition } from '@/types'
+import { Competition, Timestamp } from '@/types'
 import { mapStores } from 'pinia'
 import { useCompetitionsStore } from '@/store/competitions'
 import { fsTimestampToDate } from '@/utils/date'
@@ -136,13 +136,14 @@ function dateForInput(stamp:any):string {
   return date.toISOString().split('T')[0]
 }
 
-function dateForSave(iso:string):Date {
+function dateForSave(iso:string):Timestamp {
   let date = new Date(iso)
   date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
-  return date
+  return { seconds: date.getUTCSeconds(), nanoseconds: 0 }
 }
 
 const DEFAULT_COMP = {
+  id: '',
   name: '',
   description: '',
   rules: '',
@@ -152,8 +153,11 @@ const DEFAULT_COMP = {
     first: '',
     second: '',
     third: ''
-  }
-}
+  },
+  start_date: null,
+  end_date: null,
+  projects: []
+} as Competition
 
 export default defineComponent({
   components: { Notification },

@@ -45,13 +45,13 @@ import Notification from '@/components/Notification.vue'
 import log from '@/services/logger'
 const MODULE_ID = 'components/project/ProjectForm'
 
-function initMaterial():Material {
-  return {
-    name: '',
-    cost: 0.00,
-    quantity: 1,
-    link: ''
-  }
+const DEFAULT_PROJECT = {
+  id: '',
+  name: '',
+  terms: false,
+  design_doc: null,
+  design_doc_url: '',
+  materials: []
 }
 
 export default defineComponent({
@@ -63,13 +63,7 @@ export default defineComponent({
     },
     project: {
       type: Object as () => Project,
-      default: {
-        name: '',
-        terms: false,
-        design_doc: null as FileUpload | null,
-        design_doc_url: '',
-        materials: [] as Material[]
-      }
+      default: DEFAULT_PROJECT
     }
   },
   data() {
@@ -85,11 +79,6 @@ export default defineComponent({
     ...mapStores(useTeamsStore, useProjectsStore),
     disableSubmit():boolean {
       return !this.clone.name || !this.clone.terms
-    }
-  },
-  created() {
-    if (!this.clone.materials || !this.clone.materials.length) {
-      this.clone.materials = [initMaterial()]
     }
   },
   mounted() {

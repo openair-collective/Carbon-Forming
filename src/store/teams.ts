@@ -4,26 +4,43 @@ import firestore from '@/services/firestore'
 import storage from '@/services/storage'
 import { useProjectsStore } from '@/store/projects'
 import log from '@/services/logger'
-import { TeamRole } from '@/enums'
+import { PAGING_SIZE } from '@/consts'
 
 const MODULE_ID = 'store/teams'
 
 interface State {
-  list: Team[] | null
+  list: Team[] | undefined
 }
 
 export const useTeamsStore = defineStore('teams', {
   state: (): State => ({
-    list: null
+    list: undefined
   }),
   actions: {
-    async fetchList():Promise<void> {
-      try { 
-        this.list = await firestore.getTeams()
+    async fetch(after?:Team):Promise<Team[]|undefined> {
+      try {
+        let list_patch = this.list || [] as Team[]
+        let result = [] as Team[]
+        let after_idx = after ? list_patch.indexOf(after) : 0
+        // looking for range that is after_cursor + PAGE_LENGTH
+        if (after_idx !== -1) {
+          let start = after_idx + 1
+          let end = start + PAGING_SIZE
+          let sliced = list_patch.slice(start, end)
+          if (sliced && sliced.length) {
+            result = sliced
+          }
+        }
+        if (!result.length) {
+          result = await firestore.getTeams(after)
+          list_patch.splice(after_idx + 1, 0, ...result)
+          this.list = list_patch
+        }
+        return result
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
-        log.error(MODULE_ID, '#fetchList > ' + message)
+        log.error(MODULE_ID, '#fetch > ' + message)
       }
     },
     async getTeamById(team_id:string):Promise<Team|undefined> {
@@ -31,8 +48,6 @@ export const useTeamsStore = defineStore('teams', {
         let team = this.list && this.list.find(t => t.id === team_id)
         if (!team) {
           let response = await firestore.getTeam(team_id)
-          this.list = this.list || []
-          this.list.push(response)
           team = response
         }
         return team
@@ -44,10 +59,25 @@ export const useTeamsStore = defineStore('teams', {
     },
     async saveTeam(team:Team, avatar?:File):Promise<Team|undefined> {
       try {
+        let insert = !team.id
         const response = await firestore.saveTeam(team) as Team
         team = { ...team, ...response }
         if (avatar) {
           await this.saveTeamAvatar(team, avatar)
+        }
+        if (insert) {
+          let list_patch = this.list?.slice() || []
+          const team_before = list_patch.find(t => {
+            return team.name > t.name
+          })
+          if (team_before) {
+            let idx = list_patch.indexOf(team_before)
+            list_patch.splice(idx, 0, team)
+          }
+          else {
+            list_patch.push(team)
+          }
+          this.list = list_patch
         }
         return team
       }
@@ -59,7 +89,7 @@ export const useTeamsStore = defineStore('teams', {
     async deleteTeam(team:Team):Promise<void> {
       try {
         await firestore.deleteTeam(team)
-        await this.fetchList()
+        this.list = this.list?.filter(t => t.id !== team.id)
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)

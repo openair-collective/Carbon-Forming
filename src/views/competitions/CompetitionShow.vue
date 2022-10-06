@@ -115,6 +115,9 @@
         </div>
     </article>
   </section>
+  <div v-else-if="error" class="notification is-error">>
+    {{ error }}
+  </div>
   <loading v-else />
 </template>
 
@@ -130,6 +133,7 @@ import { dayMonth, dayMonthYear, fsTimestampToDate } from '@/utils/date'
 import Loading from '@/components/Loading.vue'
 import CountdownTimer from '@/components/CountdownTimer.vue'
 import ProjectList from '@/components/project/ProjectList.vue'
+import { ERROR_PAGE_LOAD } from '@/consts'
 import log from '@/services/logger'
 
 const MODULE_ID ='views/competition'
@@ -147,14 +151,14 @@ export default defineComponent({
       kDayMonth: dayMonth,
       kDayMonthYear: dayMonthYear,
       kfsTimestampToDate: fsTimestampToDate,
-      competition: undefined as Competition|undefined,
+      competition: null as Competition|null,
       activeTab: TABS.DETAILS,
-      projects: [] as Project[]
+      projects: [] as Project[],
+      error: ''
     }
   },
   computed: { 
     ...mapStores(useCompetitionsStore, useUserStore, useModalStore),
-    ...mapState(useCompetitionsStore, ['list']),
     ...mapState(useUserStore, ['guild']),
     canEdit():boolean {
       let result = false
@@ -166,17 +170,22 @@ export default defineComponent({
   },
   async created() {
     const id = this.$route.params.id as string
-    if (!this.list || !this.list.length) {
-      this.competitionsStore.fetchList()
-        .then(()=> this.setCompetitonByID(id))
-    }
-    else {
-      this.setCompetitonByID(id)
-    }
+    this.setCompetitonByID(id)
   },
   methods: {
     setCompetitonByID(id:string) {
-      this.competition = this.list &&  this.list.find(t => t.id === id)
+      this.competitionsStore.getCompetitionById(id)
+        .then(result => {
+          if (result) {
+            this.competition = result
+          }
+          else {
+            this.error = ERROR_PAGE_LOAD
+          }
+        })
+        .catch(error => {
+          this.error = ERROR_PAGE_LOAD
+        })
     },
     setProjects() {
       if (this.competition && !this.competition.projects) {
