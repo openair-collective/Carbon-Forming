@@ -9,3 +9,7 @@ export const FIREBASE_CONFIG = {
 
 export const DISCORD_ADMIN_ID:number = import.meta.env.VITE_DISCORD_ADMIN_ID
 export const TEAM_AVATAR_PLACEHOLDER:string = 'https://bulma.io/images/placeholders/128x128.png'
+
+export const PAGING_SIZE:number = 10
+
+export const ERROR_PAGE_LOAD:string = "We've hit an error. Please try a page refresh."

@@ -25,13 +25,27 @@
       </ul>
     </div>
     <team-list v-if="activeList" :list="activeList" class="p-4" />
-    <loading v-else />
+    <loading v-if="loading" />
+    <div
+      v-if="activeTab === eTabs.TEAMS"
+      class="has-text-centered mt-4"
+    >
+      <button
+        v-if="paginate && !loading"
+        @click="fetchMore"
+        class="button is-primary"
+      >
+        Show More
+      </button>
+      <div v-else-if="!paginate" class="tag is-medium">You’ve reached the end of the list</div>
+    </div>
   </section>
 </template>
 
 <script lang="ts">
 import { defineComponent, watch } from 'vue'
 import { mapStores } from 'pinia'
+import { PAGING_SIZE } from '@/consts'
 import { Team } from '@/types'
 import { useUserStore } from '@/store/user'
 import { useTeamsStore } from '@/store/teams'
@@ -51,7 +65,9 @@ export default defineComponent({
   data() {
     return {
       eTabs: TABS,
-      activeTab: TABS.TEAMS
+      activeTab: TABS.TEAMS,
+      paginate: false,
+      loading: false
     }
   },
   computed: {
@@ -68,9 +84,7 @@ export default defineComponent({
     }
   },
   created() {
-    if (!this.teamsStore.list) {
-      this.teamsStore.fetchList()
-    }
+    this.fetchMore()
     if (!this.userStore.teams) {
       this.userStore.fetchTeams()
     }
@@ -78,6 +92,13 @@ export default defineComponent({
     this.onTabClick(tab)
   },
   methods: {
+    fetchMore() {
+      const after = this.teamsStore.list ? this.teamsStore.list[this.teamsStore.list.length -1] : undefined
+      this.teamsStore.fetch(after)
+        .then(result => {
+          this.paginate = !!result && result.length === PAGING_SIZE
+        })
+    },
     onCreateNewTeam() {
       this.$router.push({ name: 'teams-new'})
     },

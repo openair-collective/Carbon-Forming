@@ -133,6 +133,7 @@ const AVATAR_MAX_FILE_SIZE = 200 * 1000 // 200kb
 const ABOUT_PLACEHOLDER = 'Tell us a bit about your team, what your areas of speciality are and what sort of projects you focus on.'
 
 const DEFAULT_TEAM = {
+  id: '',
   name: '', 
   location: '',
   about: '',

@@ -50,14 +50,13 @@
         </ul>
       </div>
     </header>
-    <article 
-      v-if="team"
-      class="article has-background-white-bis p-5 my-0 is-flex-grow-1"
-    >
+    <article class="article has-background-white-bis p-5 my-0 is-flex-grow-1">
       <router-view :team="team" />
     </article>
-    <loading v-else />
   </section>
+  <div v-else-if="error" class="notification is-error">>
+    {{ error }}
+  </div>
   <loading v-else />
 </template>
 
@@ -70,7 +69,7 @@ import { useTeamsStore } from '@/store/teams'
 import { Team } from '@/types'
 import { canEditTeam } from '@/helpers/authHelper'
 import Loading from '@/components/Loading.vue'
-import { TEAM_AVATAR_PLACEHOLDER } from '@/consts'
+import { TEAM_AVATAR_PLACEHOLDER, ERROR_PAGE_LOAD } from '@/consts'
 import log from '@/services/logger'
 
 const MODULE_ID ='components/teams/TeamShow'
@@ -95,7 +94,8 @@ export default defineComponent({
       team: null as Team | null,
       activeTab: TABS.DETAILS,
       backButtonLabel: '',
-      backButtonPath: ''
+      backButtonPath: '',
+      error: ''
     }
   },
   computed: {
@@ -149,7 +149,17 @@ export default defineComponent({
   methods: {
     setTeamByID(id:string) {
       this.teamsStore.getTeamById(id)
-        .then(result => this.team = result || null)
+        .then(result => {
+          if (result) {
+            this.team = result
+          }
+          else {
+              this.error = ERROR_PAGE_LOAD
+            }
+        })
+        .catch(error => {
+          this.error = ERROR_PAGE_LOAD
+        })
     },
     onTabClick(tab:number) {
       this.activeTab = tab
