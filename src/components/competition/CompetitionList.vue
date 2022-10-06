@@ -18,7 +18,11 @@
           Time TBD
         </p>
       </div>
-      <countdown-timer v-if="comp.start_date" :date="kfsTimestampToDate(comp.start_date)" />
+      <countdown-timer 
+        v-if="comp.start_date" 
+        :start_date="kfsTimestampToDate(comp.start_date)"
+        :end_date="kfsTimestampToDate(comp.end_date)"
+      />
     </div>
   </div>
 </template>

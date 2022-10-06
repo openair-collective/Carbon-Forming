@@ -46,7 +46,10 @@
             <p v-else>
               Time TBD
             </p>
-            <countdown-timer :date="kfsTimestampToDate(competition.start_date)" />
+            <countdown-timer 
+              :start_date="kfsTimestampToDate(competition.start_date)"
+              :end_date="kfsTimestampToDate(competition.end_date)"
+            />
           </div>
         </div>
       </div>

@@ -298,17 +298,17 @@ class FirestoreService {
     const competitionsRef = collection(db, KEY_COMPETITIONS)
     let q
     if (after) {
-      q = query(competitionsRef, 
+      q = query(competitionsRef,
+        orderBy("end_date"),
         orderBy("name"),
-        orderBy("start_date", "desc"),
-        startAfter(after.name, after.start_date),
+        startAfter(after.end_date, after.name),
         limit(PAGING_SIZE)
       )
     }
     else {
       q = query(competitionsRef,
+        orderBy("end_date"),
         orderBy("name"),
-        orderBy("start_date", "desc"),
         limit(PAGING_SIZE)
       )
     }

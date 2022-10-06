@@ -138,8 +138,8 @@ function dateForInput(stamp:any):string {
 
 function dateForSave(iso:string):Timestamp {
   let date = new Date(iso)
-  date.setMinutes(date.getMinutes() + date.getTimezoneOffset());
-  return { seconds: date.getUTCSeconds(), nanoseconds: 0 }
+  date.setMinutes(date.getMinutes() + date.getTimezoneOffset())
+  return { seconds: date.getTime() / 1000, nanoseconds: 0 }
 }
 
 const DEFAULT_COMP = {
@@ -191,6 +191,7 @@ export default defineComponent({
         this.clone.start_date = dateForSave(this.startDate)
         this.clone.end_date = dateForSave(this.endDate)
       }
+      debugger
       this.competitionsStore.saveCompetition(this.clone)
         .then(result => {
           Object.assign(this.competition, result)
