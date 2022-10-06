@@ -107,7 +107,6 @@ export default defineComponent({
       let distance = 0
       let start_time = this.start_date.getTime()
       let end_time = this.end_date.getTime()
-      console.info(now > end_time)
       if (now > end_time) {
         this.prompt = ENDED_TEXT
         this.ended = true
