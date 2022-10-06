@@ -13,7 +13,56 @@
       </h1>
     </header>
     <article class="article p-4 is-flex-grow-1 has-background-white-bis">
-      <competition-list v-if="list" :list="list" />
+      <div class="is-flex is-flex-direction-column">
+        <div 
+          v-for="comp in currentCompetitions"
+          :key="comp.id"
+          @click="$router.push({ name: 'comp-show', params: { id: comp.id } })" 
+          class="box p-6"
+        >
+          <div class="is-flex is-flex-direction-row is-justify-content-space-between">
+            <div>
+              <router-link :to="{ name: 'comp-show', params: { id: comp.id } }">
+                <h2 class="title is-3">{{ comp.name }}</h2>
+              </router-link>
+              <h3 class="subtitle">A sentence about this competition</h3>
+              <button class="button is-primary">Enter this competition</button>
+            </div>
+            <div>
+              <p v-if="comp.start_date && comp.end_date" class="is-size-5" >
+                {{ kDayMonth(kfsTimestampToDate(comp.start_date)) }} - {{ kDayMonthYear(kfsTimestampToDate(comp.end_date)) }}
+              </p>
+              <countdown-timer 
+                :start_date="kfsTimestampToDate(comp.start_date)"
+                :end_date="kfsTimestampToDate(comp.end_date)" 
+              />
+            </div>
+          </div>
+        </div>
+        <div class="my-4 px-4">Past Competitions</div>
+        <div 
+          v-for="comp in pastCompetitions"
+          :key="comp.id"
+          @click="$router.push({ name: 'comp-show', params: { id: comp.id } })" 
+          class="box p-6"
+        >
+          <div class="is-flex is-flex-direction-row is-justify-content-space-between">
+            <div>
+              <router-link :to="{ name: 'comp-show', params: { id: comp.id } }">
+                <h2 class="title is-3">{{ comp.name }}</h2>
+              </router-link>
+              <h3 class="subtitle">A sentence about this competition</h3>
+              <button class="button is-primary">Enter this competition</button>
+            </div>
+            <div>
+              <p v-if="comp.start_date && comp.end_date" class="is-size-5" >
+                {{ kDayMonth(kfsTimestampToDate(comp.start_date)) }} - {{ kDayMonthYear(kfsTimestampToDate(comp.end_date)) }}
+              </p>
+              <p class="is-size-3">Competition finished</p>
+            </div>
+          </div>
+        </div>
+      </div>
       <loading v-if="loading" />
       <div class="has-text-centered mt-4">
         <button
@@ -35,16 +84,21 @@ import { mapState, mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
 import { useCompetitionsStore } from '@/store/competitions'
 import { canCreateCompetition } from '@/helpers/authHelper'
+import { fsTimestampToDate, dayMonth, dayMonthYear } from '@/utils/date'
 import Loading from '@/components/Loading.vue'
-import CompetitionList from '@/components/competition/CompetitionList.vue'
+import CountdownTimer from '@/components/CountdownTimer.vue'
 import { PAGING_SIZE } from '@/consts'
+import { Competition } from '@/types'
 
 export default defineComponent({
-  components: { Loading, CompetitionList },
+  components: { Loading, CountdownTimer },
   data() {
     return {
       paginate: false,
-      loading: false
+      loading: false,
+      kDayMonth: dayMonth,
+      kDayMonthYear: dayMonthYear,
+      kfsTimestampToDate: fsTimestampToDate
     }
   },
   computed: {
@@ -54,7 +108,23 @@ export default defineComponent({
         canCreate(store) {
           return store.guild && canCreateCompetition(store.guild)
         }
-      })
+      }),
+    currentCompetitions():Competition[] {
+      let result = [] as Competition[]
+      if (this.list) {
+        let now = new Date().getTime()
+        result = this.list.filter(c => c.end_date && fsTimestampToDate(c.end_date).getTime() > now)  
+      }
+      return result
+    },
+    pastCompetitions() {
+      let result = [] as Competition[]
+      if (this.list) {
+        let now = new Date().getTime()
+        result = this.list.filter(c => c.end_date && fsTimestampToDate(c.end_date).getTime() < now)  
+      }
+      return result
+    }
   },
   created() {
     this.fetchMore()

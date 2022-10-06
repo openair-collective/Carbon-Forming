@@ -1,8 +1,8 @@
 <template>
   <div class="timer">
-    <div class="mb-1">Starting in:</div>
+    <div class="mb-1">{{ prompt }}</div>
     <div
-      :class="{ 'disabled' : !date }" 
+      :class="{ 'disabled' : !start_date || !end_date || ended }" 
       class="clock"
       >
       <div class="segment">
@@ -39,9 +39,17 @@ const DAY_MILLIS = 1000 * 60 * 60 * 24
 const HOUR_MILLIS = 1000 * 60 * 60
 const MINS_MILLIS = 1000 * 60
 
+const ENDED_TEXT = "Ended"
+const START_TEXT = 'Starting in:'
+const END_TEXT = 'Ends in:'
+
 export default defineComponent({
   props: {
-    date: {
+    start_date: {
+      type: Date,
+      required: true
+    },
+    end_date: {
       type: Date,
       required: true
     }
@@ -51,7 +59,9 @@ export default defineComponent({
       days: 0,
       hours: 0,
       minutes: 0,
-      interval: null as number|null
+      interval: null as number|null,
+      prompt: '',
+      ended: false
     }
   },
   computed: {
@@ -94,12 +104,28 @@ export default defineComponent({
     },
     tick() {
       let now = new Date().getTime()
-      let distance = this.date.getTime() - now;
+      let distance = 0
+      let start_time = this.start_date.getTime()
+      let end_time = this.end_date.getTime()
+      console.info(now > end_time)
+      if (now > end_time) {
+        this.prompt = ENDED_TEXT
+        this.ended = true
+        distance = 0
+      }
+      else if (start_time > now) {
+        this.prompt = START_TEXT
+        distance = start_time - now
+      }
+      else { 
+        this.prompt = END_TEXT
+        distance = end_time - now
+      }
       this.days = Math.floor(distance / DAY_MILLIS)
       this.hours = Math.floor((distance % DAY_MILLIS) / HOUR_MILLIS)
       this.minutes = Math.floor((distance % HOUR_MILLIS) / MINS_MILLIS)
 
-      if (distance < 0) {
+      if (distance <= 0) {
         this.endCountdown()
       }
     },
