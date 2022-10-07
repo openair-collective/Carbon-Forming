@@ -21,8 +21,14 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Team, Project, Material, FileUpload } from '@/types';
-import ProjectForm from '@/components/project/ProjectForm.vue';
+import { Team, Project } from '@/types'
+import { LogLevel } from '@/enums'
+import { ERROR_AUTH } from '@/consts'
+import ProjectForm from '@/components/project/ProjectForm.vue'
+import { canEditTeamWithId } from '@/helpers/authHelper'
+import { mapStores} from 'pinia'
+import { useUserStore } from '@/store/user'
+import { useFlashStore } from '@/store/flash'
 
 export default defineComponent({
   components: { ProjectForm },
@@ -30,6 +36,18 @@ export default defineComponent({
     team: {
       type: Object as () => Team,
       required: true
+    }
+  },
+  computed: {
+    ...mapStores(useUserStore, useFlashStore)
+  },
+  created() {
+    const profile = this.userStore.profile
+    if (!profile || !canEditTeamWithId(profile, this.team.id)) {
+      this.$router.push({name: 'team-show', params: { id: this.team.id }})
+        .then(() => {
+          this.flashStore.$patch({ message: ERROR_AUTH, level: LogLevel.warning })
+        })
     }
   },
   methods: {

@@ -1,7 +1,7 @@
 <template>
   <nav-bar v-if="isAuthenticated" />
   <main class="main">
-    <router-view class="content" />
+    <router-view />
   </main>
 </template>
 
@@ -30,7 +30,7 @@ export default defineComponent({
   display: flex;
   flex-direction: row;
 }
-.content {
+.main > div {
   flex: 2;
   min-height: calc(100vh - 56px);
 }

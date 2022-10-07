@@ -14,61 +14,25 @@
     </header>
     <article class="article p-4 is-flex-grow-1 has-background-white-bis">
       <div class="is-flex is-flex-direction-column">
-        <div 
-          v-for="comp in currentCompetitions"
-          :key="comp.id"
-          @click="$router.push({ name: 'comp-show', params: { id: comp.id } })" 
-          class="box p-6"
-        >
-          <div class="is-flex is-flex-direction-row is-justify-content-space-between">
-            <div>
-              <router-link :to="{ name: 'comp-show', params: { id: comp.id } }">
-                <h2 class="title is-3">{{ comp.name }}</h2>
-              </router-link>
-              <h3 class="subtitle">A sentence about this competition</h3>
-              <button class="button is-primary">Enter this competition</button>
-            </div>
-            <div>
-              <p v-if="comp.start_date && comp.end_date" class="is-size-5" >
-                {{ kDayMonth(kfsTimestampToDate(comp.start_date)) }} - {{ kDayMonthYear(kfsTimestampToDate(comp.end_date)) }}
-              </p>
-              <countdown-timer 
-                :start_date="kfsTimestampToDate(comp.start_date)"
-                :end_date="kfsTimestampToDate(comp.end_date)" 
-              />
-            </div>
-          </div>
-        </div>
+        <competition-list 
+            :list="currentCompetitions"
+            :listType="eListType.column"
+            :showEnterButton="true"
+          />
         <div class="my-4 px-4">Past Competitions</div>
-        <div 
-          v-for="comp in pastCompetitions"
-          :key="comp.id"
-          @click="$router.push({ name: 'comp-show', params: { id: comp.id } })" 
-          class="box p-6"
-        >
-          <div class="is-flex is-flex-direction-row is-justify-content-space-between">
-            <div>
-              <router-link :to="{ name: 'comp-show', params: { id: comp.id } }">
-                <h2 class="title is-3">{{ comp.name }}</h2>
-              </router-link>
-              <h3 class="subtitle">A sentence about this competition</h3>
-              <button class="button is-primary">Enter this competition</button>
-            </div>
-            <div>
-              <p v-if="comp.start_date && comp.end_date" class="is-size-5" >
-                {{ kDayMonth(kfsTimestampToDate(comp.start_date)) }} - {{ kDayMonthYear(kfsTimestampToDate(comp.end_date)) }}
-              </p>
-              <p class="is-size-3">Competition finished</p>
-            </div>
-          </div>
-        </div>
+        <competition-list
+          :list="pastCompetitions"
+          :listType="eListType.column"
+        />
       </div>
-      <loading v-if="loading" />
+      <loading v-if="!currentCompetitions || !pastCompetitions" />
       <div class="has-text-centered mt-4">
         <button
-          v-if="paginate && !loading"
+          v-if="paginate"
           @click="fetchMore"
           class="button is-primary"
+          :class="{ 'is-loading': isLoading}"
+          :disabled="isLoading"
         >
           Show More
         </button>
@@ -86,16 +50,18 @@ import { useCompetitionsStore } from '@/store/competitions'
 import { canCreateCompetition } from '@/helpers/authHelper'
 import { fsTimestampToDate, dayMonth, dayMonthYear } from '@/utils/date'
 import Loading from '@/components/Loading.vue'
-import CountdownTimer from '@/components/CountdownTimer.vue'
+import CompetitionList from '@/components/competition/CompetitionList.vue'
 import { PAGING_SIZE } from '@/consts'
 import { Competition } from '@/types'
+import { ListType } from '@/enums'
 
 export default defineComponent({
-  components: { Loading, CountdownTimer },
+  components: { Loading, CompetitionList },
   data() {
     return {
-      paginate: false,
-      loading: false,
+      paginate: true,
+      isLoading: false,
+      eListType: ListType,
       kDayMonth: dayMonth,
       kDayMonthYear: dayMonthYear,
       kfsTimestampToDate: fsTimestampToDate
@@ -127,14 +93,23 @@ export default defineComponent({
     }
   },
   created() {
-    this.fetchMore()
+    if (!this.competitionsStore.list) {
+      this.fetchMore()
+    }
+    else if (this.competitionsStore.list.length < PAGING_SIZE) {
+      this.paginate = false
+    }
   },
   methods: {
     fetchMore() {
+      this.isLoading = true
       const after = this.list ? this.list[this.list.length -1] : undefined
       this.competitionsStore.fetch(after)
         .then(result => {
           this.paginate = !!result && result.length === PAGING_SIZE
+        })
+        .finally(()=>{
+          this.isLoading = false
         })
     }
   }

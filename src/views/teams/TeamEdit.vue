@@ -23,20 +23,21 @@
       />
     </article>
   </section>
-  <div v-else-if="error" class="notification is-error">>
-    {{ error }}
-  </div>
   <loading v-else />
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Team } from '@/types'
+import { LogLevel } from '@/enums'
 import Loading from '@/components/Loading.vue'
 import TeamForm from '@/components/team/TeamForm.vue'
 import { useTeamsStore } from '@/store/teams'
+import { useUserStore } from '@/store/user'
+import { useFlashStore } from '@/store/flash'
 import { mapStores } from 'pinia'
-import { ERROR_PAGE_LOAD } from '@/consts'
+import { ERROR_PAGE_LOAD, ERROR_AUTH } from '@/consts'
+import { canEditTeamWithId } from '@/helpers/authHelper'
 import log from '@/services/logger'
 
 const MODULE_ID = 'views/teams/TeamEdit'
@@ -45,12 +46,11 @@ export default defineComponent({
   components: { TeamForm, Loading },
   data() {
     return {
-      team: undefined as Team | undefined,
-      error: ''
+      team: undefined as Team | undefined
     }
   },
   computed: {
-    ...mapStores(useTeamsStore)
+    ...mapStores(useTeamsStore, useUserStore, useFlashStore)
   },
   created() {
     const id = this.$route.params.id as string
@@ -58,18 +58,27 @@ export default defineComponent({
   },
   methods: {
     setTeamByID(id:string) {
-      this.teamsStore.getTeamById(id)
+      const profile = this.userStore.profile
+      if (profile && canEditTeamWithId(profile, id)) {
+        this.teamsStore.getTeamById(id)
         .then(result => {
           if (result) {
             this.team = result
           }
           else {
-              this.error = ERROR_PAGE_LOAD
-            }
+            this.flashStore.$patch({ message: ERROR_PAGE_LOAD, level: LogLevel.error })
+          }
         })
         .catch(error => {
-          this.error = ERROR_PAGE_LOAD
+          this.flashStore.$patch({ message: ERROR_PAGE_LOAD, level: LogLevel.error })
         })
+      }
+      else {
+        this.$router.push({name: 'team-show', params: { id }})
+          .then(() => {
+            this.flashStore.$patch({ message: ERROR_AUTH, level: LogLevel.warning })
+          })
+      }
     },
     onCancel() {
       if (this.team){

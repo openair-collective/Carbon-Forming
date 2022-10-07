@@ -49,7 +49,4 @@ export default defineComponent({
 </script>
 
 <style scoped>
-  .box {
-    cursor:pointer;
-  }
 </style>

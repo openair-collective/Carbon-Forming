@@ -50,3 +50,7 @@
 .file-input[disabled] ~ .file-cta .file-label {
 	cursor: not-allowed;
 }
+
+.has-border-radius-0 {
+	border-radius: 0;
+}
