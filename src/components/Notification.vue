@@ -2,28 +2,36 @@
   <div
     class="notification"
     :class="{
-      'is-success': success,
-      'is-danger': error
+      'is-info': level === kLogLevel.info,
+      'is-success': level === kLogLevel.success,
+      'is-warning': level === kLogLevel.warning,
+      'is-danger': level === kLogLevel.error
     }"
   >
     <button class="delete" @click="remove"></button>
-    {{ error || success }}
+    {{ message }}
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, PropType } from 'vue'
+import { LogLevel } from '@/enums'
 
 export default defineComponent({
   name: "notification",
   props: {
-    success: { 
-      type: String,
+    message: {
+      type:String,
       default: ''
     },
-    error: {
-      type: String,
-      default: ''
+    level: {
+      type: Number as PropType<LogLevel>,
+      default: LogLevel.info
+    }
+  },
+  data() {
+    return {
+      kLogLevel: LogLevel
     }
   },
   methods: {
