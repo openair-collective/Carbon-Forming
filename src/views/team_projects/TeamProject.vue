@@ -48,11 +48,9 @@ export default defineComponent({
     let project_id = this.$route.params.project_id as string
     this.teamsStore.getTeamProjectById(this.team, project_id)
       .then(result => {
-        console.info(result)
         this.project = result
       })
       .catch(error => {
-        console.info(error)
       })
   }
 })

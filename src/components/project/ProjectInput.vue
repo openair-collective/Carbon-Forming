@@ -145,7 +145,6 @@ import { defineComponent } from 'vue'
 import { Project, Material, FileUpload } from '@/types'
 import { mapStores } from 'pinia'
 import { useProjectsStore } from '@/store/projects'
-import Notification from '@/components/Notification.vue'
 import log from '@/services/logger'
 
 const MODULE_ID = 'components/project/ProjectInput'
@@ -161,7 +160,6 @@ function initMaterial():Material {
 }
 
 export default defineComponent({
-  components: { Notification },
   props: {
     project: {
       type: Object as () => Project,

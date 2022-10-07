@@ -13,14 +13,8 @@
       <h1 class="title is-3">Edit Competition</h1>
     </header>
     <article>
-      <div 
-        v-if="error"
-        class="notification is-error">
-      >
-      {{ error }}
-      </div>
       <competition-form
-        v-else-if="competition"
+        v-if="competition"
         :competition="competition"
         @cancel="onCancel"
       />
@@ -32,11 +26,15 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Competition } from '@/types'
+import { LogLevel } from '@/enums'
 import CompetitionForm from '@/components/competition/CompetitionForm.vue'
 import Loading from '@/components/Loading.vue'
 import { mapState, mapStores } from 'pinia'
 import { useCompetitionsStore } from '@/store/competitions'
-import { ERROR_PAGE_LOAD } from '@/consts'
+import { useUserStore } from '@/store/user'
+import { useFlashStore } from '@/store/flash'
+import { ERROR_PAGE_LOAD, ERROR_AUTH } from '@/consts'
+import { canEditCompetitions } from '@/helpers/authHelper'
 import log from '@/services/logger'
 
 const MODULE_ID = 'views/CompetitionNew'
@@ -46,11 +44,10 @@ export default defineComponent({
   data() {
     return {
       competition: undefined as Competition | undefined,
-      error: ''
     }
   },
   computed: { 
-    ...mapStores(useCompetitionsStore),
+    ...mapStores(useCompetitionsStore, useUserStore, useFlashStore),
     ...mapState(useCompetitionsStore, ['list'])
   },
   created() {
@@ -59,18 +56,27 @@ export default defineComponent({
   },
   methods: {
     setCompetitonByID(id:string) {
-      this.competitionsStore.getCompetitionById(id)
-        .then(result => {
-          if (result) {
-            this.competition = result
-          }
-          else {
-            this.error = ERROR_PAGE_LOAD
-          }
-        })
-        .catch(error => {
-          this.error = ERROR_PAGE_LOAD
-        })
+      const guild = this.userStore.guild
+      if (guild && canEditCompetitions(guild)) {
+        this.competitionsStore.getCompetitionById(id)
+          .then(result => {
+            if (result) {
+              this.competition = result
+            }
+            else {
+              this.flashStore.$patch({ message: ERROR_PAGE_LOAD, level: LogLevel.error })
+            }
+          })
+          .catch(error => {
+            this.flashStore.$patch({ message: ERROR_PAGE_LOAD, level: LogLevel.error })
+          })
+      }
+      else {
+        this.$router.push({name: 'comp-show', params: { id }})
+          .then(() => {
+            this.flashStore.$patch({ message: ERROR_AUTH, level: LogLevel.warning })
+          })
+      }
     },
     onCancel() {
       this.$router.replace({ name: 'comp-show', params: { id: this.$route.params.id }})

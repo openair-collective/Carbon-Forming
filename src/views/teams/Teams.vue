@@ -24,16 +24,21 @@
         </li>
       </ul>
     </div>
-    <team-list v-if="activeList" :list="activeList" class="p-4" />
-    <loading v-if="loading" />
+    <team-list 
+      :list="activeList" 
+      :showUserTeams="activeTab === eTabs.TEAMS"
+      class="p-4" 
+    />
     <div
       v-if="activeTab === eTabs.TEAMS"
       class="has-text-centered mt-4"
     >
       <button
-        v-if="paginate && !loading"
+        v-if="paginate"
         @click="fetchMore"
         class="button is-primary"
+        :class="{ 'is-loading': isLoading}"
+        :disabled="isLoading"
       >
         Show More
       </button>
@@ -50,7 +55,6 @@ import { Team } from '@/types'
 import { useUserStore } from '@/store/user'
 import { useTeamsStore } from '@/store/teams'
 import TeamList from '@/components/team/TeamList.vue'
-import Loading from '@/components/Loading.vue'
 import log from '@/services/logger'
 
 const MODULE_ID ='views/teams'
@@ -61,13 +65,13 @@ enum TABS {
 }
 
 export default defineComponent({
-  components: { TeamList, Loading },
+  components: { TeamList },
   data() {
     return {
       eTabs: TABS,
       activeTab: TABS.TEAMS,
-      paginate: false,
-      loading: false
+      paginate: true,
+      isLoading: false
     }
   },
   computed: {
@@ -84,7 +88,12 @@ export default defineComponent({
     }
   },
   created() {
-    this.fetchMore()
+    if (!this.teamsStore.list) {
+      this.fetchMore()
+    }
+    else if (this.teamsStore.list.length < PAGING_SIZE) {
+      this.paginate = false
+    }
     if (!this.userStore.teams) {
       this.userStore.fetchTeams()
     }
@@ -93,10 +102,14 @@ export default defineComponent({
   },
   methods: {
     fetchMore() {
+      this.isLoading = true
       const after = this.teamsStore.list ? this.teamsStore.list[this.teamsStore.list.length -1] : undefined
       this.teamsStore.fetch(after)
         .then(result => {
           this.paginate = !!result && result.length === PAGING_SIZE
+        })
+        .finally(()=>{
+          this.isLoading = false
         })
     },
     onCreateNewTeam() {

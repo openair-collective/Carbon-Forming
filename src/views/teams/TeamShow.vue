@@ -19,9 +19,8 @@
         {{ team.name }}
         <router-link
         v-if="canEdit"
-        :to="disableEdit ? '' : { name: 'team-edit'}"
+        :to="{ name: 'team-edit'}"
         class="button is-info is-small is-outlined ml-2"
-        :class="{ 'is-disabled': disableEdit }"
       >
         Edit Team
       </router-link>
@@ -62,12 +61,11 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { RouteLocationNormalized } from 'vue-router'
 import { mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
 import { useTeamsStore } from '@/store/teams'
 import { Team } from '@/types'
-import { canEditTeam } from '@/helpers/authHelper'
+import { canEditTeamWithId } from '@/helpers/authHelper'
 import Loading from '@/components/Loading.vue'
 import { TEAM_AVATAR_PLACEHOLDER, ERROR_PAGE_LOAD } from '@/consts'
 import log from '@/services/logger'
@@ -110,12 +108,9 @@ export default defineComponent({
     canEdit():boolean {
       let result = false
       if (this.team && this.userStore.profile) {
-        result = canEditTeam(this.userStore.profile, this.team)
+        result = canEditTeamWithId(this.userStore.profile, this.team.id)
       }
       return result
-    },
-    disableEdit():boolean {
-      return this.$route.name !== TEAM_PATHS.TEAM
     }
   },
   created() {

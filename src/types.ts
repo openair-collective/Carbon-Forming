@@ -10,7 +10,7 @@ export declare interface UserProfile {
   id: string
   avatar:string
   username:string
-  teams:{ [key:string]: boolean }
+  teams:{ [key:Team['id']]: TeamRole }
 }
 
 export declare interface Guild {

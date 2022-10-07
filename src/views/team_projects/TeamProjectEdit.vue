@@ -23,10 +23,15 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Team, Project } from '@/types'
+import { LogLevel } from '@/enums'
+import { ERROR_AUTH } from '@/consts'
 import { mapStores } from 'pinia'
+import { useTeamsStore } from '@/store/teams'
+import { useUserStore } from '@/store/user'
+import { useFlashStore } from '@/store/flash'
+import { canEditTeamWithId } from '@/helpers/authHelper'
 import ProjectForm from '@/components/project/ProjectForm.vue'
 import Loading from '@/components/Loading.vue'
-import { useTeamsStore } from '@/store/teams'
 
 const MODULE_ID = 'views/TeamProjectEdit'
 
@@ -41,15 +46,23 @@ export default defineComponent({
   data() {
     return {
       project: undefined as Project|undefined,
-      error: ''
     }
   },
   computed: {
-    ...mapStores(useTeamsStore)
+    ...mapStores(useTeamsStore, useUserStore, useFlashStore)
   },
   async created() {
+    const profile = this.userStore.profile
     let project_id = this.$route.params.project_id as string
-    this.project = await this.teamsStore.getTeamProjectById(this.team, project_id)
+    if (profile && canEditTeamWithId(profile, this.team.id)) {
+      this.project = await this.teamsStore.getTeamProjectById(this.team, project_id)
+    }
+    else {
+      this.$router.push({name: 'team-project-show', params: { project_id }})
+        .then(() => {
+          this.flashStore.$patch({ message: ERROR_AUTH, level: LogLevel.warning })
+        })
+    }
   },
   methods: {
     onCancel() {

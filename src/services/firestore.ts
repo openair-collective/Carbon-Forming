@@ -97,8 +97,7 @@ class FirestoreService {
     let result = [] as Team[]
     const q = query(
       collection(db, KEY_TEAMS), 
-      where(`members.${user.id}`, '==', true), 
-      orderBy('name')
+      where(`members.${user.id}`, '!=', null)
     )
     const snap = await getDocs(q)
     if (snap.size) {
@@ -109,18 +108,18 @@ class FirestoreService {
     return result
   }
 
-  async addTeamToUser(team:Team, user:UserProfile, role?:TeamRole):Promise<void> {
+  async addTeamToUser(team:Team, user:UserProfile, role:TeamRole=TeamRole.default):Promise<void> {
     const batch = writeBatch(db)
     // save team ref to user.teams
     const userRef = doc(db, KEY_USERS, user.id)
     batch.set(userRef, { teams: {
-        [`${team.id}`]: role || TeamRole.default
+        [`${team.id}`]: role
       }
     }, { merge: true })
     // save user to team to  team.members
     const teamRef = doc(db, KEY_TEAMS, team.id)
     batch.set(teamRef, { members: {
-        [`${user.id}`]: true
+        [`${user.id}`]: role
       }
     }, { merge: true })
     await batch.commit()

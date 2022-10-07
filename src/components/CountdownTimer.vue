@@ -2,7 +2,7 @@
   <div class="timer">
     <div class="mb-1">{{ prompt }}</div>
     <div
-      :class="{ 'disabled' : !start_date || !end_date || ended }" 
+      :class="{ 'disabled' : !start_date || !end_date }" 
       class="clock"
       >
       <div class="segment">

@@ -58,7 +58,8 @@
         </h3>
         <notification 
           v-if="error"
-          :error="error" 
+          :message="error" 
+          :type="eLogLevel.error"
           @remove="error = ''" 
         />
         <project-input
@@ -126,6 +127,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { LogLevel } from '@/enums'
 import { mapStores } from 'pinia'
 import { Competition, Team, Project, Material } from '@/types'
 import { useUserStore } from '@/store/user'
@@ -163,6 +165,7 @@ export default defineComponent({
   data() {
     return {
       eSteps: STEPS,
+      eLogLevel: LogLevel,
       step: STEPS.UNKNOWN,
       error: '',
       isSaving: false,
@@ -174,8 +177,8 @@ export default defineComponent({
         design_doc_url: '',
         terms: false,
         materials: [] as Material[],
-        team: null,
-        competition: null
+        team: null as Team | null,
+        competition: null as Competition | null
       } as Project
     }
   },

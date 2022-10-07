@@ -15,17 +15,23 @@
         Competitions
       </router-link>
     </div>
-    <router-view class="content" />
+    <div class="content">
+      <flash />
+      <router-view />
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import Flash from '@/components/Flash.vue'
 import log from '@/services/logger'
 
 const MODULE_ID ='views/dashboard'
 
-export default defineComponent({})
+export default defineComponent({
+  components: { Flash }
+})
 
 </script>
 
@@ -40,7 +46,13 @@ export default defineComponent({})
   order: 1;
 }
 .content {
+  display: flex;
+  flex-direction: column;
   flex: 2;
   order: 2;
+}
+.content > section,
+.content > div {
+  flex: 1 1 auto;
 }
 </style>

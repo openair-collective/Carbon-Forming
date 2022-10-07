@@ -1,10 +1,5 @@
 <template>
   <form @submit.prevent="submitTeamForm" :disabled="isSaving">
-    <notification 
-      v-if="success || error"
-      :error="error" 
-      :success="success" 
-      @remove="clearMessages" />
     <div class="is-flex is-flex-direction-row mb-4">
       <div>
         <div class="image is-128x128 mr-4">
@@ -121,10 +116,11 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Team } from '@/types'
+import { LogLevel } from '@/enums'
 import { mapStores } from 'pinia'
 import { useTeamsStore } from '@/store/teams'
+import { useFlashStore } from '@/store/flash'
 import { TEAM_AVATAR_PLACEHOLDER } from '@/consts'
-import Notification from '@/components/Notification.vue'
 import log from '@/services/logger'
 
 const MODULE_ID = 'components/TeamForm'
@@ -144,7 +140,6 @@ const DEFAULT_TEAM = {
 } as Team
 
 export default defineComponent({
-  components: { Notification },
   props: {
     team: {
       type: Object as () => Team,
@@ -154,8 +149,6 @@ export default defineComponent({
   data() {
     return {
       clone: { ...DEFAULT_TEAM, ...this.team }, // clone so we can modify
-      success: '',
-      error: '',
       isSaving: false,
       kAvatarMaxSize: AVATAR_MAX_FILE_SIZE,
       kAvatarPlaceholder: AVATAR_PLACEHOLDER,
@@ -164,7 +157,7 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapStores(useTeamsStore),
+    ...mapStores(useTeamsStore, useFlashStore),
     teamImageUrl():string { 
       let result = this.avatarPreviewUrl || AVATAR_PLACEHOLDER
       if (this.clone.avatar && this.clone.avatar.url) {
@@ -177,28 +170,24 @@ export default defineComponent({
     }
   },
   methods: {
-    clearMessages() {
-      this.success = ''
-      this.error = ''
-    },
     validateFileSize(file:File):boolean {
       return file.size < AVATAR_MAX_FILE_SIZE
     },
     removeAvatar() {
-      this.clearMessages()
+      this.flashStore.$reset()
       if (this.clone.avatar && confirm("Are you sure you want to remove the Team Avatar?")) {
         this.isSaving = true
         const avatar = { ...this.clone.avatar }
         this.teamsStore.removeTeamAvatar(this.clone)
           .then(result => {
             if (result) {
-              this.success = 'Team Avatar removed'
+              this.flashStore.$patch({ message: 'Team Avatar removed', level: LogLevel.success })
               Object.assign(this.team, result)
               this.clone = { ...this.team }
             }
           })
           .catch(error => {
-            this.error = 'Error removing Avatar. Please try again.'
+            this.flashStore.$patch({ message: 'Error removing Avatar. Please try again.', level: LogLevel.error })
           })
           .finally(()=> {
             this.isSaving = false
@@ -220,11 +209,11 @@ export default defineComponent({
           .then(result => {
             Object.assign(this.team, result)
             this.clone = { ...this.team}
-            this.success = 'Team saved'
+            this.flashStore.$patch({ message: 'Team saved', level: LogLevel.success })
             this.$emit("team-saved", result)
           })
           .catch(error => {
-            this.error = 'Error saving team. Please try again.'
+            this.flashStore.$patch({ message: 'Error saving team. Please try again.', level: LogLevel.error })
             log.error(MODULE_ID, error)
           })
           .finally(() => {
@@ -232,7 +221,7 @@ export default defineComponent({
           })
       }
       else {
-        this.error = `The Avatar file size cannot exceed ${AVATAR_MAX_FILE_SIZE}kb.`
+        this.flashStore.$patch({ message:`The Avatar file size cannot exceed ${AVATAR_MAX_FILE_SIZE}kb.`, level: LogLevel.error })
       }
     }
   }

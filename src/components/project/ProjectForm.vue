@@ -1,10 +1,5 @@
 <template>
   <div>
-    <notification 
-      v-if="success || error"
-      :error="error" 
-      :success="success" 
-      @remove="clearMessages" />
     <form @submit.prevent="submitProjectForm" :disabled="isSaving">
       <project-input 
         :project="clone"
@@ -35,10 +30,12 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Team, Project, Material, FileUpload } from '@/types'
+import { Team, Project } from '@/types'
+import { LogLevel } from '@/enums'
 import { mapStores } from 'pinia'
 import { useTeamsStore } from '@/store/teams'
 import { useProjectsStore } from '@/store/projects'
+import { useFlashStore } from '@/store/flash'
 import ProjectInput from '@/components/project/ProjectInput.vue'
 import Notification from '@/components/Notification.vue'
 
@@ -69,14 +66,12 @@ export default defineComponent({
   data() {
     return {
       clone: { ...this.project } as Project,
-      success: '',
-      error: '',
       isSaving: false,
       inputRef: undefined as InstanceType<typeof ProjectInput>|undefined
     }
   },
   computed: {
-    ...mapStores(useTeamsStore, useProjectsStore),
+    ...mapStores(useTeamsStore, useProjectsStore, useFlashStore),
     disableSubmit():boolean {
       return !this.clone.name || !this.clone.terms
     }
@@ -85,20 +80,16 @@ export default defineComponent({
     this.inputRef = this.$refs.project_input as InstanceType<typeof ProjectInput>
   },
   methods: {
-    clearMessages() {
-      this.success = ''
-      this.error = ''
-    },
     submitProjectForm() {
       this.isSaving = true
-      this.clearMessages()
+      this.flashStore.$reset()
       if (this.inputRef) {
         if (this.inputRef.hasValidMaterials && this.inputRef.hasValidDesignDoc) {
           this.teamsStore.saveTeamProject(this.team, this.clone, this.inputRef.docFile)
             .then(result => {
               Object.assign(this.project, result)
               this.clone = { ...this.project }
-              this.success = 'Project saved'
+              this.flashStore.$patch({ message: 'Project saved', level: LogLevel.success })
               this.$emit("project-saved", this.project)
             })
             .catch(error => {
@@ -109,29 +100,31 @@ export default defineComponent({
             })
         }
         else {
+          let error = ''
           if (!this.inputRef.hasValidMaterials) {
-            this.error = this.error + "Some materials are missing required fields."
+            error = "Some materials are missing required fields."
           }
           if (!this.inputRef.hasValidDesignDoc) {
-            this.error = this.error + `The Design Document file size cannot exceed ${this.inputRef.kDocMaxFileSize}kb.`
+            error = error + `The Design Document file size cannot exceed ${this.inputRef.kDocMaxFileSize}kb.`
           }
+          this.flashStore.$patch({ message: error, level: LogLevel.error })
         }
       }
     },
     removeDesignDoc() {
-      this.clearMessages()
+      this.flashStore.$reset()
       if (this.inputRef && this.clone.design_doc && confirm("Are you sure you want to remove the Document?")) {
         this.isSaving = true
         this.inputRef.removeDesignDoc()
           .then(result => {
             if (result) {
-              this.success = 'Design document removed'
+              this.flashStore.$patch({ message: 'Design document removed', level: LogLevel.success })
               Object.assign(this.project, result)
               this.clone = { ...this.project }
             }
           })
           .catch(error => {
-            this.error = 'Error removing Design Doc. Please try again.'
+            this.flashStore.$patch({ message: 'Error removing Design Doc. Please try again.', level: LogLevel.error })
           })
           .finally(()=> {
             this.isSaving = false

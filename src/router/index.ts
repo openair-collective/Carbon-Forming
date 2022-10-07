@@ -19,6 +19,8 @@ import Login from '@/views/Login.vue'
 import AuthCallback from '@/views/AuthCallback.vue'
 import Onboarding from '@/views/Onboarding.vue'
 import { useUserStore } from '@/store/user'
+import { useFlashStore } from '@/store/flash'
+import { useModalStore } from '@/store/modal'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -130,6 +132,10 @@ const router = createRouter({
 
 router.beforeEach(async (to, from) => {
   const store = useUserStore()
+  const flash = useFlashStore()
+  const modal = useModalStore()
+  flash.$reset()
+  modal.$reset()
 
   if (!store.oauth && to.name !== 'auth_callback' && to.name !== 'login') {
     return { name: 'login', query: { redirect: to.path }}

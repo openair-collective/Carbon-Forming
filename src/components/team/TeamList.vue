@@ -17,7 +17,7 @@
           >
           </figure>
           <div 
-            v-if="isCurrentUserTeamMember(team)" 
+            v-if="showUserTeams && isCurrentUserTeamMember(team)" 
             class="tag is-normal is-info is-light"
           >
             Your Team
@@ -50,6 +50,10 @@ export default defineComponent({
     list: {
       type: Array as PropType<Team[]>,
       required: true
+    },
+    showUserTeams: {
+      type:Boolean,
+      default: false
     }
   },
   computed: {

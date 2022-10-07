@@ -1,10 +1,5 @@
 <template>
   <form @submit.prevent="submitForm" :disabled="isSaving">
-    <notification 
-      v-if="success || error"
-      :error="error" 
-      :success="success" 
-      @remove="clearMessages" />
     <div class="field"> 
       <label class="label">Competition Name</label>
       <div class="control">
@@ -123,10 +118,11 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Competition, Timestamp } from '@/types'
+import { LogLevel } from '@/enums'
 import { mapStores } from 'pinia'
 import { useCompetitionsStore } from '@/store/competitions'
+import { useFlashStore } from '@/store/flash'
 import { fsTimestampToDate } from '@/utils/date'
-import Notification from '@/components/Notification.vue'
 import log from '@/services/logger'
 
 const MODULE_ID = 'components/competition/CompetitionForm'
@@ -160,7 +156,6 @@ const DEFAULT_COMP = {
 } as Competition
 
 export default defineComponent({
-  components: { Notification },
   props: {
     competition: {
       type: Object as () => Competition,
@@ -170,37 +165,31 @@ export default defineComponent({
   data() {
     return {
       clone: { ...DEFAULT_COMP, ...this.competition },
-      success: '',
-      error: '',
       isSaving: false,
       startDate: this.competition.start_date && dateForInput(this.competition.start_date),
       endDate: this.competition.end_date && dateForInput(this.competition.end_date)
     }
   },
   computed: {
-    ...mapStores(useCompetitionsStore)
+    ...mapStores(useCompetitionsStore, useFlashStore)
   },
   methods: {
-    clearMessages() {
-      this.success = ''
-      this.error = ''
-    },
     submitForm() {
       this.isSaving = true
+      this.flashStore.$reset()
       if (this.startDate && this.endDate) {
         this.clone.start_date = dateForSave(this.startDate)
         this.clone.end_date = dateForSave(this.endDate)
       }
-      debugger
       this.competitionsStore.saveCompetition(this.clone)
         .then(result => {
           Object.assign(this.competition, result)
           this.clone = { ...this.competition }
-          this.success = 'Competition saved'
+          this.flashStore.$patch({ message: 'Competition saved', level: LogLevel.success })
           this.$emit("comp-saved", result)
         })
         .catch(error => {
-          this.error = 'Error saving competition. Please try again.'
+          this.flashStore.$patch({ message: 'Error saving competition. Please try again.', level: LogLevel.error })
           log.error(MODULE_ID, error)
         })
         .finally(() => {
