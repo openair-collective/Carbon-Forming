@@ -1,42 +1,67 @@
 <template>
   <section class="is-flex is-flex-direction-column">
-    <header class="header p-4 has-background-white">
-      <h1 class="title is-4">
-        Competitions
-        <router-link 
-          v-if="canCreate"
-          :to="{ name: 'comp-new' }"
-          class="button is-info is-small is-outlined ml-2"
-        >
-          New Competition
+    <header class="header">
+      <div class="hero is-medium is-link">
+        <div class="hero-body">
+          <p class="title">
+            Welcome to Carbon Hackers
+          </p>
+          <p class="subtitle">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec at consectetur neque. Sed rhoncus nisi eget elementum commodo. Nunc ut euismod lacus. Pellentesque tortor risus, blandit et purus convallis, ornare ullamcorper lacus.</p>
+          <router-link 
+            v-if="canCreate && (currentCompetitions.length || pastCompetitions.length)"
+            :to="{ name: 'comp-new' }"
+            class="button is-info is-small is-outlined"
+          >
+            New Competition
         </router-link>
-      </h1>
+        </div>
+      </div>
     </header>
     <article class="article p-4 is-flex-grow-1 has-background-white-bis">
-      <div class="is-flex is-flex-direction-column">
-        <competition-list 
-            :list="currentCompetitions"
+      <loading v-if="isLoading" />
+      <div v-else-if="hasComps" class="list">
+        <div class="is-flex is-flex-direction-column">
+          <competition-list 
+              :list="currentCompetitions"
+              :listType="eListType.column"
+              :showEnterButton="true"
+            />
+          <h2
+            v-if="pastCompetitions && pastCompetitions.length"
+            class="title is-5 my-4 px-4"
+          >
+            Past Competitions
+          </h2>
+          <competition-list
+            :list="pastCompetitions"
             :listType="eListType.column"
-            :showEnterButton="true"
           />
-        <div class="my-4 px-4">Past Competitions</div>
-        <competition-list
-          :list="pastCompetitions"
-          :listType="eListType.column"
-        />
+        </div>
+        <div class="has-text-centered mt-4">
+          <button
+            v-if="paginate"
+            @click="fetchMore"
+            class="button is-primary"
+            :class="{ 'is-loading': isLoading}"
+            :disabled="isLoading"
+          >
+            Show More
+          </button>
+          <div v-else-if="!paginate" class="tag is-medium">You’ve reached the end of the list</div>
+        </div>
       </div>
-      <loading v-if="!currentCompetitions || !pastCompetitions" />
-      <div class="has-text-centered mt-4">
-        <button
-          v-if="paginate"
-          @click="fetchMore"
+      <div 
+        v-else
+        class="is-flex is-flex-direction-column is-align-items-center is-justify-content-center"
+      >
+        <p class="mb-2">No competitions yet.</p>
+        <router-link
+          v-if="canCreate"
+          :to="{ name: 'comp-new' }"
           class="button is-primary"
-          :class="{ 'is-loading': isLoading}"
-          :disabled="isLoading"
         >
-          Show More
-        </button>
-        <div v-else-if="!paginate" class="tag is-medium">You’ve reached the end of the list</div>
+          Create Your First Competition
+        </router-link>
       </div>
     </article>
   </section>
@@ -90,6 +115,9 @@ export default defineComponent({
         result = this.list.filter(c => c.end_date && fsTimestampToDate(c.end_date).getTime() < now)  
       }
       return result
+    },
+    hasComps():boolean {
+      return this.currentCompetitions.length > 0 || this.pastCompetitions.length > 0
     }
   },
   created() {
@@ -118,7 +146,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-  .box {
-    cursor:pointer;
+  .list {
+    margin-top: -100px;
   }
 </style>
