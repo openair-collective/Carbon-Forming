@@ -40,17 +40,22 @@
 import { defineComponent } from 'vue'
 import { mapState, mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
+import { useFlashStore } from '@/store/flash'
+import { LogLevel } from '@/enums'
 
 export default defineComponent({
   name: "nav-bar",
   computed: {
-    ...mapStores(useUserStore),
+    ...mapStores(useUserStore, useFlashStore),
     ...mapState(useUserStore, ['profile'])
   },
   methods: {
     logout() {
       this.userStore.logout().then(result => {
-        this.$router.push({'name': 'login'})
+        this.$router.push({'name': 'root'})
+          .then(() => {
+            this.flashStore.$patch({ message: 'You have been logged out.', level: LogLevel.success })
+          })
       })
     }
   }
