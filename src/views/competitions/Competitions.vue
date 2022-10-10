@@ -47,7 +47,7 @@ import { defineComponent } from 'vue'
 import { mapState, mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
 import { useCompetitionsStore } from '@/store/competitions'
-import { canCreateCompetition } from '@/helpers/authHelper'
+import { canEditCompetitions } from '@/helpers/authHelper'
 import { fsTimestampToDate, dayMonth, dayMonthYear } from '@/utils/date'
 import Loading from '@/components/Loading.vue'
 import CompetitionList from '@/components/competition/CompetitionList.vue'
@@ -72,7 +72,7 @@ export default defineComponent({
     ...mapState(useCompetitionsStore, ['list']),
     ...mapState(useUserStore, {
         canCreate(store) {
-          return store.guild && canCreateCompetition(store.guild)
+          return store.guild && canEditCompetitions(store.guild)
         }
       }),
     currentCompetitions():Competition[] {
