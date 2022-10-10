@@ -23,6 +23,15 @@
           </div>
         </div>
       </div>
+      <div v-else class="navbar-end">
+        <div class="navbar-item">
+          <div class="buttons">
+            <router-link :to="{name: 'login'}" class="button is-text">
+              Login
+            </router-link>
+          </div>
+        </div>
+      </div>
     </div>
   </nav>
 </template>

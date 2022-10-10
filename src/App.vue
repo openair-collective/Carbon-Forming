@@ -1,5 +1,5 @@
 <template>
-  <nav-bar v-if="isAuthenticated" />
+  <nav-bar v-if="showNavBar"/>
   <main class="main">
     <router-view />
   </main>
@@ -20,7 +20,11 @@ export default defineComponent({
     NavBar
   },
   computed: {
-    ...mapState(useUserStore, ['isAuthenticated'])
+    ...mapState(useUserStore, ['isAuthenticated']),
+    showNavBar():boolean {
+      const name = this.$route.name
+      return name !== 'login'
+    }
   }
 })
 </script>
