@@ -30,7 +30,8 @@ export default defineComponent({
   display: flex;
   flex-direction: row;
 }
-.main > div {
+.main > div,
+.main > section {
   flex: 2;
   min-height: calc(100vh - 56px);
 }
