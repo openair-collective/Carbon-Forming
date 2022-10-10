@@ -1,10 +1,8 @@
 <template>
-  <main>
-    <section class="p-4">
-      <h1 class="title is-3">Create your first team</h1>
-      <team-form @team-saved="onTeamSaved" />
-    </section>
-  </main>
+  <section class="p-4">
+    <h1 class="title is-3">Create your first team</h1>
+    <team-form @team-saved="onTeamSaved" />
+  </section>
 </template>
 
 <script lang="ts">
@@ -31,7 +29,7 @@ export default defineComponent({
     onTeamSaved(team:Team) {
       this.userStore.addTeam(team)
         .then(()=> {
-          this.$router.replace({ name: 'teams', params: { id: team.id }})
+          this.$router.replace({ name: 'my-teams', params: { id: team.id }})
         })
         .catch(error => {
           log.warn(MODULE_ID, '#onTeamSaved > Error adding Team to User')
