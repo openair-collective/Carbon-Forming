@@ -26,7 +26,7 @@ import { mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
 import { useFlashStore } from '@/store/flash'
 import { ERROR_AUTH } from '@/consts'
-import { canCreateCompetition } from '@/helpers/authHelper'
+import { canEditCompetitions } from '@/helpers/authHelper'
 import log from '@/services/logger'
 
 const MODULE_ID = 'views/CompetitionNew'
@@ -38,7 +38,7 @@ export default defineComponent({
   },
   created() {
     const guild = this.userStore.guild
-    if (!guild || !canCreateCompetition(guild)) {
+    if (!guild || !canEditCompetitions(guild)) {
       this.$router.push({name: 'competitions'})
       .then(() => {
         this.flashStore.$patch({ message: ERROR_AUTH, level: LogLevel.warning })

@@ -216,7 +216,7 @@ class FirestoreService {
     }
     else {
       const docRef = await addDoc(collection(db, KEY_PROJECTS), clone)
-      result = Object.assign({ id: docRef.id }, project) as Project
+      result = Object.assign(project, { id: docRef.id }) as Project
     }
     return result
   }
@@ -275,7 +275,7 @@ class FirestoreService {
     }
     else {
       let docRef = await addDoc(collection(db, KEY_COMPETITIONS), clone)
-      result = Object.assign({ id: docRef.id }, comp) as Competition
+      result = Object.assign(comp, { id: docRef.id }) as Competition
     }
     return result
   }

@@ -137,10 +137,7 @@ router.beforeEach(async (to, from) => {
   flash.$reset()
   modal.$reset()
 
-  if (!store.oauth && to.name !== 'auth_callback' && to.name !== 'login') {
-    return { name: 'login', query: { redirect: to.path }}
-  }
-  else if (!store.profile && to.name !== 'auth_callback' && to.name !== 'login') {
+  if (store.oauth && !store.profile && to.name !== 'auth_callback') {
     return { name: 'auth_callback', query: { redirect: to.path }}
   }
 

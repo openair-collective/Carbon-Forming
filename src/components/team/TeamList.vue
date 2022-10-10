@@ -70,7 +70,7 @@ export default defineComponent({
     isCurrentUserTeamMember(team:Team):boolean {
       let result = false
       if(this.userStore.profile) {
-        if (team.members && team.members[this.userStore.profile.id]) {
+        if (team.members && this.userStore.profile.id in team.members) {
           result = true
         }
       }

@@ -131,7 +131,7 @@ import { mapState, mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
 import { useCompetitionsStore } from '@/store/competitions'
 import { useModalStore } from '@/store/modal'
-import { canCreateCompetition } from '@/helpers/authHelper'
+import { canEditCompetitions } from '@/helpers/authHelper'
 import { dayMonth, dayMonthYear, fsTimestampToDate } from '@/utils/date'
 import Loading from '@/components/Loading.vue'
 import CountdownTimer from '@/components/CountdownTimer.vue'
@@ -166,7 +166,7 @@ export default defineComponent({
     canEdit():boolean {
       let result = false
       if (this.guild) {
-        result = canCreateCompetition(this.guild)
+        result = canEditCompetitions(this.guild)
       }
       return result
     }

@@ -49,7 +49,7 @@ export default defineComponent({
           await this.userStore.fetchUserGuild()
           const userTeams = this.profile && this.profile.teams
           if (userTeams && !isEmpty(userTeams)) {
-            let redirect = this.$route.query.redirect as string || '/'
+            let redirect = this.$route.query.redirect as string || '/my-teams'
             this.$router.replace({ path: redirect })
           }
           else {

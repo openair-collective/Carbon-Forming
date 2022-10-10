@@ -9,12 +9,13 @@
           <a class="is-size-3">Teams</a>
         </li>
         <li
+          v-if="userStore.isAuthenticated"
           @click="onTabClick(eTabs.MY_TEAMS)"
           :class="{'is-active': activeTab === eTabs.MY_TEAMS}"
         >
           <a class="is-size-3">My Teams</a>
         </li>
-        <li v-if="activeTab === eTabs.MY_TEAMS">
+        <li v-if="userStore.isAuthenticated && activeTab === eTabs.MY_TEAMS">
           <router-link 
             :to="{ name: 'teams-new'}"
             class="button is-info is-outlined is-small"
@@ -88,16 +89,21 @@ export default defineComponent({
     }
   },
   created() {
+    let isAuthenticated = this.userStore.isAuthenticated
+    let name = this.$route.name
+    let tab = name === 'teams' ? TABS.TEAMS : TABS.MY_TEAMS
+    if (isAuthenticated) {
+      if (!this.userStore.teams) {
+        this.userStore.fetchTeams()
+      }
+    }
+    else if( tab === TABS.MY_TEAMS) {
+      tab = TABS.TEAMS
+      this.$router.replace({ name: 'teams'})
+    }
     if (!this.teamsStore.list) {
       this.fetchMore()
     }
-    else if (this.teamsStore.list.length < PAGING_SIZE) {
-      this.paginate = false
-    }
-    if (!this.userStore.teams) {
-      this.userStore.fetchTeams()
-    }
-    let tab = this.$route.path === '/teams' ? TABS.TEAMS : TABS.MY_TEAMS
     this.onTabClick(tab)
   },
   methods: {
