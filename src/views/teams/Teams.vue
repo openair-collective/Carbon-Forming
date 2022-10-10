@@ -9,6 +9,7 @@
           <a class="is-size-3">Teams</a>
         </li>
         <li
+          v-if="userStore.profile"
           @click="onTabClick(eTabs.MY_TEAMS)"
           :class="{'is-active': activeTab === eTabs.MY_TEAMS}"
         >
@@ -88,16 +89,19 @@ export default defineComponent({
     }
   },
   created() {
+    let profile = this.userStore.profile
+    let tab = profile && this.$route.path === '/my-teams' ? TABS.MY_TEAMS : TABS.MY_TEAMS
+    if (profile) {
+      if (!this.userStore.teams) {
+        this.userStore.fetchTeams()
+      }
+    }
     if (!this.teamsStore.list) {
       this.fetchMore()
     }
     else if (this.teamsStore.list.length < PAGING_SIZE) {
       this.paginate = false
     }
-    if (!this.userStore.teams) {
-      this.userStore.fetchTeams()
-    }
-    let tab = this.$route.path === '/teams' ? TABS.TEAMS : TABS.MY_TEAMS
     this.onTabClick(tab)
   },
   methods: {
