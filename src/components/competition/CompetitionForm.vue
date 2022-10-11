@@ -18,6 +18,7 @@
               class="input"
               type="date"
               v-model="startDate"
+              pattern="\d{4})-(\d{1,2})-(\d{1,2})"
               required>
           </div>
         </div>
@@ -28,6 +29,9 @@
               class="input" 
               type="date"
               v-model="endDate"
+              :disabled="!startDate"
+              :min="minEndDate"
+              pattern="\d{4})-(\d{1,2})-(\d{1,2})"
               required>
           </div>
         </div>
@@ -122,7 +126,7 @@ import { LogLevel } from '@/enums'
 import { mapStores } from 'pinia'
 import { useCompetitionsStore } from '@/store/competitions'
 import { useFlashStore } from '@/store/flash'
-import { fsTimestampToDate } from '@/utils/date'
+import { fsTimestampToDate, lastDayOfMonth } from '@/utils/date'
 import log from '@/services/logger'
 
 const MODULE_ID = 'components/competition/CompetitionForm'
@@ -171,7 +175,30 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapStores(useCompetitionsStore, useFlashStore)
+    ...mapStores(useCompetitionsStore, useFlashStore),
+    minEndDate():string {
+      let result = ''
+      if (this.startDate) {
+        let min:Date = new Date(this.startDate)
+        min.setMinutes(min.getMinutes() + min.getTimezoneOffset())
+        min.setDate(min.getDate()+1)
+        result = min.toISOString().split('T')[0]
+      }
+      return result
+    }
+  },
+  watch: {
+    startDate(val) {
+      let start:Date = new Date(val)
+      start.setMinutes(start.getMinutes() + start.getTimezoneOffset())
+      let end:Date|null = this.endDate ? new Date(this.endDate) : null
+      if (!end || end < start) {
+        let day:number = lastDayOfMonth(start.getFullYear(), start.getMonth())
+        end = new Date(start.valueOf())
+        end.setDate(day)
+        this.endDate = end.toISOString().split('T')[0]
+      }
+    }
   },
   methods: {
     submitForm() {
