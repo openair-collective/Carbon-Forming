@@ -1,4 +1,4 @@
-export function oridinal(n:number) {
+export function oridinal(n:number):string {
   let ord = ["st", "nd", "rd"]
   let exceptions = [11, 12, 13]
   let nth = ord[(n % 10) - 1] == undefined || exceptions.includes(n % 100) ? "th" : ord[(n % 10) - 1]
@@ -16,8 +16,12 @@ export function dayMonthYear(value:Date):string {
   return `${dayMonth(value)} ${year}`
 }
 
-export function fsTimestampToDate(stamp:any) {
+export function fsTimestampToDate(stamp:any):Date {
   return new Date(
     stamp.seconds * 1000 + stamp.nanoseconds / 1000000
   )
+}
+
+export function lastDayOfMonth(year:number, month:number) {
+  return new Date(year, month+1, 0).getDate()
 }
