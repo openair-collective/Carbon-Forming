@@ -17,9 +17,9 @@ class AuthService {
     const uri = `${TOKEN_URI}?code=${code}&state=${state}`
     const response = await fetch(uri)
     const user =  await response.json()
-    // authenticate with token
-    await firebase.loginWithCustomToken(user.firebase_access_token)
-    // return tokens from exchange
+    if (user) {
+      await firebase.loginWithCustomToken(user.firebase_access_token)  
+    }
     return user
   }
 }

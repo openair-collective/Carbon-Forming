@@ -23,7 +23,7 @@ export default defineComponent({
     ...mapState(useUserStore, ['isAuthenticated']),
     showNavBar():boolean {
       const name = this.$route.name
-      return name !== 'login'
+      return name !== 'login' && name !== 'auth_callback' 
     }
   }
 })

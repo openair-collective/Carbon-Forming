@@ -2,6 +2,7 @@
   <section class="p-4 is-flex-grow-1">
     <div class="container has-text-centered">
       <div class="box p-6">
+        <flash />
         <h1 class="title is-4">Log in with your OpenAir Discord account</h1>
         <button class="button is-primary mb-4" @click="login">Log in with Discord</button>
       </div>
@@ -14,11 +15,10 @@
 import { defineComponent } from 'vue'
 import auth from '@/services/auth'
 import { useUserStore } from '@/store/user'
+import Flash from '@/components/Flash.vue'
 
 export default defineComponent({
-  data() {
-    return {}
-  },
+  components: { Flash },
   beforeRouteEnter(to, from) {
     let store = useUserStore()
     if (store.oauth) {
