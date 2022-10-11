@@ -59,7 +59,10 @@ exports.redirect = (req, res) => {
     state = req.cookies.state
   }
   functions.logger.log('Setting verification state:', state)
-  res.cookie('state', state.toString(), {maxAge: 3600000, secure: true, httpOnly: true})
+  res.cookie('state', state.toString(), {
+    maxAge: 3600000,
+    httpOnly: true
+  })
 
   const uri = `${URI_AUTH}?response_type=code&client_id=${CLIENT_ID}&scope=identify%20guilds%20guilds.members.read&state=${state}&redirect_uri=${URI_REDIRECT}&prompt=none`
   
