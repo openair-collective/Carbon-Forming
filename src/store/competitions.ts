@@ -52,12 +52,27 @@ export const useCompetitionsStore = defineStore('competitions', {
         log.error(MODULE_ID, '#fetchCompetitionProjects > ' + message)
       }
     },
+    async getCompetitionProjectById(comp:Competition, project_id:string):Promise<Project|undefined> {
+      try {
+        if (!comp.projects || !comp.projects.length) {
+          await this.fetchCompetitionProjects(comp)
+        }
+        return comp.projects ? comp.projects.find(p => p.id === project_id) : undefined
+      }
+      catch(error) {
+        let message = (error instanceof Error) ? error.message : String(error)
+        log.error(MODULE_ID, '#getCompetitionProjectById > ' + message)
+      }
+    },
     async saveCompetition(comp:Competition):Promise<Competition|undefined> {
       try {
         const insert = !comp.id
         const response = await firestore.saveCompetition(comp)
         comp = { ...comp, ...response }
         if (insert) {
+          if (!this.list) {
+            await this.fetch()
+          }
           let list_patch = this.list?.slice() || []
           const comp_before = list_patch.find(c => {
             const isBeforeName = comp.name > c.name

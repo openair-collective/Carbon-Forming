@@ -116,7 +116,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Team } from '@/types'
-import { LogLevel } from '@/enums'
+import { LogLevel, TeamRole } from '@/enums'
 import { mapStores } from 'pinia'
 import { useTeamsStore } from '@/store/teams'
 import { useFlashStore } from '@/store/flash'
@@ -209,7 +209,6 @@ export default defineComponent({
           .then(result => {
             Object.assign(this.team, result)
             this.clone = { ...this.team}
-            this.flashStore.$patch({ message: 'Team saved', level: LogLevel.success })
             this.$emit("team-saved", result)
           })
           .catch(error => {

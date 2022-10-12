@@ -41,7 +41,7 @@ export default defineComponent({
     }
   },
   created() {
-    if (!this.team.projects) {
+    if (!this.team.projects || !this.team.projects.length ) {
       this.teamsStore.fetchTeamProjects(this.team)
     }
   }

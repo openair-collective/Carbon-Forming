@@ -19,7 +19,7 @@ export const useTeamsStore = defineStore('teams', {
   actions: {
     async fetch(after?:Team):Promise<Team[]|undefined> {
       try {
-        let list_patch = this.list || [] as Team[]
+        let list_patch = this.list?.slice() || [] as Team[]
         let result = [] as Team[]
         let after_idx = after ? list_patch.indexOf(after) : 0
         // looking for range that is after_cursor + PAGE_LENGTH
@@ -49,6 +49,9 @@ export const useTeamsStore = defineStore('teams', {
         if (!team) {
           let response = await firestore.getTeam(team_id)
           team = response
+          let list_patch = this.list?.slice() || [] as Team[]
+          list_patch.push(team)
+          this.list = list_patch
         }
         return team
       }
@@ -66,6 +69,9 @@ export const useTeamsStore = defineStore('teams', {
           await this.saveTeamAvatar(team, avatar)
         }
         if (insert) {
+          if (!this.list) {
+            await this.fetch()
+          }
           let list_patch = this.list?.slice() || []
           const team_before = list_patch.find(t => {
             return team.name > t.name
@@ -109,7 +115,7 @@ export const useTeamsStore = defineStore('teams', {
     },
     async getTeamProjectById(team:Team, project_id:string):Promise<Project|undefined> {
       try {
-        if (!team.projects) {
+        if (!team.projects || !team.projects.length) {
           await this.fetchTeamProjects(team)
         }
         return team.projects ? team.projects.find(p => p.id === project_id) : undefined

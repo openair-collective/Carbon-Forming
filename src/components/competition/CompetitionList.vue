@@ -26,7 +26,6 @@
           class="mb-4"
         > 
           <h3 class="title is-3">{{ comp.name }}</h3>
-          <h4 class="subtitle">A sentence about this competition</h4>
           <button 
             v-if="showEnterButton"
             @click.stop.prevent="onEnterCompetition(comp)"

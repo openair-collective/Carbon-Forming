@@ -39,7 +39,16 @@
                 </div>
               </td>
               <td><input type="number" class="input" v-model="m.quantity" min="1" /></td>
-              <td><input type="text" class="input" v-model="m.link" /></td>
+              <td>
+                <input 
+                  type="url" 
+                  class="input" 
+                  placeholder="https://example.com" 
+                  pattern="https?://.*"
+                  title="Must be a valid URL"
+                  v-model="m.link"
+                />
+              </td>
               <td>
                   <a
                     @click="removeMaterialAtIndex(i)"
@@ -118,8 +127,10 @@
           <div class="control">
             <input
               class="input" 
-              type="text"
+              type="url"
               v-model="project.design_doc_url"
+              pattern="https?://.*"
+              title="Must be a valid URL"
               :disabled="!!docFile"
             >
           </div>

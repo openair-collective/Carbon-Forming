@@ -13,7 +13,7 @@
         <div class="is-pulled-left mr-4">
           <figure 
             class="image mb-2"
-            :style="{backgroundImage: `url(${getTeamAvatar(team)})`}  "
+            :style="{backgroundImage: `url(${teamAvatar(team)})`}  "
           >
           </figure>
           <div 
@@ -43,7 +43,7 @@ import { defineComponent, PropType } from 'vue'
 import { Team } from '@/types'
 import { mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
-import { TEAM_AVATAR_PLACEHOLDER } from '@/consts'
+import { getTeamAvatar } from '@/helpers/teamHelper'
 
 export default defineComponent({
   props: {
@@ -60,13 +60,7 @@ export default defineComponent({
     ...mapStores(useUserStore)
   },
   methods: {
-    getTeamAvatar(team:Team):string {
-      let result = TEAM_AVATAR_PLACEHOLDER
-      if (team.avatar) {
-        result = team.avatar.url
-      }
-      return result
-    },
+    teamAvatar: getTeamAvatar,
     isCurrentUserTeamMember(team:Team):boolean {
       let result = false
       if(this.userStore.profile) {

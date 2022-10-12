@@ -24,10 +24,11 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Team } from '@/types'
-import { TeamRole } from '@/enums'
+import { TeamRole, LogLevel } from '@/enums'
 import { mapStores } from 'pinia'
 import TeamForm from '@/components/team/TeamForm.vue'
 import { useUserStore } from '@/store/user'
+import { useFlashStore } from '@/store/flash'
 import log from '@/services/logger'
 
 const MODULE_ID = 'views/TeamNew'
@@ -35,7 +36,7 @@ const MODULE_ID = 'views/TeamNew'
 export default defineComponent({
   components: { TeamForm },
   computed: {
-    ...mapStores(useUserStore)
+    ...mapStores(useUserStore, useFlashStore)
   },
   methods: {
     onCancel() {
@@ -46,6 +47,9 @@ export default defineComponent({
       this.userStore.addTeam(team, TeamRole.admin)
         .then(result => {
           this.$router.replace({ name: 'team-show', params: { id: team.id }})
+            .then(() => {
+              this.flashStore.$patch({ message: 'Team saved', level: LogLevel.success })
+            })
         })
         .catch(error => {
           log.warn(MODULE_ID, '#onTeamSaved > Error adding Team to User')

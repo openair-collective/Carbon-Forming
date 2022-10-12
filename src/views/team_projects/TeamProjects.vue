@@ -6,41 +6,13 @@
       </h3>
     </header>
     <article>
-      <div v-if="team.projects" class="box box--with-border">
-        <table class="table is-fullwidth">
-          <thead>
-            <tr>
-              <th>Project Name</th>
-              <th>Competitions</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="(project, i) in team.projects" :key="'project_'+ i">
-              <td>
-                <router-link :to="{ name: 'team-project-show', params: { project_id: project.id }}">
-                {{ project.name }}
-              </router-link>
-              </td>
-              <td>
-                <router-link
-                  v-if="project.competition"
-                  :to="{ name: 'comp-show', params: { id: project.competition.id }}"
-                  >
-                  {{ project.competition.name }}
-                </router-link>
-                <button 
-                  v-else
-                  class="button is-info is-small"
-                >
-                  Submit to Competition
-                </button>
-              </td>
-              <td><button class="button">...</button></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <project-list
+        v-if="team.projects" 
+        :list="team.projects"
+        :can-edit="true"
+        :show-team="false"
+        @project-click="onProjectClick"
+      />
       <div v-else>
         <h4 class="title is-5">No projects yet</h4>
       </div>
@@ -54,13 +26,14 @@ import { Team, Project, Competition } from '@/types'
 import { mapStores } from 'pinia'
 import { useTeamsStore } from '@/store/teams'
 import { useCompetitionsStore } from '@/store/competitions'
+import ProjectList from '@/components/project/ProjectList.vue'
 import Loading from '@/components/Loading.vue'
 
 import log from '@/services/logger'
 const MODULE_ID ='components/team_projects/TeamProjects'
 
 export default defineComponent({
-  components: { Loading },
+  components: { ProjectList, Loading },
   props: {
     team: {
       type: Object as () => Team,
@@ -78,8 +51,19 @@ export default defineComponent({
     }
   },
   created() {
-    if (!this.team.projects) {
-      this.teamsStore.fetchTeamProjects(this.team)
+    this.fetchProjects()
+  },
+  beforeRouteUpdate() {
+    this.fetchProjects()
+  },
+  methods: {
+    fetchProjects() {
+      if (!this.team.projects || !this.team.projects.length) {
+        this.teamsStore.fetchTeamProjects(this.team)
+      }
+    },
+    onProjectClick(project:Project) {
+      this.$router.push({ name: 'team-project-show', params: { project_id: project.id }})
     }
   }
 })
