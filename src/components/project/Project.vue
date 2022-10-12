@@ -1,26 +1,16 @@
 <template>
   <section>
-    <header class="header p-4">
+    <header class="header mb-4">
       <h1 class="title is-3">
         {{ project.name }}
-          <router-link 
-            :to="{name: 'team-project-edit', params: { project_id: project.id }}"
-            class="button is-info is-small is-outlined ml-2"
-          >
-            Edit Project
-          </router-link>
       </h1>
     </header>
-    <article class="article p-4">
-      <h2 class="title is-4">Competition</h2>
-      <div v-if="project.competition" class="box box--with-border">
-        <router-link :to="{ name: 'competitions', params: { id: project.competition.id}}">
-          Competition Link
+    <article class="article">
+      <div v-if="project.competition && showCompetition" class="box box--with-border">
+        <h2 class="title is-4">Competition</h2>
+        <router-link :to="{ name: 'comp-show', params: { id: project.competition.id}}">
+          {{ project.competition.name }}
         </router-link>
-      </div>
-      <div v-else class="box box--with-border has-text-centered">
-        <p class="mb-4">You have not entered this project in a competition yet</p>
-        <button class="button is-info">Submit to a Competition</button>
       </div>
       <h2 class="title is-4">Bill of Materials</h2>
       <div class="box box--with-border">
@@ -74,8 +64,6 @@
           </router-link>
         </template>
       </div>
-      <h2 class="title is-4">OpenAir Github Link</h2>
-      <div class="box box--with-border"></div>
     </article>
   </section>
 </template>
@@ -92,6 +80,10 @@ export default defineComponent({
     project: {
       type: Object as () => Project,
       required: true
+    },
+    showCompetition: {
+      type: Boolean,
+      default: false
     }
   }
 })

@@ -3,8 +3,11 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Dashboard from '@/views/Dashboard.vue'
 import Competitions from '@/views/competitions/Competitions.vue'
 import CompetitionShow from '@/views/competitions/CompetitionShow.vue'
+import CompetitionDetail from '@/views/competitions/CompetitionDetail.vue'
 import CompetitionNew from '@/views/competitions/CompetitionNew.vue'
 import CompetitionEdit from '@/views/competitions/CompetitionEdit.vue'
+import CompetitionProject from '@/views/competition_projects/CompetitionProject.vue'
+import CompetitionProjects from '@/views/competition_projects/CompetitionProjects.vue'
 import Teams from '@/views/teams/Teams.vue'
 import TeamShow from '@/views/teams/TeamShow.vue'
 import TeamDetail from '@/views/teams/TeamDetail.vue'
@@ -93,8 +96,25 @@ const routes: RouteRecordRaw[] = [
       },
       {
         path: '/competitions/:id',
-        name: 'comp-show',
-        component: CompetitionShow
+        name: 'comp-parent',
+        component: CompetitionShow, // has router-view -- container team children
+        children: [
+          {
+            path: '',
+            name: 'comp-show',
+            component: CompetitionDetail
+          },
+          {
+            path: 'projects',
+            name: 'comp-projects',
+            component: CompetitionProjects
+          },
+          {
+            path: 'projects/:project_id',
+            name: 'comp-project-show',
+            component: CompetitionProject
+          }
+        ]
       },
       {
         path: '/competitions/:id/edit',

@@ -102,7 +102,7 @@ class FirestoreService {
     const snap = await getDocs(q)
     if (snap.size) {
       result = snap.docs.map(team => {
-        return Object.assign({ id: team.id }, team.data()) as Team
+        return Object.assign({ id: team.id, projects: [] as Project[] }, team.data()) as Team
       })
     }
     return result
@@ -155,7 +155,7 @@ class FirestoreService {
     }
     else {
       const docRef = await addDoc(collection(db, KEY_TEAMS), clone)
-      result = Object.assign(team, { id: docRef.id }) as Team
+      result = Object.assign({ projects: [] as Project[] }, team, { id: docRef.id }) as Team
     }
     return result
   }
@@ -170,7 +170,7 @@ class FirestoreService {
     const teamRef = doc(db, KEY_TEAMS, team_id)
     const team = await getDoc(teamRef)
     let data = team.data() || {}
-    return Object.assign(data, { id: team.id }) as Team
+    return Object.assign({ projects: [] as Project[] }, data, { id: team.id }) as Team
   }
 
   async getTeams(after?:Team):Promise<Team[]> {
@@ -194,7 +194,7 @@ class FirestoreService {
     const docsSnap = await getDocs(q)
     if (docsSnap.size) {
       result = docsSnap.docs.map(team => {
-        return Object.assign({ id: team.id }, team.data()) as Team
+        return Object.assign({ id: team.id, projects: [] as Project[] }, team.data()) as Team
       })
     }
     return result

@@ -84,6 +84,8 @@ const TEAM_PATHS = {
   COMPS: 'team-competitions'
 }
 
+const TEAM_PROJECT_ROOT_PATH = 'team-project'
+
 export default defineComponent({
   components: { Loading },
   data() {
@@ -116,8 +118,8 @@ export default defineComponent({
   created() {
     const id = this.$route.params.id as string
     this.setTeamByID(id)
-    const name = this.$route.name
-    if (name === TEAM_PATHS.PROJECTS) {
+    const name = this.$route.name as string
+    if (name.indexOf(TEAM_PROJECT_ROOT_PATH) !== -1) {
       this.activeTab = TABS.PROJECTS
     }
     if (name === TEAM_PATHS.COMPS) {

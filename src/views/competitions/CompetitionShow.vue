@@ -56,66 +56,22 @@
       <div class="tabs mb-0 pb-0">
         <ul>
           <li 
-            @click="activeTab = kTabs.DETAILS"
-            :class="{'is-active': activeTab === kTabs.DETAILS}"
+            @click="onTabClick(eTabs.DETAILS)"
+            :class="{'is-active': activeTab === eTabs.DETAILS}"
           >
             <a>Competition Details</a>
           </li>
           <li
-            @click="(activeTab = kTabs.PROJECTS) && setProjects()"
-            :class="{'is-active': activeTab === kTabs.PROJECTS}"
+            @click="onTabClick(eTabs.PROJECTS)"
+            :class="{'is-active': activeTab === eTabs.PROJECTS}"
           >
             <a>Submitted Projects</a>
           </li>
         </ul>
       </div>
     </header>
-    <article 
-      v-if="activeTab === kTabs.DETAILS"
-      class="article p-5 is-flex-grow-1 has-background-white-bis "
-    >
-      <div class="columns">
-        <div class="column is-8">
-          <h2 class="title is-4 mb-2">Competition Details</h2>
-          <div class="mb-4">{{ competition.description }}</div>
-          <h2 class="title is-4 mb-2">Competition Rules</h2>
-          <div class="mb-4">{{ competition.rules }}</div>
-          <h2 class="title is-4 mb-2">Judging Criteria</h2>
-          <div class="mb-4">{{ competition.criteria }}</div>
-        </div>
-        <div
-          v-if="!competition.prizesDisabled"
-          class="column"
-        >
-          <table class="table is-fullwidth">
-            <tr>
-              <td>First Prize</td>
-              <td>{{ competition.prizes.first }}</td>
-            </tr>
-            <tr>
-              <td>Second Prize</td>
-              <td>{{ competition.prizes.second }}</td>
-            </tr>
-            <tr>
-              <td>Runner Up</td>
-              <td>{{ competition.prizes.third }}</td>
-            </tr>
-          </table>
-        </div>
-      </div>
-    </article>
-    <article 
-      v-else-if="activeTab === kTabs.PROJECTS"
-      class="article p-5 is-flex-grow-1 has-background-white-bis"
-    >
-      <h2 class="title is-4">Submitted Projects</h2>
-        <project-list
-          v-if="competition.projects && competition.projects.length"
-          :list="competition.projects"
-        />
-        <div v-else>
-          No projects
-        </div>
+    <article class="article has-background-white-bis p-5 my-0 is-flex-grow-1">
+      <router-view :competition="competition" />
     </article>
   </section>
   <div v-else-if="error" class="notification is-error">>
@@ -135,22 +91,28 @@ import { canEditCompetitions } from '@/helpers/authHelper'
 import { dayMonth, dayMonthYear, fsTimestampToDate } from '@/utils/date'
 import Loading from '@/components/Loading.vue'
 import CountdownTimer from '@/components/CountdownTimer.vue'
-import ProjectList from '@/components/project/ProjectList.vue'
 import { ERROR_PAGE_LOAD } from '@/consts'
 import log from '@/services/logger'
 
 const MODULE_ID ='views/competition'
 
-const TABS = {
-  DETAILS: 0,
-  PROJECTS: 1
+enum TABS {
+  DETAILS,
+  PROJECTS
 }
 
+const COMP_PATHS = {
+  DETAILS: 'comp-show',
+  PROJECTS: 'comp-projects',
+}
+
+const COMP_PROJECT_ROOT_PATH = 'comp-project'
+
 export default defineComponent({
-  components: { Loading, CountdownTimer, ProjectList },
+  components: { Loading, CountdownTimer},
   data() {
     return {
-      kTabs: TABS,
+      eTabs: TABS,
       kDayMonth: dayMonth,
       kDayMonthYear: dayMonthYear,
       kfsTimestampToDate: fsTimestampToDate,
@@ -174,8 +136,28 @@ export default defineComponent({
   async created() {
     const id = this.$route.params.id as string
     this.setCompetitonByID(id)
+    const name = this.$route.name as string
+    if (name.indexOf(COMP_PROJECT_ROOT_PATH) !== -1){
+      this.activeTab = TABS.PROJECTS
+    }
+    if (name === COMP_PATHS.DETAILS) {
+      this.activeTab = TABS.DETAILS
+    }
   },
   methods: {
+    onTabClick(tab:number) {
+      this.activeTab = tab
+      if (this.competition) {
+        let path
+        if (tab === TABS.PROJECTS) {
+          path =  { name: COMP_PATHS.PROJECTS }
+        }
+        else {
+          path = { name: COMP_PATHS.DETAILS }
+        }
+        this.$router.push(path)
+      }
+    },
     setCompetitonByID(id:string) {
       this.competitionsStore.getCompetitionById(id)
         .then(result => {
@@ -189,11 +171,6 @@ export default defineComponent({
         .catch(error => {
           this.error = ERROR_PAGE_LOAD
         })
-    },
-    setProjects() {
-      if (this.competition && !this.competition.projects) {
-        this.competitionsStore.fetchCompetitionProjects(this.competition)
-      }
     },
     onEnterCompetition() {
       this.modalStore.options = {
