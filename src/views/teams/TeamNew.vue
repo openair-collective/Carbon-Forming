@@ -24,6 +24,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Team } from '@/types'
+import { TeamRole } from '@/enums'
 import { mapStores } from 'pinia'
 import TeamForm from '@/components/team/TeamForm.vue'
 import { useUserStore } from '@/store/user'
@@ -42,7 +43,7 @@ export default defineComponent({
       this.$router.replace({ name: 'root'})
     },
     onTeamSaved(team:Team) {
-      this.userStore.addTeam(team)
+      this.userStore.addTeam(team, TeamRole.admin)
         .then(result => {
           this.$router.replace({ name: 'team-show', params: { id: team.id }})
         })
