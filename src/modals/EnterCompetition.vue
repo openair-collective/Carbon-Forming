@@ -127,7 +127,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { LogLevel } from '@/enums'
+import { TeamRole, LogLevel } from '@/enums'
 import { mapStores } from 'pinia'
 import { Competition, Team, Project, Material } from '@/types'
 import { useUserStore } from '@/store/user'
@@ -210,8 +210,11 @@ export default defineComponent({
       this.$emit('close')
     },
     onTeamSaved(team:Team) {
-      this.team = team
-      this.step = STEPS.CHOOSE_TEAM
+      this.userStore.addTeam(team, TeamRole.admin)
+        .then(()=> {
+          this.team = team
+          this.step = STEPS.CHOOSE_TEAM
+        })
     },
     onTeamFormCancel() {
       this.step = STEPS.CHOOSE_TEAM

@@ -70,6 +70,9 @@ export const useCompetitionsStore = defineStore('competitions', {
         const response = await firestore.saveCompetition(comp)
         comp = { ...comp, ...response }
         if (insert) {
+          if (!this.list) {
+            await this.fetch()
+          }
           let list_patch = this.list?.slice() || []
           const comp_before = list_patch.find(c => {
             const isBeforeName = comp.name > c.name

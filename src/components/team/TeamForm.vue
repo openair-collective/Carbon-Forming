@@ -209,7 +209,6 @@ export default defineComponent({
           .then(result => {
             Object.assign(this.team, result)
             this.clone = { ...this.team}
-            this.flashStore.$patch({ message: 'Team saved', level: LogLevel.success })
             this.$emit("team-saved", result)
           })
           .catch(error => {

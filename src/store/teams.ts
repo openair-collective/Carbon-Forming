@@ -69,6 +69,9 @@ export const useTeamsStore = defineStore('teams', {
           await this.saveTeamAvatar(team, avatar)
         }
         if (insert) {
+          if (!this.list) {
+            await this.fetch()
+          }
           let list_patch = this.list?.slice() || []
           const team_before = list_patch.find(t => {
             return team.name > t.name

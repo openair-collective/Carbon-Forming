@@ -110,7 +110,10 @@ export const useUserStore = defineStore('user', {
           team.members[this.profile.id] = role
           this.profile.teams = this.profile.teams || {}
           this.profile.teams[team.id] = role
-          let patch = this.teams || []
+          if (!this.teams) {
+            await this.fetchTeams()
+          }
+          let patch = this.teams || [] as Team[]
           patch.push(team)
           this.teams = patch
         }

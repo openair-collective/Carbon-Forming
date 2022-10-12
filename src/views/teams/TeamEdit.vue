@@ -20,6 +20,7 @@
         v-if="team"
         :team="team"
         @cancel="onCancel"
+        @team-saved="onTeamSaved"
       />
     </article>
   </section>
@@ -79,6 +80,9 @@ export default defineComponent({
             this.flashStore.$patch({ message: ERROR_AUTH, level: LogLevel.warning })
           })
       }
+    },
+    onTeamSaved() {
+      this.flashStore.$patch({ message: 'Team saved', level: LogLevel.success })
     },
     onCancel() {
       if (this.team){

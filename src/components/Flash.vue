@@ -4,12 +4,12 @@
     :message="message" 
     :level="level"
     @remove="reset"
-    class="has-border-radius-0 is-flex-grow-0"
+    class="has-border-radius-0 is-flex-grow-0 m-0"
   />
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue'
+import { defineComponent } from 'vue'
 import { mapState, mapStores } from 'pinia'
 import { useFlashStore } from '@/store/flash'
 import Notification from './Notification.vue'

@@ -96,8 +96,8 @@ class FirestoreService {
   async getUserTeams(user:UserProfile):Promise<Team[]> {
     let result = [] as Team[]
     const q = query(
-      collection(db, KEY_TEAMS), 
-      where(`members.${user.id}`, '!=', null)
+      collection(db, KEY_TEAMS),
+      where(`members.${user.id}`, '!=', null),
     )
     const snap = await getDocs(q)
     if (snap.size) {
@@ -105,6 +105,9 @@ class FirestoreService {
         return Object.assign({ id: team.id, projects: [] as Project[] }, team.data()) as Team
       })
     }
+    result.sort((a, b) => {
+      return a.name.localeCompare(b.name)
+    })
     return result
   }
 
