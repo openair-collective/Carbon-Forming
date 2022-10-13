@@ -1,30 +1,28 @@
 import { TeamRole } from "@/enums"
 
-export declare interface OAuth {
+export type OAuth = {
   firebase_access_token:string
   discord_access_token:string
   discord_id:string
 }
 
-export declare interface UserProfile {
+export type UserProfile = {
   id: string
   avatar:string
   username:string
-  teams:{ [key:Team['id']]: TeamRole }
+  teams:{ [key:string]: TeamRole }
 }
 
-export declare interface Guild {
-  id?:string
+export type Guild = {
+  id:string
   roles:string[]
   user: {
     username: string
   }
 }
 
-// persisted
-
-export declare interface Team {
-  id:string
+export type Team = {
+  id?:string
   name:string
   location:string
   about:string
@@ -35,19 +33,19 @@ export declare interface Team {
   projects?: Project[]
 }
 
-export declare interface Project {
-  id: string
+export type Project = {
+  id?: string
   name:string
   design_doc:FileUpload | null
   design_doc_url:string
   terms:boolean
   materials:Material[]
-  team:Team
+  team?:Team
   competition?:Competition
 }
 
-export declare interface Competition {
-  id: string
+export type Competition = {
+  id?: string
   name:string
   description:string
   rules:string
@@ -58,35 +56,38 @@ export declare interface Competition {
     second:string
     third:string
   }
+  leaderboard: {
+    first: { [key:string]: string },
+    second: { [key:string]: string },
+    third: { [key:string]: string }
+  }
   start_date:Timestamp | null
   end_date:Timestamp | null
   projects?: Project[]
 }
 
-// end persisted
-
-export declare interface Material {
+export type Material = {
   name: string
   cost: number
   quantity: number
   link: string
 }
 
-export declare interface Modal {
-  title:string
-  component:string,
-  fullscreen?:boolean,
-  close?:boolean,
-  meta?:object
-}
-
-export declare interface FileUpload {
+export type FileUpload = {
   filename:string
   url:string
   path:string
 }
 
-export declare interface Timestamp {
+export type Modal = {
+  title:string
+  component:string
+  fullscreen?:boolean
+  close?:boolean
+  meta?:object
+}
+
+export type Timestamp = {
   nanoseconds:number
   seconds:number
 }

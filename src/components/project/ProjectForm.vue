@@ -42,14 +42,15 @@ import Notification from '@/components/Notification.vue'
 import log from '@/services/logger'
 const MODULE_ID = 'components/project/ProjectForm'
 
-const DEFAULT_PROJECT = {
+const PROJECT_PARTIAL = {
   id: '',
   name: '',
   terms: false,
   design_doc: null,
   design_doc_url: '',
-  materials: []
-}
+  materials: [],
+  team: undefined
+} as Project
 
 export default defineComponent({
   components: { Notification, ProjectInput },
@@ -60,12 +61,16 @@ export default defineComponent({
     },
     project: {
       type: Object as () => Project,
-      default: DEFAULT_PROJECT
+      default: PROJECT_PARTIAL
     }
   },
   data() {
     return {
-      clone: { ...this.project } as Project,
+      clone: {
+        ...PROJECT_PARTIAL,
+        ...this.project,
+        ...{ team: this.team } 
+      } as Project,
       isSaving: false,
       inputRef: undefined as InstanceType<typeof ProjectInput>|undefined
     }

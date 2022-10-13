@@ -7,7 +7,7 @@ import log from '@/services/logger'
 const MODULE_ID = 'store/projects'
 
 interface State {
-  projects: { [key:Project['id']]: Project }
+  projects: { [key:string]: Project }
 }
 
 export const useProjectsStore = defineStore('projects', {
@@ -18,7 +18,6 @@ export const useProjectsStore = defineStore('projects', {
     async saveProject(project:Project, design_doc?:File):Promise<Project|undefined> {
       try {
         const response = await firestore.saveProject(project)
-        project = { ...project, ...response }
         if (design_doc) {
           await this.saveProjectDesignDoc(project, design_doc)
         }
