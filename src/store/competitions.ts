@@ -73,23 +73,25 @@ export const useCompetitionsStore = defineStore('competitions', {
           if (!this.list) {
             await this.fetch()
           }
-          let list_patch = this.list?.slice() || []
-          const comp_before = list_patch.find(c => {
-            const isBeforeName = comp.name > c.name
-            let isBeforeStart = false
-            if (comp.start_date && c.start_date) {
-              isBeforeStart = comp.start_date.seconds < c.start_date.seconds
-            }
-            return isBeforeName && isBeforeStart
-          })
-          if (comp_before) {
-            let idx = list_patch.indexOf(comp_before)
-            list_patch.splice(idx, 0, comp)
-          }
           else {
-            list_patch.push(comp)
+            let list_patch = this.list?.slice() || []
+            const comp_before = list_patch.find(c => {
+              const isBeforeName = comp.name > c.name
+              let isBeforeStart = false
+              if (comp.start_date && c.start_date) {
+                isBeforeStart = comp.start_date.seconds < c.start_date.seconds
+              }
+              return isBeforeName && isBeforeStart
+            })
+            if (comp_before) {
+              let idx = list_patch.indexOf(comp_before)
+              list_patch.splice(idx, 0, comp)
+            }
+            else {
+              list_patch.push(comp)
+            }
+            this.list = list_patch
           }
-          this.list = list_patch
         }
         return comp
       }

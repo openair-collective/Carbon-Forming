@@ -113,9 +113,11 @@ export const useUserStore = defineStore('user', {
           if (!this.teams) {
             await this.fetchTeams()
           }
-          let patch = this.teams || [] as Team[]
-          patch.push(team)
-          this.teams = patch
+          else {
+            let patch = this.teams || [] as Team[]
+            patch.push(team)
+            this.teams = patch
+          }
         }
         catch(error) {
           let message = (error instanceof Error) ? error.message : String(error)

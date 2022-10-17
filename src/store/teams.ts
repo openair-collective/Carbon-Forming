@@ -69,18 +69,20 @@ export const useTeamsStore = defineStore('teams', {
           if (!this.list) {
             await this.fetch()
           }
-          let list_patch = this.list?.slice() || []
-          const team_before = list_patch.find(t => {
-            return team.name > t.name
-          })
-          if (team_before) {
-            let idx = list_patch.indexOf(team_before)
-            list_patch.splice(idx, 0, team)
-          }
           else {
-            list_patch.push(team)
+            let list_patch = this.list?.slice() || []
+            const team_before = list_patch.find(t => {
+              return team.name > t.name
+            })
+            if (team_before) {
+              let idx = list_patch.indexOf(team_before)
+              list_patch.splice(idx, 0, team)
+            }
+            else {
+              list_patch.push(team)
+            }
+            this.list = list_patch
           }
-          this.list = list_patch
         }
         return team
       }
