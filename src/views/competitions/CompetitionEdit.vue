@@ -33,7 +33,7 @@ import { mapState, mapStores } from 'pinia'
 import { useCompetitionsStore } from '@/store/competitions'
 import { useUserStore } from '@/store/user'
 import { useFlashStore } from '@/store/flash'
-import { ERROR_PAGE_LOAD, ERROR_AUTH } from '@/consts'
+import { ERROR_NOT_FOUND, ERROR_AUTH } from '@/consts'
 import { canEditCompetitions } from '@/helpers/authHelper'
 import log from '@/services/logger'
 
@@ -64,11 +64,17 @@ export default defineComponent({
               this.competition = result
             }
             else {
-              this.flashStore.$patch({ message: ERROR_PAGE_LOAD, level: LogLevel.error })
+              throw new Error('Competition not found.')
             }
           })
           .catch(error => {
-            this.flashStore.$patch({ message: ERROR_PAGE_LOAD, level: LogLevel.error })
+            this.$router.replace({ name: 'competitions'})
+              .then(()=> {
+                this.flashStore.$patch({ 
+                  message: ERROR_NOT_FOUND,
+                  level: LogLevel.error
+                })
+              })
           })
       }
       else {

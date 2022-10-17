@@ -53,9 +53,6 @@
       <router-view :team="team" />
     </article>
   </section>
-  <div v-else-if="error" class="notification is-error">>
-    {{ error }}
-  </div>
   <loading v-else />
 </template>
 
@@ -64,11 +61,13 @@ import { defineComponent } from 'vue'
 import { mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
 import { useTeamsStore } from '@/store/teams'
+import { useFlashStore } from '@/store/flash'
 import { Team } from '@/types'
 import { canEditTeamWithId } from '@/helpers/authHelper'
 import Loading from '@/components/Loading.vue'
-import { TEAM_AVATAR_PLACEHOLDER, ERROR_PAGE_LOAD } from '@/consts'
+import { TEAM_AVATAR_PLACEHOLDER, ERROR_NOT_FOUND } from '@/consts'
 import log from '@/services/logger'
+import { LogLevel } from '@/enums'
 
 const MODULE_ID ='components/teams/TeamShow'
 
@@ -94,12 +93,11 @@ export default defineComponent({
       team: null as Team | null,
       activeTab: TABS.DETAILS,
       backButtonLabel: '',
-      backButtonPath: '',
-      error: ''
+      backButtonPath: ''
     }
   },
   computed: {
-    ...mapStores(useTeamsStore, useUserStore),
+    ...mapStores(useTeamsStore, useUserStore, useFlashStore),
     avatar():string {
       let result = TEAM_AVATAR_PLACEHOLDER
       if (this.team && this.team.avatar) {
@@ -109,7 +107,7 @@ export default defineComponent({
     },
     canEdit():boolean {
       let result = false
-      if (this.team && this.userStore.profile) {
+      if (this.team && this.team.id && this.userStore.profile) {
         result = canEditTeamWithId(this.userStore.profile, this.team.id)
       }
       return result
@@ -151,11 +149,17 @@ export default defineComponent({
             this.team = result
           }
           else {
-              this.error = ERROR_PAGE_LOAD
-            }
+            throw new Error('Team not found.')
+          }
         })
         .catch(error => {
-          this.error = ERROR_PAGE_LOAD
+          this.$router.replace({ name: 'my-teams'})
+            .then(()=> {
+              this.flashStore.$patch({ 
+                message: ERROR_NOT_FOUND,
+                level: LogLevel.error
+              })
+            })
         })
     },
     onTabClick(tab:number) {

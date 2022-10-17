@@ -154,6 +154,7 @@ const DEFAULT_COMP = {
     second: '',
     third: ''
   },
+  leaderboard: {},
   start_date: null,
   end_date: null,
   projects: []

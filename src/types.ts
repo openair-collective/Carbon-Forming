@@ -22,7 +22,7 @@ export type Guild = {
 }
 
 export type Team = {
-  id?:string
+  id:string
   name:string
   location:string
   about:string
@@ -34,7 +34,7 @@ export type Team = {
 }
 
 export type Project = {
-  id?: string
+  id: string
   name:string
   design_doc:FileUpload | null
   design_doc_url:string
@@ -45,7 +45,7 @@ export type Project = {
 }
 
 export type Competition = {
-  id?: string
+  id: string
   name:string
   description:string
   rules:string
@@ -56,11 +56,7 @@ export type Competition = {
     second:string
     third:string
   }
-  leaderboard: {
-    first: { [key:string]: string },
-    second: { [key:string]: string },
-    third: { [key:string]: string }
-  }
+  leaderboard: { [key:Project['id']]: number }
   start_date:Timestamp | null
   end_date:Timestamp | null
   projects?: Project[]

@@ -37,7 +37,7 @@ import { useTeamsStore } from '@/store/teams'
 import { useUserStore } from '@/store/user'
 import { useFlashStore } from '@/store/flash'
 import { mapStores } from 'pinia'
-import { ERROR_PAGE_LOAD, ERROR_AUTH } from '@/consts'
+import { ERROR_NOT_FOUND, ERROR_AUTH } from '@/consts'
 import { canEditTeamWithId } from '@/helpers/authHelper'
 import log from '@/services/logger'
 
@@ -67,11 +67,17 @@ export default defineComponent({
             this.team = result
           }
           else {
-            this.flashStore.$patch({ message: ERROR_PAGE_LOAD, level: LogLevel.error })
+            throw new Error('Team not found.')
           }
         })
         .catch(error => {
-          this.flashStore.$patch({ message: ERROR_PAGE_LOAD, level: LogLevel.error })
+          this.$router.replace({ name: 'my-teams'})
+            .then(()=> {
+              this.flashStore.$patch({ 
+                message: ERROR_NOT_FOUND,
+                level: LogLevel.error
+              })
+            })
         })
       }
       else {
