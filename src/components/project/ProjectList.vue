@@ -17,9 +17,9 @@
           </router-link>
         </div>
       </div>
-      <div v-if="showTeam" class="mt-5">
+      <div v-if="showTeam && project.team" class="mt-5">
         <div class="is-pulled-left mr-5">
-          <figure 
+          <figure
             class="image image--team mb-2"
             :style="{backgroundImage: `url(${teamAvatar(project.team)})`}  "
           >

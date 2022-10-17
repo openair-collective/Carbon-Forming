@@ -83,15 +83,17 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Competition, Project } from '@/types'
+import { LogLevel } from '@/enums'
 import { mapState, mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
 import { useCompetitionsStore } from '@/store/competitions'
 import { useModalStore } from '@/store/modal'
+import { useFlashStore } from '@/store/flash'
 import { canEditCompetitions } from '@/helpers/authHelper'
 import { dayMonth, dayMonthYear, fsTimestampToDate } from '@/utils/date'
 import Loading from '@/components/Loading.vue'
 import CountdownTimer from '@/components/CountdownTimer.vue'
-import { ERROR_PAGE_LOAD } from '@/consts'
+import { ERROR_NOT_FOUND } from '@/consts'
 import log from '@/services/logger'
 
 const MODULE_ID ='views/competition'
@@ -123,7 +125,7 @@ export default defineComponent({
     }
   },
   computed: { 
-    ...mapStores(useCompetitionsStore, useUserStore, useModalStore),
+    ...mapStores(useCompetitionsStore, useUserStore, useModalStore, useFlashStore),
     ...mapState(useUserStore, ['guild']),
     canEdit():boolean {
       let result = false
@@ -165,11 +167,17 @@ export default defineComponent({
             this.competition = result
           }
           else {
-            this.error = ERROR_PAGE_LOAD
+            throw new Error('Competition not found.')
           }
         })
         .catch(error => {
-          this.error = ERROR_PAGE_LOAD
+          this.$router.replace({ name: 'competitions'})
+            .then(()=> {
+              this.flashStore.$patch({ 
+                message: ERROR_NOT_FOUND,
+                level: LogLevel.error
+              })
+            })
         })
     },
     onEnterCompetition() {

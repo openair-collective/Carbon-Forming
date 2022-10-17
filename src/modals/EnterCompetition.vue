@@ -233,9 +233,6 @@ export default defineComponent({
             if (comp.projects) {
               comp.projects.push(this.project)
             }
-            else {
-              comp.projects = [this.project]
-            }
             this.modalStore.options = {
                 title: 'Project Submitted',
                 component: 'Message',

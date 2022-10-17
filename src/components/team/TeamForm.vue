@@ -154,6 +154,7 @@ export default defineComponent({
       kAvatarPlaceholder: AVATAR_PLACEHOLDER,
       kAboutPlacehoder: ABOUT_PLACEHOLDER,
       avatarPreviewUrl: ''
+
     }
   },
   computed: {

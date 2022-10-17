@@ -7,7 +7,6 @@ import {
   addDoc,
   getDoc,
   setDoc,
-  updateDoc,
   getDocs,
   collection,
   doc,
@@ -22,6 +21,11 @@ import {
   limit
 } from "firebase/firestore" 
 import { PAGING_SIZE } from "@/consts"
+import {
+  teamConverter,
+  projectConverter,
+  compConverter
+} from '@/services/firestore_converters'
 
 const MODULE_ID = 'services/firestore'
 const KEY_USERS = 'users'
@@ -36,30 +40,6 @@ export const db = getFirestore(app)
 
 if (import.meta.env.DEV) {
   connectFirestoreEmulator(db, 'localhost', 8080)
-}
-
-const TEAM_PARAMS_BLACKLIST = [ 'id', 'projects']
-
-function team_params(team:Team):Team {
-  const clone:Team = { ...team, ...{}}
-  TEAM_PARAMS_BLACKLIST.forEach(key => delete clone[key as keyof Team])
-  return clone
-}
-
-const PROJECT_PARAMS_BLACKLIST = [ 'id']
-
-function project_params(project:Project):Project {
-  const clone = { ...project, ...{}}
-  PROJECT_PARAMS_BLACKLIST.forEach(key => delete clone[key as keyof Project])
-  return clone
-}
-
-const COMP_PARAMS_BLACKLIST = [ 'id', 'projects']
-
-function comp_params(comp:Competition):Competition {
-  const clone = { ...comp, ...{}}
-  COMP_PARAMS_BLACKLIST.forEach(key => delete clone[key as keyof Competition])
-  return clone
 }
 
 const USER_PROFILE_PARAMS_BLACKLIST = [ 'id', 'avatar']
@@ -96,14 +76,12 @@ class FirestoreService {
   async getUserTeams(user:UserProfile):Promise<Team[]> {
     let result = [] as Team[]
     const q = query(
-      collection(db, KEY_TEAMS),
+      collection(db, KEY_TEAMS).withConverter(teamConverter),
       where(`members.${user.id}`, '!=', null),
     )
     const snap = await getDocs(q)
     if (snap.size) {
-      result = snap.docs.map(team => {
-        return Object.assign({ id: team.id, projects: [] as Project[] }, team.data()) as Team
-      })
+      result = snap.docs.map(team => team.data() as Team)
     }
     result.sort((a, b) => {
       return a.name.localeCompare(b.name)
@@ -112,20 +90,25 @@ class FirestoreService {
   }
 
   async addTeamToUser(team:Team, user:UserProfile, role:TeamRole=TeamRole.default):Promise<void> {
-    const batch = writeBatch(db)
-    // save team ref to user.teams
-    const userRef = doc(db, KEY_USERS, user.id)
-    batch.set(userRef, { teams: {
-        [`${team.id}`]: role
-      }
-    }, { merge: true })
-    // save user to team to  team.members
-    const teamRef = doc(db, KEY_TEAMS, team.id)
-    batch.set(teamRef, { members: {
-        [`${user.id}`]: role
-      }
-    }, { merge: true })
-    await batch.commit()
+    if (team.id) {
+      const batch = writeBatch(db)
+      // save team ref to user.teams
+      const userRef = doc(db, KEY_USERS, user.id)
+      batch.set(userRef, { teams: {
+          [`${team.id}`]: role
+        }
+      }, { merge: true })
+      // save user to team to  team.members
+      const teamRef = doc(db, KEY_TEAMS, team.id)
+      batch.set(teamRef, { members: {
+          [`${user.id}`]: role
+        }
+      }, { merge: true })
+      await batch.commit()
+    }
+    else {
+      throw new Error(`${MODULE_ID} #addTeamToUser > Team instance must have an id `)
+    }
   }
 
   async removeTeamFromUser(team:Team, user:UserProfile) {
@@ -151,34 +134,37 @@ class FirestoreService {
 
   async saveTeam(team:Team):Promise<Team> {
     let result = team
-    const clone = team_params(team)
     if (team.id) {
-      const ref = doc(db, KEY_TEAMS, team.id)
-      await setDoc(ref, clone, { merge: true })
+      const ref = doc(db, KEY_TEAMS, team.id).withConverter(teamConverter)
+      await setDoc(ref, team, { merge: true })
     }
     else {
-      const docRef = await addDoc(collection(db, KEY_TEAMS), clone)
-      result = Object.assign({ projects: [] as Project[] }, team, { id: docRef.id }) as Team
+      const docRef = await addDoc(collection(db, KEY_TEAMS), team)
+      team.id = docRef.id
     }
     return result
   }
 
   async deleteTeam(team:Team):Promise<void> {
-    // firestore triggers update/deletion of Team relationships
-    const teamsRef = doc(db, KEY_TEAMS, team.id)
-    await deleteDoc(teamsRef)
+    if (team.id) {
+      // firestore triggers update/deletion of Team relationships
+      const teamsRef = doc(db, KEY_TEAMS, team.id)
+      await deleteDoc(teamsRef)
+    }
+    else {
+      throw new Error(`${MODULE_ID} #deleteTeam > Team instance must have an id`)
+    }
   }
 
   async getTeam(team_id:string):Promise<Team> {
-    const teamRef = doc(db, KEY_TEAMS, team_id)
+    const teamRef = doc(db, KEY_TEAMS, team_id).withConverter(teamConverter)
     const team = await getDoc(teamRef)
-    let data = team.data() || {}
-    return Object.assign({ projects: [] as Project[] }, data, { id: team.id }) as Team
+    return team.data() as Team
   }
 
   async getTeams(after?:Team):Promise<Team[]> {
     let result = [] as Team[]
-    const teamsRef = collection(db, KEY_TEAMS)
+    const teamsRef = collection(db, KEY_TEAMS).withConverter(teamConverter)
 
     let q
     if (after) {
@@ -194,110 +180,126 @@ class FirestoreService {
         limit(PAGING_SIZE)
       )
     }
-    const docsSnap = await getDocs(q)
-    if (docsSnap.size) {
-      result = docsSnap.docs.map(team => {
-        return Object.assign({ id: team.id, projects: [] as Project[] }, team.data()) as Team
-      })
+    const snap = await getDocs(q)
+    if (snap.size) {
+      result = snap.docs.map(team => team.data() as Team)
     }
     return result
   }
 
   async saveProject(project:Project):Promise<Project> {
-    let result = project
-    const clone = project_params(project)
-    // avoid recursively saving projects on parents
-    if (clone.team) {
-      delete clone.team.projects
+    // avoid recursively saving projects on embedded associations
+    if (!project.team) {
+      throw new Error(`${MODULE_ID} #saveProject - The Project instance must be associated with a Team`)
     }
-    if (clone.competition) {
-      delete clone.competition.projects
+    if (!project.competition) {
+      throw new Error(`${MODULE_ID} #saveProject - The Project instance must be associated with a Competition`)
     }
     if (project.id) {
-      const ref = doc(db, KEY_PROJECTS, project.id)
-      await updateDoc(ref, clone as object)
+      const ref = doc(db, KEY_PROJECTS, project.id).withConverter(projectConverter)
+      await setDoc(ref, project, { merge: true })
     }
     else {
-      const docRef = await addDoc(collection(db, KEY_PROJECTS), clone)
-      result = Object.assign(project, { id: docRef.id }) as Project
+      const colRef = collection(db, KEY_PROJECTS).withConverter(projectConverter)
+      const docRef = await addDoc(colRef, project)
+      project.id = docRef.id
     }
-    return result
+    return project
   }
 
   async deleteProject(project:Project):Promise<void> {
     // firestore triggers update/deletion of project relationships
-    const projetRef = doc(db, KEY_PROJECTS, project.id)
-    await deleteDoc(projetRef)
+    if (project.id) {
+      const projetRef = doc(db, KEY_PROJECTS, project.id)
+      await deleteDoc(projetRef)
+    }
+    else {
+      throw new Error(`${MODULE_ID} #deleteProject > Project instance must have an id`)
+    }
   }
 
   async getProject(project_id:string):Promise<Project> {
-    const projectRef = doc(db, KEY_PROJECTS, project_id)
+    const projectRef = doc(db, KEY_PROJECTS, project_id).withConverter(projectConverter)
     const project = await getDoc(projectRef)
-    let data = project.data() || {}
-    return Object.assign(data, { id: project.id }) as Project
+    return project.data() as Project
   }
 
   async getProjects():Promise<Project[]> {
     let result = [] as Project[]
-    const ref = collection(db, KEY_PROJECTS)
+    const ref = collection(db, KEY_PROJECTS).withConverter(projectConverter)
     const docsSnap = await getDocs(ref)
     if (docsSnap.size) {
-      result = docsSnap.docs.map(project => Object.assign({ id: project.id }, project.data()) as Project)
+      result = docsSnap.docs.map(project => project.data() as Project)
     }
     return result
   }
 
   async getTeamProjects(team:Team):Promise<Project[]> {
-    let result = [] as Project[]
-    const ref = doc(db, KEY_TEAM_PROJECTS, team.id)
-    const snap = await getDoc(ref)
-    const data = snap.data()
-    if (data) {
-      result = Object.values(data) as Project[]
+    if (team.id) {
+      let result = [] as Project[]
+      const ref = doc(db, KEY_TEAM_PROJECTS, team.id)
+      const snap = await getDoc(ref)
+      const data = snap.data()
+      if (data) {
+        result = Object.values(data) as Project[]
+        result.sort((a,b) => a.name.localeCompare(b.name))
+      }
+      return result
     }
-    return result
+    else {
+      throw new Error(`{MODULE_ID} #getTeamProjects > Team instance must have an id`)
+    }
   }
 
   async getCompetitionProjects(comp:Competition):Promise<Project[]> {
-    let result = [] as Project[]
-    const ref = doc(db, KEY_COMP_PROJECTS, comp.id)
-    const snap = await getDoc(ref)
-    const data = snap.data()
-    if (data) {
-      result = Object.values(data) as Project[]
+    if (comp.id) {
+      let result = [] as Project[]
+      const ref = doc(db, KEY_COMP_PROJECTS, comp.id)
+      const snap = await getDoc(ref)
+      const data = snap.data()
+      if (data) {
+        result = Object.values(data) as Project[]
+      }
+      return result
     }
-    return result
+    else {
+      throw new Error(`{MODULE_ID} #getCompetitionProjects > Competition instance must have an id`)
+    }
   }
 
   async saveCompetition(comp:Competition):Promise<Competition> {
-    let result = comp
-    const clone = comp_params(comp)
     if (comp.id) {
-      const ref = doc(db, KEY_COMPETITIONS, comp.id)
-      await setDoc(ref, clone, { merge: true })
+      const ref = doc(db, KEY_COMPETITIONS, comp.id).withConverter(compConverter)
+      await setDoc(ref, comp, { merge: true })
     }
     else {
-      let docRef = await addDoc(collection(db, KEY_COMPETITIONS), clone)
-      result = Object.assign(comp, { id: docRef.id }) as Competition
+      const colRef = collection(db, KEY_COMPETITIONS).withConverter(compConverter)
+      let docRef = await addDoc(colRef, comp)
+      comp.id = docRef.id
     }
-    return result
+    return comp
   }
 
   async deleteCompetition(comp:Competition):Promise<void> {
     // firestore triggers update/deletion of competition relationships
-    const compRef = doc(db, KEY_COMPETITIONS, comp.id)
-    await deleteDoc(compRef)
+    if (comp.id) {
+      const compRef = doc(db, KEY_COMPETITIONS, comp.id)
+      await deleteDoc(compRef)
+    }
+    else {
+      throw new Error(`{MODULE_ID} #deleteCompetition > Competition instance must have an id`)
+    }
   }
 
   async getCompetition(comp_id:string):Promise<Competition> {
-    const compRef = doc(db, KEY_COMPETITIONS, comp_id)
+    const compRef = doc(db, KEY_COMPETITIONS, comp_id).withConverter(compConverter)
     const comp = await getDoc(compRef)
-    return Object.assign({ id: comp.id }, comp.data()) as Competition
+    return comp.data() as Competition
   }
 
   async getCompetitions(after?:Competition):Promise<Competition[]> {
     let result = [] as Competition[]
-    const competitionsRef = collection(db, KEY_COMPETITIONS)
+    const competitionsRef = collection(db, KEY_COMPETITIONS).withConverter(compConverter)
     let q
     if (after) {
       q = query(competitionsRef,
@@ -314,11 +316,9 @@ class FirestoreService {
         limit(PAGING_SIZE)
       )
     }
-    const docsSnap = await getDocs(q)
-    if (docsSnap.size) {
-      result = docsSnap.docs.map(comp => {
-        return Object.assign({ id: comp.id }, comp.data()) as Competition
-      })
+    const snap = await getDocs(q)
+    if (snap.size) {
+      result = snap.docs.map(comp => comp.data() as Competition)
     }
     return result
   }

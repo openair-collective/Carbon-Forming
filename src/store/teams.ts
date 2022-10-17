@@ -49,9 +49,6 @@ export const useTeamsStore = defineStore('teams', {
         if (!team) {
           let response = await firestore.getTeam(team_id)
           team = response
-          let list_patch = this.list?.slice() || [] as Team[]
-          list_patch.push(team)
-          this.list = list_patch
         }
         return team
       }
@@ -63,8 +60,8 @@ export const useTeamsStore = defineStore('teams', {
     async saveTeam(team:Team, avatar?:File):Promise<Team|undefined> {
       try {
         let insert = !team.id
-        const response = await firestore.saveTeam(team) as Team
-        team = { ...team, ...response }
+        const response = await firestore.saveTeam(team)
+        team = response
         if (avatar) {
           await this.saveTeamAvatar(team, avatar)
         }
@@ -72,18 +69,20 @@ export const useTeamsStore = defineStore('teams', {
           if (!this.list) {
             await this.fetch()
           }
-          let list_patch = this.list?.slice() || []
-          const team_before = list_patch.find(t => {
-            return team.name > t.name
-          })
-          if (team_before) {
-            let idx = list_patch.indexOf(team_before)
-            list_patch.splice(idx, 0, team)
-          }
           else {
-            list_patch.push(team)
+            let list_patch = this.list?.slice() || []
+            const team_before = list_patch.find(t => {
+              return team.name > t.name
+            })
+            if (team_before) {
+              let idx = list_patch.indexOf(team_before)
+              list_patch.splice(idx, 0, team)
+            }
+            else {
+              list_patch.push(team)
+            }
+            this.list = list_patch
           }
-          this.list = list_patch
         }
         return team
       }
@@ -105,7 +104,7 @@ export const useTeamsStore = defineStore('teams', {
     async fetchTeamProjects(team:Team):Promise<Project[]|undefined> {
       try {
         let response = await firestore.getTeamProjects(team)
-        team.projects = response
+        team.projects = response as Project[]
         return team.projects
       }
       catch(error) {
@@ -129,7 +128,7 @@ export const useTeamsStore = defineStore('teams', {
       try {
         project.team = team
         let response = await useProjectsStore().saveProject(project, design_doc)
-        project = {...project, ...response}
+        project = response as Project
         team.projects = team.projects || [project]
         let idx  = team.projects.indexOf(project)
         if (!idx) {

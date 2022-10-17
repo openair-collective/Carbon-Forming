@@ -1,9 +1,10 @@
 const functions = require('firebase-functions')
-const { ObjectFlags } = require('typescript')
 const { 
   admin,
   db,
 } = require('./admin.js')
+
+const { FieldValue } = require("firebase-admin/firestore");
 
 const KEY_USERS = 'users'
 const KEY_TEAMS = 'teams'
@@ -35,7 +36,7 @@ exports.deleteUser = functions.firestore
       userTeams.forEach(doc => {
         batch.update(doc.ref, { members : 
           {
-            [`${snap.id}`] : admin.firestore.FieldValue.delete()
+            [`${snap.id}`] : FieldValue.delete()
           }
         })
       })
@@ -51,7 +52,12 @@ exports.updateTeam = functions.firestore
 
       const newName = before.name !== after.name
       const newLocation = before.location !== before.location
-      const newAvatar = !before.avatar && after.avatar || before.avatar.url !== after.avatar.url
+      let newAvatar = !!after.avatar
+      if (before.avatar) {
+        if (after.avatar) {
+          newAvatar = before.avatar.url !== after.avatar.url
+        }
+      }
 
       if (newName || newLocation || newAvatar) {
         const batch = db.batch()
@@ -79,11 +85,11 @@ exports.deleteTeam = functions.firestore
       const usersRef = db.collection(KEY_USERS)
       const teamUsers = await usersRef.where(`teams.${snap.id}`, '!=', null).get()
       teamUsers.forEach(doc => {
-        batch.update(doc.ref, { teams: 
+        batch.update(doc.ref,
           {
-            [`${snap.id}`] : admin.firestore.FieldValue.delete()
+            [`teams.${snap.id}`] : FieldValue.delete()
           }
-        })
+        )
       })
 
       // delete all Team Projects
@@ -168,7 +174,7 @@ exports.updateProject = functions.firestore
       if (before.team && before.team.id) {
         const teamProjectsRef = db.collection(KEY_TEAM_PROJECTS).doc(`${before.team.id}.${before.id}`)
         batch.set(teamProjectsRef, {
-            [`${change.before.id}`]: admin.firestore.FieldValue.delete()
+            [`${change.before.id}`]: FieldValue.delete()
           }, 
           { merge: true }
         )
@@ -189,7 +195,7 @@ exports.updateProject = functions.firestore
       if (before.competition && before.competition.id) {
         const compProjectsRef = db.collection(KEY_COMP_PROJECTS).doc(`${before.competition.id}`)
         batch.set(compProjectsRef, {
-            [`${change.before.id}`]: admin.firestore.FieldValue.delete()
+            [`${change.before.id}`]: FieldValue.delete()
           }, 
           { merge: true }
         )
@@ -223,7 +229,7 @@ exports.deleteProject = functions.firestore
       if (data.team && data.team.id) {
         const teamProjectsRef = db.collection(KEY_TEAM_PROJECTS).doc(`${data.team.id}`)
         batch.set(teamProjectsRef, {
-            [`${snap.id}`]: admin.firestore.FieldValue.delete()
+            [`${snap.id}`]: FieldValue.delete()
           }, 
           { merge: true }
         )
@@ -231,7 +237,7 @@ exports.deleteProject = functions.firestore
       if (data.competition && data.competition.id) {
         const compProjectsRef = db.collection(KEY_COMP_PROJECTS).doc(`${data.competition.id}`)
         batch.set(compProjectsRef, {
-            [`${snap.id}`]: admin.firestore.FieldValue.delete()
+            [`${snap.id}`]: FieldValue.delete()
           }, 
           { merge: true }
         )
