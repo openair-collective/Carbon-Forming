@@ -41,14 +41,7 @@ export default defineComponent({
     }
   },
   computed: { 
-    ...mapStores(useTeamsStore, useCompetitionsStore),
-    projects():Project[] {
-      let result = [] as Project[]
-      if (this.team.projects) {
-        result = Object.values(this.team.projects)
-      }
-      return result
-    }
+    ...mapStores(useTeamsStore, useCompetitionsStore)
   },
   created() {
     this.fetchProjects()
@@ -58,7 +51,7 @@ export default defineComponent({
   },
   methods: {
     fetchProjects() {
-      if (!this.team.projects || !this.team.projects.length) {
+      if (!this.team.projects || !this.team.projects.length) {  
         this.teamsStore.fetchTeamProjects(this.team)
       }
     },
