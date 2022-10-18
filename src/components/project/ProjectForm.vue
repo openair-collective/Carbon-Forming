@@ -3,7 +3,6 @@
     <form @submit.prevent="submitProjectForm" :disabled="isSaving">
       <project-input 
         :project="clone"
-        @remove-design-doc="removeDesignDoc"
         ref="project_input" 
       />
       <hr/>
@@ -46,7 +45,6 @@ const PROJECT_PARTIAL = {
   id: '',
   name: '',
   terms: false,
-  design_doc: null,
   design_doc_url: '',
   materials: [],
   team: undefined
@@ -89,7 +87,7 @@ export default defineComponent({
       this.isSaving = true
       this.flashStore.$reset()
       if (this.inputRef) {
-        if (this.inputRef.hasValidMaterials && this.inputRef.hasValidDesignDoc) {
+        if (this.inputRef.hasValidMaterials) {
           this.teamsStore.saveTeamProject(this.team, this.clone, this.inputRef.docFile)
             .then(result => {
               Object.assign(this.project, result)
@@ -109,31 +107,8 @@ export default defineComponent({
           if (!this.inputRef.hasValidMaterials) {
             error = "Some materials are missing required fields."
           }
-          if (!this.inputRef.hasValidDesignDoc) {
-            error = error + `The Design Document file size cannot exceed ${this.inputRef.kDocMaxFileSize}kb.`
-          }
           this.flashStore.$patch({ message: error, level: LogLevel.error })
         }
-      }
-    },
-    removeDesignDoc() {
-      this.flashStore.$reset()
-      if (this.inputRef && this.clone.design_doc && confirm("Are you sure you want to remove the Document?")) {
-        this.isSaving = true
-        this.inputRef.removeDesignDoc()
-          .then(result => {
-            if (result) {
-              this.flashStore.$patch({ message: 'Design document removed', level: LogLevel.success })
-              Object.assign(this.project, result)
-              this.clone = { ...this.project }
-            }
-          })
-          .catch(error => {
-            this.flashStore.$patch({ message: 'Error removing Design Doc. Please try again.', level: LogLevel.error })
-          })
-          .finally(()=> {
-            this.isSaving = false
-          })
       }
     }
   }

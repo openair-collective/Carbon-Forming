@@ -37,7 +37,6 @@ export const projectConverter = {
     delete competition.projects
     return {
       name: project.name,
-      design_doc: project.design_doc || null,
       design_doc_url: project.design_doc_url || null,
       terms: project.terms || false,
       materials: project.materials || [],
@@ -50,7 +49,6 @@ export const projectConverter = {
     return {
       id: snapshot.id,
       name: data.name || '',
-      design_doc: data.design_doc || null,
       design_doc_url: data.design_doc_url || '',
       terms: data.terms || false,
       materials: data.materials || [],
