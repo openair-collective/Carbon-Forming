@@ -36,7 +36,6 @@ export type Team = {
 export type Project = {
   id: string
   name:string
-  design_doc:FileUpload | null
   design_doc_url:string
   terms:boolean
   materials:Material[]

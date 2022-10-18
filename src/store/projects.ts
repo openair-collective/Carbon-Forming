@@ -17,11 +17,7 @@ export const useProjectsStore = defineStore('projects', {
   actions: {
     async saveProject(project:Project, design_doc?:File):Promise<Project|undefined> {
       try {
-        const response = await firestore.saveProject(project)
-        if (design_doc) {
-          await this.saveProjectDesignDoc(project, design_doc)
-        }
-        return project
+        return await firestore.saveProject(project)
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
@@ -35,30 +31,6 @@ export const useProjectsStore = defineStore('projects', {
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
         log.error(MODULE_ID, '#deleteProject > ' + message)
-      }
-    },
-    async saveProjectDesignDoc(project:Project, doc:File):Promise<Project|undefined> {
-      try {
-        const response = await storage.saveFile(doc, project.id)
-        project.design_doc = response
-        return await this.saveProject(project)
-      }
-      catch(error) {
-        let message = (error instanceof Error) ? error.message : String(error)
-        log.error(MODULE_ID, '#saveProjectDesignDoc > ' + message)
-      }
-    },
-    async removeProjectDesignDoc(project:Project):Promise<Project|undefined> {
-      try {
-        if (project.design_doc) {
-          const avatar_response = await storage.removeFile(project.design_doc)
-          project.design_doc = null
-          return await this.saveProject(project)
-        }
-      }
-      catch(error) {
-        let message = (error instanceof Error) ? error.message : String(error)
-        log.error(MODULE_ID, '#removeTeamAvatar > ' + message)
       }
     }
   }
