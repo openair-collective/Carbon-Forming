@@ -15,7 +15,17 @@ export const useCompetitionsStore = defineStore('competitions', {
     list: undefined
   }),
   actions: {
-    async fetch(after?:Competition):Promise<Competition[]|undefined> {
+    async fetch():Promise<Competition[]|undefined> {
+      try {
+        this.list = await firestore.getCompetitionList()
+        return this.list
+      }
+      catch(error) {
+        let message = (error instanceof Error) ? error.message : String(error)
+        log.error(MODULE_ID, '#fetch > ' + message)
+      }
+    },
+    async page(after?:Competition):Promise<Competition[]|undefined> {
       try {
         let list_patch = this.list?.slice() || [] as Competition[]
         let result = [] as Competition[]
@@ -39,7 +49,7 @@ export const useCompetitionsStore = defineStore('competitions', {
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
         log.error(MODULE_ID, '#fetch > ' + message)
-      }
+      }     
     },
     async fetchCompetitionProjects(comp:Competition):Promise<Project[]|undefined> {
       try {
