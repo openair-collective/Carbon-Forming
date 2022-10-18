@@ -10,20 +10,10 @@ const KEY_USERS = 'users'
 const KEY_TEAMS = 'teams'
 const KEY_PROJECTS = 'projects'
 const KEY_COMPETITIONS = 'competitions'
-const KEY_AGG_LATEST_COMPS = 'aggregates/latest_competitions'
 const KEY_COMP_PROJECTS = 'competition_projects'
 const KEY_TEAM_PROJECTS = 'team_projects'
-
-async function aggLatestComps() {
-  const compsRef = db.collection(KEY_COMPETITIONS).limit(10)
-  const comps = await compsRef.get()
-  let list = {}
-  comps.forEach(doc => {
-    let data = doc.data()
-    list[doc.id] = Object.assign({id: doc.id}, data)
-  })
-  await db.doc(KEY_AGG_LATEST_COMPS).set(list)
-}
+const KEY_AGGREGATES = 'aggregates'
+const AGGREGATE_ID_COMPS = 'competitions'
 
 exports.deleteUser = functions.firestore
     .document('users/{userID}')
@@ -106,11 +96,24 @@ exports.deleteTeam = functions.firestore
       bucket.deleteFiles({ prefix: snap.id })
     })
 
+exports.createCompetition = functions.firestore
+    .document('competitions/{competitionID}')
+    .onCreate(async (snap, context) => {
+      // update aggregate
+      const aggregateDoc =  db.doc(`${KEY_AGGREGATES}/${AGGREGATE_ID_COMPS}`)
+      batch.set(aggregateDoc, { [`${snap.id}`]: snap.data() }, { merge: true })
+    })
+
 exports.updateCompetition = functions.firestore
   .document('competitions/{competitionID}')
   .onUpdate(async (change, context) => {
     const after = change.after.data()
     const batch = db.batch()
+
+    // update aggregate
+    const aggregateDoc =  db.doc(`${KEY_AGGREGATES}/${AGGREGATE_ID_COMPS}`)
+    batch.set(aggregateDoc, { [`${change.after.id}`]: after }, { merge: true })
+
     const projectsRef = db.collection(KEY_PROJECTS)
     // update projects
     const projects = await projectsRef.where('competition.id', '==', change.after.id).get()
@@ -118,7 +121,6 @@ exports.updateCompetition = functions.firestore
       batch.update(doc.ref, { competition : Object.assign({ id: after.id }, after) })
     })
     batch.commit()
-    aggLatestComps()
   })
 
 exports.deleteCompetition = functions.firestore
@@ -131,8 +133,11 @@ exports.deleteCompetition = functions.firestore
       projects.forEach(doc => {
         batch.update(doc.ref, { competition : null })
       })
+      // update aggregate
+      const aggregateDoc =  db.doc(`${KEY_AGGREGATES}/${AGGREGATE_ID_COMPS}`)
+      batch.set(aggregateDoc, { [`${snap.id}`]: FieldValue.delete() }, { merge: true })
+      
       batch.commit()
-      aggLatestComps()
     })
 
 exports.createProject = functions.firestore

@@ -20,35 +20,21 @@
     <article class="article p-4 is-flex-grow-1 has-background-white-bis">
       <loading v-if="isLoading" />
       <div v-else-if="hasComps" class="list">
-        <div class="is-flex is-flex-direction-column">
-          <competition-list 
-              :list="currentCompetitions"
-              :listType="eListType.column"
-              :showEnterButton="true"
-            />
-          <h2
-            v-if="pastCompetitions && pastCompetitions.length"
-            class="title is-5 my-4 px-4"
-          >
-            Past Competitions
-          </h2>
-          <competition-list
-            :list="pastCompetitions"
+        <competition-list 
+            :list="currentCompetitions"
             :listType="eListType.column"
+            :showEnterButton="true"
           />
-        </div>
-        <div class="has-text-centered mt-4">
-          <button
-            v-if="paginate"
-            @click="fetchMore"
-            class="button is-primary"
-            :class="{ 'is-loading': isLoading}"
-            :disabled="isLoading"
-          >
-            Show More
-          </button>
-          <div v-else-if="!paginate" class="tag is-medium">You’ve reached the end of the list</div>
-        </div>
+        <h2
+          v-if="pastCompetitions && pastCompetitions.length"
+          class="title is-5 my-4 px-4"
+        >
+          Past Competitions
+        </h2>
+        <competition-list
+          :list="pastCompetitions"
+          :listType="eListType.column"
+        />
       </div>
       <div 
         v-else
@@ -84,7 +70,6 @@ export default defineComponent({
   components: { Loading, CompetitionList },
   data() {
     return {
-      paginate: true,
       isLoading: false,
       eListType: ListType,
       kDayMonth: dayMonth,
@@ -120,25 +105,9 @@ export default defineComponent({
       return this.currentCompetitions.length > 0 || this.pastCompetitions.length > 0
     }
   },
-  created() {
+  async created() {
     if (!this.competitionsStore.list) {
-      this.fetchMore()
-    }
-    else if (this.competitionsStore.list.length < PAGING_SIZE) {
-      this.paginate = false
-    }
-  },
-  methods: {
-    fetchMore() {
-      this.isLoading = true
-      const after = this.list ? this.list[this.list.length -1] : undefined
-      this.competitionsStore.fetch(after)
-        .then(result => {
-          this.paginate = !!result && result.length === PAGING_SIZE
-        })
-        .finally(()=>{
-          this.isLoading = false
-        })
+      this.competitionsStore.fetch()
     }
   }
 })

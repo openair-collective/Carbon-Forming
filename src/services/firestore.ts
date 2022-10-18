@@ -34,6 +34,8 @@ const KEY_PROJECTS = 'projects'
 const KEY_COMPETITIONS = 'competitions'
 const KEY_COMP_PROJECTS = 'competition_projects'
 const KEY_TEAM_PROJECTS = 'team_projects'
+const KEY_AGGREGATES = 'aggregates'
+const AGGREGATE_ID_COMPS = 'competitions'
 
 export const app = getApps().length > 0 ? getApp() : initializeApp(FIREBASE_CONFIG)
 export const db = getFirestore(app)
@@ -295,6 +297,20 @@ class FirestoreService {
     const compRef = doc(db, KEY_COMPETITIONS, comp_id).withConverter(compConverter)
     const comp = await getDoc(compRef)
     return comp.data() as Competition
+  }
+
+  async getCompetitionList():Promise<Competition[]> {
+    let result = [] as Competition[]
+    const compsRef = doc(db, KEY_AGGREGATES, AGGREGATE_ID_COMPS)
+    const snap = await getDoc(compsRef)
+    if (snap.exists()) {
+      let list = snap.data() as { [key:string]: Competition}
+      let keys = Object.keys(list)
+      result = keys.map(k => {
+        return { ...{id: k}, ...list[k] } as Competition
+      })
+    }
+    return result
   }
 
   async getCompetitions(after?:Competition):Promise<Competition[]> {

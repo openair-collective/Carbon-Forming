@@ -139,7 +139,9 @@ export default defineComponent({
   },
   beforeRouteUpdate(to) {
     const id = to.params.id as string
-    this.setTeamByID(id)
+    if (this.team && this.team.id !== id) {
+      this.setTeamByID(id)
+    }
   },
   methods: {
     setTeamByID(id:string) {

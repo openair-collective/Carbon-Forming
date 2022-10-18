@@ -233,14 +233,17 @@ export default defineComponent({
             if (comp.projects) {
               comp.projects.push(this.project)
             }
-            this.modalStore.options = {
-                title: 'Project Submitted',
-                component: 'Message',
-                meta: {
-                  message: `Well done, you're in ${comp.name}`
-                },
-                close: true
-              }
+            this.$router.push({ name: 'team-project-show', params: { id: this.team!.id, project_id: this.project.id} })
+              .then(() => {
+                this.modalStore.options = {
+                  title: 'Project Submitted',
+                  component: 'Message',
+                  meta: {
+                    message: `Well done, you're in ${comp.name}`
+                  },
+                  close: true
+                }
+              })
           })
           .catch(error => {
             log.error(MODULE_ID, error)

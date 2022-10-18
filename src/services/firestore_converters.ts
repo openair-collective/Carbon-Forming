@@ -31,9 +31,9 @@ export const teamConverter = {
 export const projectConverter = {
   toFirestore: (project:Project) => {
     // don't save projects recursively on associatoins
-    const {...team } = project.team
+    const {...team } = project.team as any
     delete team.projects
-    const { ...competition } = project.competition
+    const { ...competition } = project.competition as any
     delete competition.projects
     return {
       name: project.name,
