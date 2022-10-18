@@ -3,7 +3,7 @@ const URI_USER='https://discordapp.com/api/users/@me'
 
 class DiscordService {
 
-  async userGuildMember(access_token:string):Promise<any> {
+  async userGuildMember(access_token:string):Promise<any|undefined> {
     const uri = `${URI_USER}/guilds/${GUILD_ID}/member`
     const response = await fetch(uri, {
       method: 'GET',
@@ -11,7 +11,12 @@ class DiscordService {
         Authorization: `Bearer ${access_token}`
       }
     })
-    return await response.json()
+    if (response.ok) {
+      return await response.json()
+    }
+    else {
+      throw new Error('User not authorized')
+    }
   }
 }
 
