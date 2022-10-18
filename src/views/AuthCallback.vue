@@ -17,6 +17,7 @@ import { LogLevel } from '@/enums'
 
 const MODULE_ID = 'views/AuthCallback'
 const LOGIN_ERROR = 'An unknown error occurred. Please try again.'
+const GUILD_ERROR = 'Sorry, but it looks like you are not part of the OpenAir Discord guild. Click the link below to join.'
 
 function getURLParameter(name:string): string | null {
   const url = window.location
@@ -38,7 +39,13 @@ export default defineComponent({
     ...mapStores(useUserStore, useFlashStore)
   },
   async created() {
-    if (this.error) return
+    if (this.error) {
+      this.logout({
+        message: LOGIN_ERROR,
+        level: LogLevel.error
+      })
+      return
+    }
 
     // setup a listener for Firebase Auth changes
     let unsubscribe = authRef.onAuthStateChanged(async user => {
@@ -46,17 +53,25 @@ export default defineComponent({
         try {
           await this.userStore.fetchUser(user.uid, user.photoURL || '')
           await this.userStore.fetchUserGuild()
-          const userTeams = this.profile && this.profile.teams
-          if (userTeams && !isEmpty(userTeams)) {
-            let redirect = this.$route.query.redirect as string || '/my-teams'
-            this.$router.replace({ path: redirect })
+          if (!this.userStore.profile || !this.userStore.guild) {
+            unsubscribe()
+            this.logout({
+              message: !this.userStore.profile ? LOGIN_ERROR : GUILD_ERROR,
+              level: LogLevel.error
+            })
           }
           else {
-            this.$router.replace({ name: 'onboarding'})
+            const userTeams = this.profile && this.profile.teams
+            if (userTeams && !isEmpty(userTeams)) {
+              let redirect = this.$route.query.redirect as string || '/my-teams'
+              this.$router.replace({ path: redirect })
+            }
+            else {
+              this.$router.replace({ name: 'onboarding'})
+            }
           }
         }
         catch(error) {
-          unsubscribe()
           let message = (error instanceof Error) ? error.message : String(error)
           log.error(MODULE_ID, '#created.authRef.onAuthStateChanged > ' + message)
           log.error(MODULE_ID, message)
@@ -76,13 +91,10 @@ export default defineComponent({
       this.userStore.exchangeToken(this.code, this.state)
         .then(result => {
           if (!this.oauth) {
-            this.$router.replace({ name: 'login'})
-              .then(() => {
-                this.flashStore.$patch({
-                  message: LOGIN_ERROR,
-                  level: LogLevel.error
-                })
-              })
+            this.logout({
+              message: LOGIN_ERROR,
+              level: LogLevel.error
+            })
           }
         })
     }
@@ -92,10 +104,15 @@ export default defineComponent({
     }
   },
   methods: {
-    logout() {
-      this.userStore.logout()
+    logout(message?:any):Promise<any> {
+      return this.userStore.logout()
         .then(()=> {
           this.$router.replace({ name: 'login' })
+            .then(()=> {
+              if (message) {
+                this.flashStore.$patch(message)
+              }
+            })
         })
     }
   }
