@@ -2,7 +2,8 @@
   <div
     class="is-flex" 
     :class="{ 
-      'is-flex-direction-row': listType === eListType.grid 
+      'is-flex-direction-column': listType === eListType.column,
+      'is-flex-direction-row': listType === eListType.grid
     }">
     <div  
       v-for="(comp, i) in list" 
