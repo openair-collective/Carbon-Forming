@@ -27,5 +27,9 @@ service cloud.firestore {
       allow read
       allow get
     }
+    match /aggregates/{document=*} {
+      allow read
+      allow get
+    }
   }
 }
