@@ -2,7 +2,7 @@
   <section class="p-4 is-flex-grow-1">
     <div class="container has-text-centered">
       <div class="box p-6">
-        <flash />
+        <flash class="mb-4" />
         <h1 class="title is-4">Log in with your OpenAir Discord account</h1>
         <button class="button is-primary mb-4" @click="login">Log in with Discord</button>
       </div>
