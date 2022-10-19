@@ -97,7 +97,7 @@ export default defineComponent({
         this.userStore.fetchTeams()
       }
     }
-    else if( tab === TABS.MY_TEAMS) {
+    else if(tab === TABS.MY_TEAMS) {
       tab = TABS.TEAMS
       this.$router.replace({ name: 'teams'})
     }
@@ -132,6 +132,3 @@ export default defineComponent({
 })
 
 </script>
-
-<style scoped>
-</style>

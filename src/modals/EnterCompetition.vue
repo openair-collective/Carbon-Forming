@@ -173,7 +173,6 @@ export default defineComponent({
       team: null as Team | null,
       project: {
         name: '',
-        design_doc: null,
         design_doc_url: '',
         terms: false,
         materials: [] as Material[],

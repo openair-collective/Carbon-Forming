@@ -41,7 +41,7 @@ exports.updateTeam = functions.firestore
       const after = change.after.data()
 
       const newName = before.name !== after.name
-      const newLocation = before.location !== before.location
+      const newLocation = before.location !== after.location
       let newAvatar = !!after.avatar
       if (before.avatar) {
         if (after.avatar) {
@@ -118,7 +118,7 @@ exports.updateCompetition = functions.firestore
     // update projects
     const projects = await projectsRef.where('competition.id', '==', change.after.id).get()
     projects.forEach(doc => {
-      batch.update(doc.ref, { competition : Object.assign({ id: after.id }, after) })
+      batch.update(doc.ref, { competition : Object.assign({ id: change.after.id }, after) })
     })
     batch.commit()
   })
@@ -177,7 +177,7 @@ exports.updateProject = functions.firestore
 
     if (newTeam) {
       if (before.team && before.team.id) {
-        const teamProjectsRef = db.collection(KEY_TEAM_PROJECTS).doc(`${before.team.id}.${before.id}`)
+        const teamProjectsRef = db.collection(KEY_TEAM_PROJECTS).doc(`${before.team.id}`)
         batch.set(teamProjectsRef, {
             [`${change.before.id}`]: FieldValue.delete()
           }, 

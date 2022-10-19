@@ -6,14 +6,10 @@ import log from '@/services/logger'
 
 const MODULE_ID = 'store/projects'
 
-interface State {
-  projects: { [key:string]: Project }
-}
+interface State {}
 
 export const useProjectsStore = defineStore('projects', {
-  state: (): State => ({
-    projects: {}
-  }),
+  state: (): State => ({}),
   actions: {
     async saveProject(project:Project, design_doc?:File):Promise<Project|undefined> {
       try {
