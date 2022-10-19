@@ -28,6 +28,7 @@ import { TeamRole, LogLevel } from '@/enums'
 import { mapStores } from 'pinia'
 import TeamForm from '@/components/team/TeamForm.vue'
 import { useUserStore } from '@/store/user'
+import { useTeamsStore } from '@/store/teams'
 import { useFlashStore } from '@/store/flash'
 import log from '@/services/logger'
 
@@ -36,7 +37,7 @@ const MODULE_ID = 'views/TeamNew'
 export default defineComponent({
   components: { TeamForm },
   computed: {
-    ...mapStores(useUserStore, useFlashStore)
+    ...mapStores(useUserStore, useFlashStore, useTeamsStore)
   },
   methods: {
     onCancel() {
@@ -46,6 +47,9 @@ export default defineComponent({
     onTeamSaved(team:Team) {
       this.userStore.addTeam(team, TeamRole.admin)
         .then(result => {
+          if (this.teamsStore.list) {
+            this.teamsStore.list.push(team)
+          }
           this.$router.replace({ name: 'team-show', params: { id: team.id }})
             .then(() => {
               this.flashStore.$patch({ message: 'Team saved', level: LogLevel.success })

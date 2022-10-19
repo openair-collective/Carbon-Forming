@@ -87,7 +87,7 @@ export default defineComponent({
           })
       }
     },
-    onTeamSaved() {
+    onTeamSaved(team:Team) {
       this.flashStore.$patch({ message: 'Team saved', level: LogLevel.success })
     },
     onCancel() {

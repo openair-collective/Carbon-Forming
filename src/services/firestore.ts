@@ -141,7 +141,8 @@ class FirestoreService {
       await setDoc(ref, team, { merge: true })
     }
     else {
-      const docRef = await addDoc(collection(db, KEY_TEAMS), team)
+      const ref = collection(db, KEY_TEAMS).withConverter(teamConverter)
+      const docRef = await addDoc(ref, team)
       team.id = docRef.id
     }
     return result
