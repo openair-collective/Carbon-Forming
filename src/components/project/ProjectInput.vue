@@ -133,7 +133,7 @@ export default defineComponent({
     ...mapStores(useProjectsStore),
     hasValidMaterials():boolean {
       const materialErrors = this.project.materials.filter(p => {
-        return !p.name || !p.cost || !p.quantity
+        return !p.name || !p.quantity
       })
       return materialErrors.length === 0
     }

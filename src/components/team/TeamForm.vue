@@ -85,13 +85,11 @@
     <hr/>
     <div class="field"> 
       <label class="label">About your team</label>
-      <div class="control">
-        <textarea 
-          v-model="clone.about"
-          class="textarea" 
-          :placeholder="kAboutPlacehoder"
-          required></textarea>
-      </div>
+      <text-editor 
+        :value="clone.about"
+        :placeholder="kAboutPlacehoder"
+        @text-change="(change) => clone.about = change" 
+      />
     </div>
     <div class="field is-grouped is-grouped-right">
       <div class="control">
@@ -114,7 +112,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, defineAsyncComponent } from 'vue'
 import { Team } from '@/types'
 import { LogLevel, TeamRole } from '@/enums'
 import { mapStores } from 'pinia'
@@ -140,6 +138,7 @@ const DEFAULT_TEAM = {
 } as Team
 
 export default defineComponent({
+  components: { TextEditor: defineAsyncComponent(() => import('@/components/TextEditor.vue')) },
   props: {
     team: {
       type: Object as () => Team,

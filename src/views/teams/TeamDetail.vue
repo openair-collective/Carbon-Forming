@@ -8,7 +8,7 @@
     <article class="article has-background-white-bis">
       <div class="columns">
         <div class="column">
-          {{ team.about }}
+          <text-editor-content :value="team.about" />
         </div>
         <div class="column is-4">
           <table class="table is-fullwidth">
@@ -28,14 +28,15 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Team, } from '@/types'
+import { Team } from '@/types'
 import Loading from '@/components/Loading.vue'
+import TextEditorContent from '@/components/TextEditorContent.vue'
 import log from '@/services/logger'
 
 const MODULE_ID ='components/TeamDetail'
 
 export default defineComponent({
-  components: { Loading },
+  components: { Loading, TextEditorContent },
   props: {
     team: {
       type: Object as () => Team,

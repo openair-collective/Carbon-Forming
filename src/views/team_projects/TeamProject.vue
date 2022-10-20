@@ -11,16 +11,7 @@
     </nav>
     <article class="article">
       <template v-if="project">
-        <project-view :project="project"/>
-        <div class="mt-6 has-text-right">
-          <router-link
-            v-if="canEdit"
-            :to="{ name: 'team-project-edit', params: { project_id: project.id }}"
-            class="button is-warning ml-2"
-          >
-            Edit Project
-          </router-link>
-        </div>
+        <project-view :project="project" />
       </template>
       <loading v-else />
     </article>

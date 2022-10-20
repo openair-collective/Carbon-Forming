@@ -108,6 +108,7 @@ export default defineComponent({
             error = "Some materials are missing required fields."
           }
           this.flashStore.$patch({ message: error, level: LogLevel.error })
+          this.isSaving = false
         }
       }
     }

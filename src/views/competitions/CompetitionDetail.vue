@@ -4,12 +4,12 @@
     >
     <div class="columns">
       <div class="column is-8">
-        <h2 class="title is-4 mb-2">Competition Details</h2>
-        <div class="mb-4">{{ competition.description }}</div>
-        <h2 class="title is-4 mb-2">Competition Rules</h2>
-        <div class="mb-4">{{ competition.rules }}</div>
-        <h2 class="title is-4 mb-2">Judging Criteria</h2>
-        <div class="mb-4">{{ competition.criteria }}</div>
+        <h2 class="title is-4 mb-4">Competition Details</h2>
+        <text-editor-content :value="competition.description" class="mb-6"/>
+        <h2 class="title is-4 mb-4">Competition Rules</h2>
+        <text-editor-content :value="competition.rules" class="mb-6" />
+        <h2 class="title is-4 mb-4">Judging Criteria</h2>
+        <text-editor-content :value="competition.criteria"/>
       </div>
       <div
         v-if="!competition.prizesDisabled"
@@ -37,8 +37,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Competition } from '@/types'
+import TextEditorContent from '@/components/TextEditorContent.vue'
 
 export default defineComponent({
+  components: { TextEditorContent },
   props: {
     competition: {
       type: Object as () => Competition,

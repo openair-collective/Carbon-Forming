@@ -3,6 +3,13 @@
     <header class="header mb-4">
       <h1 class="title is-3">
         {{ project.name }}
+        <router-link
+          v-if="canEdit"
+          :to="{ name: 'team-project-edit'}"
+          class="button is-info is-small is-outlined ml-2"
+        >
+          Edit Project
+        </router-link>
       </h1>
     </header>
     <article class="article">
@@ -43,26 +50,6 @@
             {{ project.design_doc_url }}
           </a>
         </template>
-        <template v-if="project.design_doc">
-          <a
-            :href="project.design_doc.url" 
-            class="button is-info" 
-            target="_blank"
-          >
-            Review Document
-          </a>
-        </template>
-        <template v-if="!project.design_doc && !project.design_doc_url">
-          <router-link 
-            :to="{ 
-              name: 'team-project-edit', 
-              params: { project_id: $route.params.project_id }
-            }"
-            class="button is-text"
-          >
-            Add a Document
-          </router-link>
-        </template>
       </div>
     </article>
   </section>
@@ -71,7 +58,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Project } from '@/types'
+import { useUserStore } from '@/store/user'
+import { canEditTeamWithId } from '@/helpers/authHelper'
 import log from '@/services/logger'
+import { mapStores } from 'pinia'
 
 const MODULE_ID ='components/project/Project'
 
@@ -84,6 +74,16 @@ export default defineComponent({
     showCompetition: {
       type: Boolean,
       default: false
+    }
+  },
+  computed: {
+    ...mapStores(useUserStore),
+    canEdit():boolean {
+      let result = false
+      if (this.project.team && this.project.team.id && this.userStore.profile) {
+        result = canEditTeamWithId(this.userStore.profile, this.project.team.id)
+      }
+      return result
     }
   }
 })
