@@ -55,3 +55,7 @@
 .has-border-radius-0 {
 	border-radius: 0;
 }
+
+.text-editor {
+	@import "bulma/sass/elements/content.sass";
+}
