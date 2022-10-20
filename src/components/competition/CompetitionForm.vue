@@ -87,19 +87,31 @@
       <div class="field"> 
         <label class="label">Description</label>
         <div class="control">
-          <textarea class="textarea" v-model="clone.description"></textarea>
+          <text-editor 
+            :value="clone.description"
+            :placeholder="'Tell us about your competition'"
+            @text-change="(change) => clone.description = change" 
+          />
         </div>
       </div>
       <div class="field"> 
         <label class="label">Rules</label>
         <div class="control">
-          <textarea class="textarea" v-model="clone.rules"></textarea>
+          <text-editor 
+            :value="clone.rules"
+            :placeholder="'What are the rules of your competition?'"
+            @text-change="(change) => clone.rules = change" 
+          />
         </div>
       </div>
       <div class="field"> 
         <label class="label">Criteria</label>
         <div class="control">
-          <textarea class="textarea" v-model="clone.criteria"></textarea>
+          <text-editor 
+            :value="clone.criteria"
+            :placeholder="'How will the winning entries be selected?'"
+            @text-change="(change) => clone.criteria = change" 
+          />
         </div>
       </div>
     </div>
@@ -120,7 +132,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, defineAsyncComponent } from 'vue'
 import { Competition, Timestamp } from '@/types'
 import { LogLevel } from '@/enums'
 import { mapStores } from 'pinia'
@@ -161,6 +173,7 @@ const DEFAULT_COMP = {
 } as Competition
 
 export default defineComponent({
+  components: { TextEditor: defineAsyncComponent(() => import('@/components/TextEditor.vue')) },
   props: {
     competition: {
       type: Object as () => Competition,

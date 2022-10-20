@@ -18,12 +18,12 @@
       <h1 class="title is-4">
         {{ team.name }}
         <router-link
-        v-if="canEdit"
-        :to="{ name: 'team-edit'}"
-        class="button is-info is-small is-outlined ml-2"
-      >
-        Edit Team
-      </router-link>
+          v-if="canEdit"
+          :to="{ name: 'team-edit'}"
+          class="button is-info is-small is-outlined ml-2"
+        >
+          Edit Team
+        </router-link>
       </h1>
       <h2 class="subtitle">{{ team.location }}</h2>
       <div class="tabs mb-0 pb-0">

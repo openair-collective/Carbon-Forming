@@ -16,7 +16,7 @@
       </router-link>
     </div>
     <div class="content">
-      <flash />
+      <flash id="flash" />
       <router-view />
     </div>
   </div>
@@ -55,4 +55,13 @@ export default defineComponent({
 .content > div {
   flex: 1 1 auto;
 }
+
+#flash {
+  position: sticky;
+  top: 0;
+  right: 0;
+  left: 132px;
+  z-index: 3;
+}
+
 </style>
