@@ -41,7 +41,8 @@ export const projectConverter = {
       terms: project.terms || false,
       materials: project.materials || [],
       team,
-      competition
+      competition,
+      image: project.image || null
     }
   },
   fromFirestore: (snapshot:QueryDocumentSnapshot, options:SnapshotOptions) => {
@@ -53,7 +54,8 @@ export const projectConverter = {
       terms: data.terms || false,
       materials: data.materials || [],
       team: data.team || null,
-      competition: data.competition || null
+      competition: data.competition || null,
+      image: data.image
     } as Project
   }
 }

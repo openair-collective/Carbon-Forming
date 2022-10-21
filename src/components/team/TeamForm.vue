@@ -122,7 +122,6 @@ import { TEAM_AVATAR_PLACEHOLDER } from '@/consts'
 import log from '@/services/logger'
 
 const MODULE_ID = 'components/TeamForm'
-const AVATAR_PLACEHOLDER = TEAM_AVATAR_PLACEHOLDER
 const AVATAR_MAX_FILE_SIZE = 200 * 1000 // 200kb
 const ABOUT_PLACEHOLDER = 'Tell us a bit about your team, what your areas of speciality are and what sort of projects you focus on.'
 
@@ -150,16 +149,15 @@ export default defineComponent({
       clone: { ...DEFAULT_TEAM, ...this.team }, // clone so we can modify
       isSaving: false,
       kAvatarMaxSize: AVATAR_MAX_FILE_SIZE,
-      kAvatarPlaceholder: AVATAR_PLACEHOLDER,
+      kAvatarPlaceholder: TEAM_AVATAR_PLACEHOLDER,
       kAboutPlacehoder: ABOUT_PLACEHOLDER,
       avatarPreviewUrl: ''
-
     }
   },
   computed: {
     ...mapStores(useTeamsStore, useFlashStore),
     teamImageUrl():string { 
-      let result = this.avatarPreviewUrl || AVATAR_PLACEHOLDER
+      let result = this.avatarPreviewUrl || TEAM_AVATAR_PLACEHOLDER
       if (this.clone.avatar && this.clone.avatar.url) {
         result = this.clone.avatar.url
       }
@@ -197,7 +195,7 @@ export default defineComponent({
     showAvatarPreview (event:Event){
       const avatar:HTMLInputElement = this.$refs.file_avatar as HTMLInputElement
       const file: File = (avatar.files as FileList)[0]
-      this.avatarPreviewUrl = file ? URL.createObjectURL(file) : AVATAR_PLACEHOLDER
+      this.avatarPreviewUrl = file ? URL.createObjectURL(file) : TEAM_AVATAR_PLACEHOLDER
     },
     submitTeamForm() {
       const avatar:HTMLInputElement = this.$refs.file_avatar as HTMLInputElement

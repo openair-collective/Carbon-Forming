@@ -13,6 +13,7 @@ module.exports = {
   createProject: triggers.createProject,
   updateProject: triggers.updateProject,
   deleteProject: triggers.deleteProject,
+  createCompetition: triggers.createCompetition,
   updateCompetition: triggers.updateCompetition,
   deleteCompetition: triggers.deleteCompetition
 }

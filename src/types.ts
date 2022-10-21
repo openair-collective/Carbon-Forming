@@ -39,6 +39,7 @@ export type Project = {
   design_doc_url:string
   terms:boolean
   materials:Material[]
+  image:FileUpload | null
   team?:Team
   competition?:Competition
 }

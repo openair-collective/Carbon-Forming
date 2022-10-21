@@ -13,6 +13,13 @@
       </h1>
     </header>
     <article class="article">
+      <div v-if="project.image && project.image.url">
+        <div 
+          class="project-image has-border-radius-6 has-background-grey-dark mb-4"
+          :style="{ 'background-image': 'url(' + project.image.url + ')' }"
+        >
+        </div>
+      </div>
       <div v-if="project.competition && showCompetition" class="box box--with-border">
         <h2 class="title is-4">Competition</h2>
         <router-link :to="{ name: 'comp-show', params: { id: project.competition.id}}">
@@ -91,4 +98,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.project-image {
+  height: 420px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
 </style>

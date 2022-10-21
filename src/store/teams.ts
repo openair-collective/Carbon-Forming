@@ -124,10 +124,10 @@ export const useTeamsStore = defineStore('teams', {
         log.error(MODULE_ID, '#getTeamProjectById > ' + message)
       }
     },
-    async saveTeamProject(team:Team, project:Project, design_doc?:File):Promise<Project|undefined> {
+    async saveTeamProject(team:Team, project:Project, image?:File):Promise<Project|undefined> {
       try {
         project.team = team
-        let response = await useProjectsStore().saveProject(project, design_doc)
+        let response = await useProjectsStore().saveProject(project, image)
         project = response as Project
         team.projects = team.projects || [project]
         let idx  = team.projects.indexOf(project)

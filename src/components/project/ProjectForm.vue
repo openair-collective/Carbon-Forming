@@ -3,7 +3,8 @@
     <form @submit.prevent="submitProjectForm" :disabled="isSaving">
       <project-input 
         :project="clone"
-        ref="project_input" 
+        ref="project_input"
+        @remove-image="removeImage"
       />
       <hr/>
       <div class="field is-grouped is-grouped-right">
@@ -47,7 +48,8 @@ const PROJECT_PARTIAL = {
   terms: false,
   design_doc_url: '',
   materials: [],
-  team: undefined
+  team: undefined,
+  image: null
 } as Project
 
 export default defineComponent({
@@ -83,11 +85,31 @@ export default defineComponent({
     this.inputRef = this.$refs.project_input as InstanceType<typeof ProjectInput>
   },
   methods: {
+    removeImage() {
+      this.flashStore.$reset()
+      if (this.inputRef && this.clone.image && confirm("Are you sure you want to remove the image?")) {
+        this.isSaving = true
+        this.projectsStore.removeProjectImage(this.project)
+          .then(result => {
+            if (result) {
+              this.flashStore.$patch({ message: 'image removed', level: LogLevel.success })
+              Object.assign(this.project, result)
+              this.clone = { ...this.project }
+            }
+          })
+          .catch(error => {
+            this.flashStore.$patch({ message: 'Error removing Design Doc. Please try again.', level: LogLevel.error })
+          })
+          .finally(()=> {
+            this.isSaving = false
+          })
+      }
+    },
     submitProjectForm() {
       this.isSaving = true
       this.flashStore.$reset()
       if (this.inputRef) {
-        if (this.inputRef.hasValidMaterials) {
+        if (this.inputRef.hasValidMaterials && this.inputRef.hasValidImage) {
           this.teamsStore.saveTeamProject(this.team, this.clone, this.inputRef.docFile)
             .then(result => {
               Object.assign(this.project, result)
@@ -106,6 +128,9 @@ export default defineComponent({
           let error = ''
           if (!this.inputRef.hasValidMaterials) {
             error = "Some materials are missing required fields."
+          }
+          if (!this.inputRef.hasValidImage) {
+            error = "The project image is not in the required format."
           }
           this.flashStore.$patch({ message: error, level: LogLevel.error })
           this.isSaving = false
