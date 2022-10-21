@@ -56,6 +56,10 @@
 	border-radius: 0;
 }
 
+.has-border-radius-6 {
+	border-radius: 6px;
+}
+
 .text-editor {
 	@import "bulma/sass/elements/content.sass";
 }
