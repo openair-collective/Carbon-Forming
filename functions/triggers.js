@@ -101,7 +101,7 @@ exports.createCompetition = functions.firestore
     .onCreate(async (snap, context) => {
       // update aggregate
       const aggregateDoc =  db.doc(`${KEY_AGGREGATES}/${AGGREGATE_ID_COMPS}`)
-      batch.set(aggregateDoc, { [`${snap.id}`]: snap.data() }, { merge: true })
+      aggregateDoc.set({ [`${snap.id}`]: snap.data() }, { merge: true })
     })
 
 exports.updateCompetition = functions.firestore
