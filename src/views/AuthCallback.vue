@@ -61,14 +61,8 @@ export default defineComponent({
             })
           }
           else {
-            const userTeams = this.profile && this.profile.teams
-            if (userTeams && !isEmpty(userTeams)) {
-              let redirect = this.$route.query.redirect as string || '/my-teams'
-              this.$router.replace({ path: redirect })
-            }
-            else {
-              this.$router.replace({ name: 'onboarding'})
-            }
+            let redirect = this.$route.query.redirect as string || '/my-teams'
+            this.$router.replace({ path: redirect })
           }
         }
         catch(error) {

@@ -129,11 +129,6 @@ const routes: RouteRecordRaw[] = [
     ]
   },
   {
-    path: '/onboarding',
-    name: 'onboarding',
-    component: Onboarding
-  },
-  {
     path: '/login',
     name: 'login',
     component: Login

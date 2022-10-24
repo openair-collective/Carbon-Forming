@@ -59,32 +59,27 @@ export const useTeamsStore = defineStore('teams', {
     },
     async saveTeam(team:Team, avatar?:File):Promise<Team|undefined> {
       try {
-        let insert = !team.id
-        const response = await firestore.saveTeam(team)
-        team = response
+        let creating = !team.id
         if (avatar) {
           await this.saveTeamAvatar(team, avatar)
         }
-        if (insert) {
-          if (!this.list) {
-            await this.fetch()
+        let response = await firestore.saveTeam(team)
+        team = { ...team, ...response }
+        if(response && creating && this.list) {
+          let list_patch = this.list?.slice() || []
+          const team_before = list_patch.find(t => {
+            return team.name > t.name
+          })
+          if (team_before) {
+            let idx = list_patch.indexOf(team_before)
+            list_patch.splice(idx, 0, team)
           }
           else {
-            let list_patch = this.list?.slice() || []
-            const team_before = list_patch.find(t => {
-              return team.name > t.name
-            })
-            if (team_before) {
-              let idx = list_patch.indexOf(team_before)
-              list_patch.splice(idx, 0, team)
-            }
-            else {
-              list_patch.push(team)
-            }
-            this.list = list_patch
+            list_patch.push(team)
           }
+          this.list = list_patch
         }
-        return team
+        return response
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
@@ -160,7 +155,7 @@ export const useTeamsStore = defineStore('teams', {
       try {
         const response = await storage.saveFile(avatar, team.id)
         team.avatar = response
-        return await this.saveTeam(team)
+        return team
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)

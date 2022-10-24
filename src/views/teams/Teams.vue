@@ -16,7 +16,8 @@
           <a class="is-size-3">My Teams</a>
         </li>
         <li v-if="userStore.isAuthenticated && activeTab === eTabs.MY_TEAMS">
-          <router-link 
+          <router-link
+            v-if="activeList.length > 0"
             :to="{ name: 'teams-new'}"
             class="button is-info is-outlined is-small"
           >
@@ -25,7 +26,29 @@
         </li>
       </ul>
     </div>
-    <team-list 
+    <div
+      v-if="activeList.length === 0"
+      class="is-flex is-flex-direction-column is-align-items-center p-6"
+    >
+      <template v-if="activeTab === eTabs.TEAMS">
+        <p class="mb-2 is-size-4">
+          There are no teams.
+        </p>
+      </template>
+      <template v-else>
+        <p class="mb-4 is-size-4">
+          You've got no teams
+        </p>
+        <router-link
+          :to="{ name: 'teams-new'}"
+          class="button is-info"
+        >
+        Create a team
+        </router-link>
+      </template>
+    </div>
+    <team-list
+      v-else
       :list="activeList" 
       :showUserTeams="activeTab === eTabs.TEAMS"
       class="p-4" 
@@ -43,7 +66,6 @@
       >
         Show More
       </button>
-      <div v-else-if="!paginate" class="tag is-medium">You’ve reached the end of the list</div>
     </div>
   </section>
 </template>
@@ -71,7 +93,7 @@ export default defineComponent({
     return {
       eTabs: TABS,
       activeTab: TABS.TEAMS,
-      paginate: true,
+      paginate: false,
       isLoading: false
     }
   },

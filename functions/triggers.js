@@ -9,7 +9,6 @@ const { FieldValue } = require("firebase-admin/firestore");
 const KEY_USERS = 'users'
 const KEY_TEAMS = 'teams'
 const KEY_PROJECTS = 'projects'
-const KEY_COMPETITIONS = 'competitions'
 const KEY_COMP_PROJECTS = 'competition_projects'
 const KEY_TEAM_PROJECTS = 'team_projects'
 const KEY_AGGREGATES = 'aggregates'
@@ -88,6 +87,12 @@ exports.deleteTeam = functions.firestore
       teamProjects.forEach(doc => {
         batch.delete(doc.ref)
       })
+
+      // delete team_projects ref
+      const teamProjectsRef = db.collection(KEY_TEAM_PROJECTS).doc(`${snap.id}`)
+      batch.set(teamProjectsRef, {
+        [`${snap.id}`]: FieldValue.delete()
+      }, { merge: true})
 
       batch.commit()
 
@@ -206,6 +211,7 @@ exports.updateProject = functions.firestore
         )
       }
     }
+    
     // sync with competitions
     if (after.competition && after.competition.id) {
       const compProjectsRef = db.collection(KEY_COMP_PROJECTS).doc(`${after.competition.id}`)
