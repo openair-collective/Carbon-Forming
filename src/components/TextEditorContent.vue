@@ -1,6 +1,6 @@
 <template>
   <div class="text-editor">
-    <div class="content" v-html="value" />
+    <div class="content" v-html="valueFormatted" />
   </div>
 </template>
 
@@ -13,6 +13,17 @@ export default defineComponent({
       type: String,
       default: ''
     }
+  },
+  computed: {
+    valueFormatted():string {
+      return this.value.replaceAll('<p><br></p>', '')
+    }
   }
 })
 </script>
+
+<style scoped>
+.content p > br {
+  display: none;
+}
+</style>
