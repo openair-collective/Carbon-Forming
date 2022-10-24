@@ -26,11 +26,22 @@
           :to="{ name: 'comp-show', params: { id: comp.id } }"
           class="mb-4"
         > 
+          <div
+            v-if="acceptingEntries(comp)"
+            class="tag mb-4 is-primary is-light"
+          >
+            Open Competition
+          </div>
           <h3 class="title is-3">{{ comp.name }}</h3>
           <button 
             v-if="showEnterButton"
             @click.stop.prevent="onEnterCompetition(comp)"
-            class="button is-primary"
+            class="button"
+            :class="{
+              'is-info': acceptingEntries(comp),
+              'is-light': !acceptingEntries(comp)
+            }"
+            :disabled="!acceptingEntries(comp)"
           >
             Enter this competition
           </button>
@@ -65,6 +76,7 @@ import { mapStores } from 'pinia'
 import { useModalStore } from '@/store/modal'
 import CountdownTimer from '@/components/CountdownTimer.vue'
 import { ListType } from '@/enums'
+import { acceptingEntries, compEnded } from '@/helpers/compHelper'
 
 export default defineComponent({
   components: { CountdownTimer },
@@ -94,14 +106,8 @@ export default defineComponent({
     ...mapStores(useModalStore)
   },
   methods: {
-    compEnded(comp:Competition):boolean {
-      let result = false
-      let now = new Date().getTime()
-      if (comp.end_date) {
-        result = fsTimestampToDate(comp.end_date).getTime() < now
-      }
-      return result
-    },
+    acceptingEntries,
+    compEnded,
     onEnterCompetition(comp:Competition) {
       this.modalStore.options = {
         component: 'EnterCompetition',
