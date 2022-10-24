@@ -15,23 +15,36 @@
       </nav>
       <div class="columns">
         <div class="column">
-          <h1 class="title is-2">{{ competition.name }}</h1>
+          <div class="is-flex is-flex-direction-row is-align-items-center mb-4">
+            <h1 class="title is-2 mr-4 mb-0">
+              {{ competition.name }}
+            </h1>
+            <router-link 
+              v-if="canEdit"
+              :to="{ name: 'comp-edit', params: {id: competition.id }}"
+              class="button is-small is-info is-outlined">
+              Edit this competition
+            </router-link>
+          </div>
           <div class="field is-grouped mb-4">
             <div class="control">
               <button
                 @click="onEnterCompetition"
-                class="button is-primary"
+                class="button"
+                :class="{
+                  'is-primary': acceptingEntries(competition),
+                  'is-light': !acceptingEntries(competition)
+                }"
+                :disabled="!acceptingEntries(competition)" 
               >
                 Enter this competition
               </button>
-            </div>
-            <div class="control">
-              <router-link 
-                v-if="canEdit"
-                :to="{ name: 'comp-edit', params: {id: competition.id }}"
-                class="button is-info is-outlined">
-                Edit this competition
-              </router-link>
+              <span
+                v-if="!acceptingEntries(competition)" 
+                class="help is-danger is-pulled-right ml-4"
+              >
+                We cannot accept submissions until the start date
+              </span>
             </div>
           </div>
         </div>
@@ -74,9 +87,6 @@
       <router-view :competition="competition" />
     </article>
   </section>
-  <div v-else-if="error" class="notification is-error">>
-    {{ error }}
-  </div>
   <loading v-else />
 </template>
 
@@ -94,6 +104,7 @@ import { dayMonth, dayMonthYear, fsTimestampToDate } from '@/utils/date'
 import Loading from '@/components/Loading.vue'
 import CountdownTimer from '@/components/CountdownTimer.vue'
 import { ERROR_NOT_FOUND } from '@/consts'
+import { acceptingEntries } from  '@/helpers/compHelper'
 import log from '@/services/logger'
 
 const MODULE_ID ='views/competition'
@@ -120,8 +131,7 @@ export default defineComponent({
       kfsTimestampToDate: fsTimestampToDate,
       competition: null as Competition|null,
       activeTab: TABS.DETAILS,
-      projects: [] as Project[],
-      error: ''
+      projects: [] as Project[]
     }
   },
   computed: { 
@@ -147,6 +157,7 @@ export default defineComponent({
     }
   },
   methods: {
+    acceptingEntries,
     onTabClick(tab:number) {
       this.activeTab = tab
       if (this.competition) {

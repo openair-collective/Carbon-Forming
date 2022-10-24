@@ -1,7 +1,7 @@
 <template>
   <section class="is-flex is-flex-direction-column">
     <header class="header">
-      <div class="hero is-medium is-link">
+      <div class="hero is-medium">
         <div class="hero-body">
           <p class="title">
             Welcome to Carbon Hackers
@@ -10,9 +10,9 @@
           <router-link 
             v-if="canCreate && (currentCompetitions.length || pastCompetitions.length)"
             :to="{ name: 'comp-new' }"
-            class="button is-info is-small is-outlined"
+            class="button is-info"
           >
-            New Competition
+            Create Competition
         </router-link>
         </div>
       </div>
@@ -44,7 +44,7 @@
         <router-link
           v-if="canCreate"
           :to="{ name: 'comp-new' }"
-          class="button is-primary"
+          class="button is-info"
         >
           Create Your First Competition
         </router-link>
@@ -91,7 +91,11 @@ export default defineComponent({
         let now = new Date().getTime()
         result = this.list.filter(c => c.end_date && fsTimestampToDate(c.end_date).getTime() > now)  
       }
-      return result
+      return result.sort((a,b) => {
+        const aEnd = a.end_date ? fsTimestampToDate(a.end_date).getTime() : 0
+        const bEnd = b.end_date ? fsTimestampToDate(b.end_date).getTime() : 0
+        return aEnd - bEnd
+      })
     },
     pastCompetitions() {
       let result = [] as Competition[]
@@ -117,5 +121,8 @@ export default defineComponent({
 <style scoped>
   .list {
     margin-top: -100px;
+  }
+  .hero {
+    background-color:#A6A4A4;
   }
 </style>
