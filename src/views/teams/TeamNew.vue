@@ -42,14 +42,11 @@ export default defineComponent({
   methods: {
     onCancel() {
       const id = this.$route.params.id
-      this.$router.replace({ name: 'root'})
+      this.$router.replace({ name: 'my-teams'})
     },
     onTeamSaved(team:Team) {
       this.userStore.addTeam(team, TeamRole.admin)
         .then(result => {
-          if (this.teamsStore.list) {
-            this.teamsStore.list.push(team)
-          }
           this.$router.replace({ name: 'team-show', params: { id: team.id }})
             .then(() => {
               this.flashStore.$patch({ message: 'Team saved', level: LogLevel.success })

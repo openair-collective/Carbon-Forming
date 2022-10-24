@@ -1,39 +1,34 @@
 <template>
   <div class="is-flex is-flex-wrap-wrap">
-    <template v-if="list && list.length">
-      <div  
-        v-for="(team, i) in list" 
-        :key="i"
-        @click="$router.push({ 
-          name: 'team-show', 
-          params: { id: team.id }
-        })" 
-        class="box box--team mb-4 mr-4 is-flex-grow-1"
-      >
-        <div class="is-pulled-left mr-4">
-          <figure 
-            class="image mb-2"
-            :style="{backgroundImage: `url(${teamAvatar(team)})`}  "
-          >
-          </figure>
-          <div 
-            v-if="showUserTeams && isCurrentUserTeamMember(team)" 
-            class="tag is-normal is-info is-light"
-          >
-            Your Team
-          </div>
+    <div  
+      v-for="(team, i) in list" 
+      :key="i"
+      @click="$router.push({ 
+        name: 'team-show', 
+        params: { id: team.id }
+      })" 
+      class="box box--team mb-4 mr-4 is-flex-grow-1"
+    >
+      <div class="is-pulled-left mr-4">
+        <figure 
+          class="image mb-2"
+          :style="{backgroundImage: `url(${teamAvatar(team)})`}  "
+        >
+        </figure>
+        <div 
+          v-if="showUserTeams && isCurrentUserTeamMember(team)" 
+          class="tag is-normal is-info is-light"
+        >
+          Your Team
         </div>
-        <router-link :to="{ 
-          name: 'team-show', 
-          params: { id: team.id }
-        }"> 
-          <h3 class="title is-3">{{ team.name }}</h3>
-          <h4 class="subtitle">{{ team.location }}</h4>
-        </router-link>
       </div>
-    </template>
-    <div v-else>
-      <p>No teams</p>
+      <router-link :to="{ 
+        name: 'team-show', 
+        params: { id: team.id }
+      }"> 
+        <h3 class="title is-3">{{ team.name }}</h3>
+        <h4 class="subtitle">{{ team.location }}</h4>
+      </router-link>
     </div>
   </div>
 </template>

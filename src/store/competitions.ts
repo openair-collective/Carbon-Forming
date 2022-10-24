@@ -76,32 +76,27 @@ export const useCompetitionsStore = defineStore('competitions', {
     },
     async saveCompetition(comp:Competition):Promise<Competition|undefined> {
       try {
-        const insert = !comp.id
+        const creating = !comp.id
         const response = await firestore.saveCompetition(comp)
         comp = { ...comp, ...response }
-        if (insert) {
-          if (!this.list) {
-            await this.fetch()
+        if (creating && response && this.list) {
+          let list_patch = this.list?.slice() || []
+          const comp_before = list_patch.find(c => {
+            const isBeforeName = comp.name > c.name
+            let isBeforeStart = false
+            if (comp.start_date && c.start_date) {
+              isBeforeStart = comp.start_date.seconds < c.start_date.seconds
+            }
+            return isBeforeName && isBeforeStart
+          })
+          if (comp_before) {
+            let idx = list_patch.indexOf(comp_before)
+            list_patch.splice(idx, 0, comp)
           }
           else {
-            let list_patch = this.list?.slice() || []
-            const comp_before = list_patch.find(c => {
-              const isBeforeName = comp.name > c.name
-              let isBeforeStart = false
-              if (comp.start_date && c.start_date) {
-                isBeforeStart = comp.start_date.seconds < c.start_date.seconds
-              }
-              return isBeforeName && isBeforeStart
-            })
-            if (comp_before) {
-              let idx = list_patch.indexOf(comp_before)
-              list_patch.splice(idx, 0, comp)
-            }
-            else {
-              list_patch.push(comp)
-            }
-            this.list = list_patch
+            list_patch.push(comp)
           }
+          this.list = list_patch
         }
         return comp
       }
