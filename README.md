@@ -122,6 +122,7 @@ Firebase emulators require [Java](https://www.oracle.com/java/technologies/downl
    cp .sample.env .env.local
    cp ./functions/.sample.secret.local ./functions/.secret.local
    ```
+   For developing on the actual web interface, ask contributors or maintainers of this repo for specific ENV values, which may need to be generated. 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -130,7 +131,7 @@ Firebase emulators require [Java](https://www.oracle.com/java/technologies/downl
 
 ### Running the Development Server
 
-You will want to run these two commands in seperate terminal instances
+You will want to run these two commands in separate terminal instances
 
 1. Run the Vite project in development mode
    ```sh
@@ -140,6 +141,7 @@ You will want to run these two commands in seperate terminal instances
    ```sh
     npx firebase emulators:start
    ```
+1. The web interface will be accessible at [http://localhost:5000](http://localhost:5000). 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
