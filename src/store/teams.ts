@@ -124,10 +124,14 @@ export const useTeamsStore = defineStore('teams', {
         project.team = team
         let response = await useProjectsStore().saveProject(project, image)
         project = response as Project
-        team.projects = team.projects || [project]
-        let idx  = team.projects.indexOf(project)
-        if (!idx) {
-          team.projects.push(project)
+        if (team.projects && team.projects.length) {
+          let match  = team.projects.find(p => p.id === project.id)
+          if (match) {
+            match = { ...match, ...project }
+          }
+        }
+        else {
+          team.projects = [project]
         }
         return project
       }

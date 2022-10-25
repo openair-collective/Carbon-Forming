@@ -90,9 +90,7 @@ exports.deleteTeam = functions.firestore
 
       // delete team_projects ref
       const teamProjectsRef = db.collection(KEY_TEAM_PROJECTS).doc(`${snap.id}`)
-      batch.set(teamProjectsRef, {
-        [`${snap.id}`]: FieldValue.delete()
-      }, { merge: true})
+      batch.delete(teamProjectsRef)
 
       batch.commit()
 
@@ -104,7 +102,7 @@ exports.deleteTeam = functions.firestore
 exports.createCompetition = functions.firestore
     .document('competitions/{competitionID}')
     .onCreate(async (snap, context) => {
-      // update aggregate
+      // update competitions aggregate list
       const aggregateDoc =  db.doc(`${KEY_AGGREGATES}/${AGGREGATE_ID_COMPS}`)
       aggregateDoc.set({ [`${snap.id}`]: snap.data() }, { merge: true })
     })
@@ -138,34 +136,12 @@ exports.deleteCompetition = functions.firestore
       projects.forEach(doc => {
         batch.update(doc.ref, { competition : null })
       })
-      // update aggregate
+      // delete competition_projects
       const aggregateDoc =  db.doc(`${KEY_AGGREGATES}/${AGGREGATE_ID_COMPS}`)
-      batch.set(aggregateDoc, { [`${snap.id}`]: FieldValue.delete() }, { merge: true })
+      batch.delete(aggregateDoc)
       
       batch.commit()
     })
-
-exports.createProject = functions.firestore
-  .document('projects/{projectID}')
-  .onCreate(async (snap, context) => {
-    const batch = db.batch()
-
-    const data = snap.data()
-    
-    const teamProjectsRef = db.collection(KEY_TEAM_PROJECTS).doc(`${data.team.id}`)
-    batch.set(teamProjectsRef, {
-        [`${snap.id}`]: Object.assign({ id: snap.id }, data)
-      }, 
-      { merge: true }
-    )
-    const compProjectsRef = db.collection(KEY_COMP_PROJECTS).doc(`${data.competition.id}`)
-    batch.set(compProjectsRef, {
-        [`${snap.id}`]: Object.assign({ id: snap.id }, data)
-      }, 
-      { merge: true }
-    )
-    batch.commit()
-  })
 
 exports.updateProject = functions.firestore
   .document('projects/{projectID}')

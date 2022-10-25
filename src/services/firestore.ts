@@ -203,9 +203,25 @@ class FirestoreService {
       await setDoc(ref, project, { merge: true })
     }
     else {
+      // adding a new instawnce
       const colRef = collection(db, KEY_PROJECTS).withConverter(projectConverter)
       const docRef = await addDoc(colRef, project)
       project.id = docRef.id
+      // immediately add to project aggregates
+      const batch = writeBatch(db)
+      const teamProjectsRef = doc(db, KEY_TEAM_PROJECTS, project.team.id)
+      batch.set(teamProjectsRef, {
+          [`${project.id}`]: Object.assign({ id: project.id }, project)
+        }, 
+        { merge: true }
+      )
+      const compProjectsRef = doc(db, KEY_COMP_PROJECTS, project.competition.id)
+      batch.set(compProjectsRef, {
+          [`${project.id}`]: Object.assign({ id: project.id }, project)
+        }, 
+        { merge: true }
+      )
+      await batch.commit()
     }
     return project
   }
