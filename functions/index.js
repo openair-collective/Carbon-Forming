@@ -10,7 +10,6 @@ module.exports = {
   deleteUser: triggers.deleteUser,
   updateTeam: triggers.updateTeam,
   deleteTeam: triggers.deleteTeam,
-  createProject: triggers.createProject,
   updateProject: triggers.updateProject,
   deleteProject: triggers.deleteProject,
   createCompetition: triggers.createCompetition,
