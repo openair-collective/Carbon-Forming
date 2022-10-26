@@ -47,7 +47,8 @@
     <div class="field"> 
       <label class="label">Where is your team located?</label>
       <div class="control">
-        <input class="input" type="text" v-model="clone.location" required>
+        <input class="input" type="text" placeholder="Country" v-model="clone.country" required>
+        <input class="input" type="text" placeholder="City, State/Province" v-model="clone.region" required>
       </div>
     </div>
     <hr/>
@@ -128,7 +129,8 @@ const ABOUT_PLACEHOLDER = 'Tell us a bit about your team, what your areas of spe
 const DEFAULT_TEAM = {
   id: '',
   name: '', 
-  location: '',
+  country: '',
+  region: '',
   about: '',
   avatar: null,
   members: {},
@@ -164,7 +166,7 @@ export default defineComponent({
       return result
     },
     disableSubmit():boolean {
-      return !this.clone.name || !this.clone.location
+      return !this.clone.name || !this.clone.country || !this.clone.region
     }
   },
   methods: {

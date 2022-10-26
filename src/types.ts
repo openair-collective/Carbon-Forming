@@ -24,7 +24,8 @@ export type Guild = {
 export type Team = {
   id:string
   name:string
-  location:string
+  country:string
+  region:string
   about:string
   avatar:FileUpload | null
   members: { [key:UserProfile['id']]: TeamRole }
