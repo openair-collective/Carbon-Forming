@@ -20,7 +20,6 @@ import TeamProject from '@/views/team_projects/TeamProject.vue'
 import TeamCompetitions from '@/views/team_competitions/TeamCompetitions.vue'
 import Login from '@/views/Login.vue'
 import AuthCallback from '@/views/AuthCallback.vue'
-import Onboarding from '@/views/Onboarding.vue'
 import { useUserStore } from '@/store/user'
 import { useFlashStore } from '@/store/flash'
 import { useModalStore } from '@/store/modal'
@@ -30,7 +29,7 @@ const routes: RouteRecordRaw[] = [
     path: '/',
     name: 'root',
     component: Dashboard, // has router-view -- wraps team and competition views
-    redirect: to => { return '/teams' },
+    redirect: to => { return '/competitions' },
     children: [
       {
         path: '/teams',

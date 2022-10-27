@@ -4,7 +4,7 @@
       <div class="navbar-item">
         <h1 class="title is-4">
           <router-link :to="{ name: 'root'}">
-            Carbon Forming
+            Carbon Hackers
           </router-link>
         </h1>
       </div>
@@ -63,7 +63,17 @@ export default defineComponent({
 </script>
 
 <style scoped>
-  .image--avatar img {
-    max-height: none;
-  }
+.navbar .is-light {
+  background-color: #D9D9D9;
+}
+.navbar-brand a,
+.navbar-brand a:visited {
+  color: #1A1A1A;
+}
+.navbar-brand a:hover {
+  color: #707070
+}
+.image--avatar img {
+  max-height: none;
+}
 </style>
