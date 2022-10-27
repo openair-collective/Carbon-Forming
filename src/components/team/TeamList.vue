@@ -27,7 +27,7 @@
         params: { id: team.id }
       }"> 
         <h3 class="title is-3">{{ team.name }}</h3>
-        <h4 class="subtitle">{{ team.location }}</h4>
+        <h4 class="subtitle">{{ team.region }}, {{ team.country }}</h4>
       </router-link>
     </div>
   </div>
