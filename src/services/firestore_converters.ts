@@ -5,8 +5,9 @@ export const teamConverter = {
   toFirestore: (team:Team) => {
     return {
       name: team.name,
-      country: team.country,
+      city: team.city,
       region: team.region,
+      country: team.country,
       about: team.about,
       avatar: team.avatar,
       members: team.members,
@@ -20,8 +21,9 @@ export const teamConverter = {
       id: snapshot.id,
       name: data.name,
       about: data.about || '',
-      country: data.country || '',
+      city: data.city || '',
       region: data.region || '',
+      country: data.country || '',
       avatar: data.avatar || '',
       members: data.members || {},
       discord_usernames: data.discord_usernames || [],

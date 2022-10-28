@@ -25,7 +25,7 @@
           Edit Team
         </router-link>
       </h1>
-      <h2 class="subtitle">{{ team.region }}, {{ team.country }}</h2>
+      <h2 class="subtitle">{{ team.city }}, {{ team.region }}, {{ team.country }}</h2>
       <div class="tabs mb-0 pb-0">
         <ul>
           <li 
