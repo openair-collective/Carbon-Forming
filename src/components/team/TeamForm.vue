@@ -1,4 +1,4 @@
-  <template>
+<template>
   <form @submit.prevent="submitTeamForm" :disabled="isSaving">
     <div class="is-flex is-flex-direction-row mb-4">
       <div>
@@ -54,7 +54,6 @@
       </div>
       <div class="control">
         <input class="input" type="text" placeholder="Country" v-model="clone.country" required>
-      </div>
       </div>
     </div>
     <hr/>

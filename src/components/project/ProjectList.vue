@@ -26,7 +26,7 @@
           </figure>
         </div>
         <p class="is-size-5">{{ project.team.name }}</p>
-        <p class="is-size-6">{{ project.team.country }}, {{ project.team.region }}, {{ project.team.country }}</p>
+        <p class="is-size-6">{{ project.team.city }}, {{ project.team.region }}, {{ project.team.country }}</p>
       </div>
     </div>
   </div>
