@@ -61,7 +61,7 @@ export default defineComponent({
             })
           }
           else {
-            let redirect = this.$route.query.redirect as string || '/my-teams'
+            let redirect = this.$route.query.redirect as string || '/'
             this.$router.replace({ path: redirect })
           }
         }
