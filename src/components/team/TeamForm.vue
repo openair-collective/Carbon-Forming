@@ -49,9 +49,13 @@
       <div class="control">
         <input class="input" type="text" placeholder="City" v-model="clone.city" required>
       </div>
+    </div>
+    <div class="field">
       <div class="control">
         <input class="input" type="text" placeholder="State/Province/Region" v-model="clone.region" required>
       </div>
+    </div>
+    <div class="field">
       <div class="control">
         <input class="input" type="text" placeholder="Country" v-model="clone.country" required>
       </div>
