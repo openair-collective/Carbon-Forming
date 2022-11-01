@@ -13,10 +13,10 @@
   },
   "main": "index.js",
   "dependencies": {
-    "firebase-admin": "^11.0.1",
-    "firebase-functions": "^3.24.1",
     "cookie-parser": "^1.4.4",
-    "crypto": "1.0.1"
+    "crypto": "1.0.1",
+    "firebase-admin": "^11.0.1",
+    "firebase-functions": "^4.0.1"
   },
   "devDependencies": {
     "firebase-functions-test": "^2.4.0"
