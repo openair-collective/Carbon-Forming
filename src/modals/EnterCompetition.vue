@@ -36,7 +36,7 @@
               >
               </figure>
               <h4 class="title is-5">{{ user_team.name }}</h4>
-              <h5 class="subtitle">{{ user_team.location }}</h5>
+              <h5 class="subtitle">{{ user_team.city }}, {{ user_team.region }}, {{ user_team.country }}</h5>
             </div>
           </div>
         </div>
