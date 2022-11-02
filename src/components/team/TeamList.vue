@@ -12,7 +12,7 @@
       <div class="is-pulled-left mr-4">
         <figure 
           class="image mb-2"
-          :style="{backgroundImage: `url(${teamAvatar(team)})`}  "
+          :style="{backgroundImage: `url(${getTeamAvatar(team)})`}  "
         >
         </figure>
         <div 
@@ -27,7 +27,7 @@
         params: { id: team.id }
       }"> 
         <h3 class="title is-3">{{ team.name }}</h3>
-        <h4 class="subtitle">{{ team.city }}, {{ team.region }}, {{ team.country }}</h4>
+        <h4 class="subtitle">{{ getTeamLocation(team)}}</h4>
       </router-link>
     </div>
   </div>
@@ -38,7 +38,7 @@ import { defineComponent, PropType } from 'vue'
 import { Team } from '@/types'
 import { mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
-import { getTeamAvatar } from '@/helpers/teamHelper'
+import { getTeamAvatar, getTeamLocation } from '@/helpers/teamHelper'
 
 export default defineComponent({
   props: {
@@ -55,7 +55,8 @@ export default defineComponent({
     ...mapStores(useUserStore)
   },
   methods: {
-    teamAvatar: getTeamAvatar,
+    getTeamLocation,
+    getTeamAvatar,
     isCurrentUserTeamMember(team:Team):boolean {
       let result = false
       if(this.userStore.profile) {

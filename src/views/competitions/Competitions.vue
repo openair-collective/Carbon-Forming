@@ -34,6 +34,7 @@
         <competition-list
           :list="pastCompetitions"
           :listType="eListType.column"
+          :showEnterButton="true"
         />
       </div>
       <div 
@@ -65,6 +66,7 @@ import CompetitionList from '@/components/competition/CompetitionList.vue'
 import { PAGING_SIZE } from '@/consts'
 import { Competition } from '@/types'
 import { ListType } from '@/enums'
+import { COMP_STATES, getCompState } from '@/helpers/compHelper'
 
 export default defineComponent({
   components: { Loading, CompetitionList },
@@ -88,8 +90,7 @@ export default defineComponent({
     currentCompetitions():Competition[] {
       let result = [] as Competition[]
       if (this.list) {
-        let now = new Date().getTime()
-        result = this.list.filter(c => c.end_date && fsTimestampToDate(c.end_date).getTime() > now)  
+        result = this.list.filter(c => getCompState(c) !== COMP_STATES.JUDGED)
       }
       return result.sort((a,b) => {
         const aEnd = a.end_date ? fsTimestampToDate(a.end_date).getTime() : 0
@@ -100,8 +101,7 @@ export default defineComponent({
     pastCompetitions() {
       let result = [] as Competition[]
       if (this.list) {
-        let now = new Date().getTime()
-        result = this.list.filter(c => c.end_date && fsTimestampToDate(c.end_date).getTime() < now)  
+        result = this.list.filter(c => getCompState(c) === COMP_STATES.JUDGED)
       }
       return result
     },

@@ -13,6 +13,25 @@ export function compEnded(comp:Competition):boolean {
   return end <= now
 }
 
-export function acceptingEntries(comp:Competition):boolean {
-  return compStarted(comp) && !compEnded(comp)
+export enum COMP_STATES {
+  UNAVAILABLE,
+  IN_PROGRESS,
+  FINISHED,
+  JUDGED
+}
+
+export function getCompState(comp:Competition):COMP_STATES {
+  let result = COMP_STATES.UNAVAILABLE
+  if (compStarted(comp) && !compEnded(comp)) {
+    result = COMP_STATES.IN_PROGRESS
+  }
+  else if (compEnded(comp)) {
+    if (comp.results_disabled) {
+      result = COMP_STATES.FINISHED
+    }
+    else {
+      result = COMP_STATES.JUDGED
+    }
+  }
+  return result
 }

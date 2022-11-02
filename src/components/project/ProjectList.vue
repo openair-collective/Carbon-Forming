@@ -21,12 +21,12 @@
         <div class="is-pulled-left mr-5">
           <figure
             class="image image--team mb-2"
-            :style="{backgroundImage: `url(${teamAvatar(project.team)})`}  "
+            :style="{backgroundImage: `url(${getTeamAvatar(project.team)})`}  "
           >
           </figure>
         </div>
         <p class="is-size-5">{{ project.team.name }}</p>
-        <p class="is-size-6">{{ project.team.city }}, {{ project.team.region }}, {{ project.team.country }}</p>
+        <p class="is-size-6">{{ getTeamLocation(project.team) }}</p>
       </div>
     </div>
   </div>
@@ -35,7 +35,7 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
 import { Project } from '@/types'
-import { getTeamAvatar } from '@/helpers/teamHelper'
+import { getTeamAvatar, getTeamLocation } from '@/helpers/teamHelper'
 
 export default defineComponent({
   props: {
@@ -53,7 +53,8 @@ export default defineComponent({
     }
   },
   methods: {
-    teamAvatar: getTeamAvatar
+    getTeamLocation,
+    getTeamAvatar
   }
 })
 </script>

@@ -51,14 +51,17 @@ export type Competition = {
   name:string
   description:string
   rules:string
-  criteria:string
-  prizesDisabled: boolean
+  judging_criteria:string
+  success_criteria:string
+  assessment_metric:string
+  prizes_disabled: boolean
   prizes: {
     first:string
     second:string
     third:string
   }
-  leaderboard: { [key:Project['id']]: number }
+  results: { [key:Project['id']]: Ranking },
+  results_disabled:boolean
   start_date:Timestamp | null
   end_date:Timestamp | null
   projects?: Project[]
@@ -69,6 +72,11 @@ export type Material = {
   cost: number
   quantity: number
   link: string
+}
+
+export type Ranking = {
+  position: number | null
+  value: any
 }
 
 export type FileUpload = {
