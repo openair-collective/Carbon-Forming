@@ -61,7 +61,7 @@
                 View Results
               </router-link>
               <p
-                v-if="competitionState !== eCompStates.IN_PROGRESS" 
+                v-if="competitionState === eCompStates.UNAVAILABLE" 
                 class="help is-danger"
               >
                 We cannot accept submissions until the start date

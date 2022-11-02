@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="!canEdit && (isEmpty(results) || competition.results_disabled)"
+    v-if="isEmpty(results) || competition.results_disabled"
     class="is-flex is-flex-direction-column is-align-items-center p-6"
   >
     <p class="mb-4 is-size-4">
