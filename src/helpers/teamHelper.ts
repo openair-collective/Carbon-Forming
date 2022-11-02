@@ -8,3 +8,9 @@ export function getTeamAvatar(team:Team):string {
   }
   return result
 }
+
+export function getTeamLocation(team:Team):string {
+  let location = [team.city, team.region, team.country]
+  location = location.filter(v => v)
+  return location.join(', ')
+}

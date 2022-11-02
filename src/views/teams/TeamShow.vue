@@ -12,7 +12,7 @@
       </nav>
       <figure 
         class="image is-pulled-left mr-4"
-        :style="{backgroundImage: `url(${avatar})`}  "
+        :style="{backgroundImage: `url(${getTeamAvatar(team)})`}  "
       >
       </figure>
       <h1 class="title is-4">
@@ -25,7 +25,7 @@
           Edit Team
         </router-link>
       </h1>
-      <h2 class="subtitle">{{ team.city }}, {{ team.region }}, {{ team.country }}</h2>
+      <h2 class="subtitle">{{ getTeamLocation(team) }}</h2>
       <div class="tabs mb-0 pb-0">
         <ul>
           <li 
@@ -65,6 +65,7 @@ import { useFlashStore } from '@/store/flash'
 import { Team } from '@/types'
 import { canEditTeamWithId } from '@/helpers/authHelper'
 import Loading from '@/components/Loading.vue'
+import { getTeamLocation, getTeamAvatar } from '@/helpers/teamHelper'
 import { TEAM_AVATAR_PLACEHOLDER, ERROR_NOT_FOUND } from '@/consts'
 import log from '@/services/logger'
 import { LogLevel } from '@/enums'
@@ -98,13 +99,6 @@ export default defineComponent({
   },
   computed: {
     ...mapStores(useTeamsStore, useUserStore, useFlashStore),
-    avatar():string {
-      let result = TEAM_AVATAR_PLACEHOLDER
-      if (this.team && this.team.avatar) {
-        result = this.team.avatar.url
-      }
-      return result
-    },
     canEdit():boolean {
       let result = false
       if (this.team && this.team.id && this.userStore.profile) {
@@ -144,6 +138,8 @@ export default defineComponent({
     }
   },
   methods: {
+    getTeamAvatar,
+    getTeamLocation,
     setTeamByID(id:string) {
       this.teamsStore.getTeamById(id)
         .then(result => {

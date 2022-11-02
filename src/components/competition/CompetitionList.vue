@@ -27,24 +27,37 @@
           class="mb-4"
         > 
           <div
-            v-if="acceptingEntries(comp)"
+            v-if="getCompState(comp) === eCompStates.IN_PROGRESS"
             class="tag mb-4 is-primary is-light"
           >
             Open Competition
           </div>
           <h3 class="title is-3">{{ comp.name }}</h3>
-          <button 
-            v-if="showEnterButton"
-            @click.stop.prevent="onEnterCompetition(comp)"
-            class="button"
-            :class="{
-              'is-info': acceptingEntries(comp),
-              'is-light': !acceptingEntries(comp)
-            }"
-            :disabled="!acceptingEntries(comp)"
-          >
-            Enter this competition
-          </button>
+          <template v-if="showEnterButton">
+            <button
+              v-if="getCompState(comp) === eCompStates.IN_PROGRESS || getCompState(comp) === eCompStates.UNAVAILABLE"
+              @click.stop.prevent="onEnterCompetition(comp)"
+              class="button is-info"
+              :disabled="getCompState(comp) === eCompStates.UNAVAILABLE"
+            >
+              Enter this competition
+            </button>
+            <button
+              v-else-if="getCompState(comp) === eCompStates.FINISHED"
+              @click.stop.prevent=""
+              class="button is-info"
+              disabled
+            >
+              Judging in Progress
+            </button>
+            <router-link
+              v-else-if="getCompState(comp) === eCompStates.JUDGED"
+              :to="{name: 'comp-results', params: { id: comp.id }}"
+              class="button is-info"
+            >
+              View Results
+            </router-link>
+          </template>
         </router-link>
         <div>
           <p 
@@ -56,7 +69,7 @@
           <p v-else>
             Time TBD
           </p>
-          <p v-if="compEnded(comp)" class="is-size-3">Competition finished</p>
+          <p v-if="getCompState(comp) === eCompStates.FINISHED" class="is-size-3">Competition finished</p>
           <countdown-timer 
             v-else-if="comp.start_date" 
             :start_date="kfsTimestampToDate(comp.start_date)"
@@ -76,7 +89,10 @@ import { mapStores } from 'pinia'
 import { useModalStore } from '@/store/modal'
 import CountdownTimer from '@/components/CountdownTimer.vue'
 import { ListType } from '@/enums'
-import { acceptingEntries, compEnded } from '@/helpers/compHelper'
+import { 
+  getCompState, 
+  COMP_STATES 
+} from '@/helpers/compHelper'
 
 export default defineComponent({
   components: { CountdownTimer },
@@ -97,6 +113,7 @@ export default defineComponent({
   data() {
     return {
       eListType: ListType,
+      eCompStates: COMP_STATES,
       kDayMonth: dayMonth,
       kDayMonthYear: dayMonthYear,
       kfsTimestampToDate: fsTimestampToDate
@@ -106,8 +123,7 @@ export default defineComponent({
     ...mapStores(useModalStore)
   },
   methods: {
-    acceptingEntries,
-    compEnded,
+    getCompState,
     onEnterCompetition(comp:Competition) {
       this.modalStore.options = {
         component: 'EnterCompetition',

@@ -36,7 +36,7 @@
               >
               </figure>
               <h4 class="title is-5">{{ user_team.name }}</h4>
-              <h5 class="subtitle">{{ user_team.city }}, {{ user_team.region }}, {{ user_team.country }}</h5>
+              <h5 class="subtitle">{{ getTeamLocation(user_team) }}</h5>
             </div>
           </div>
         </div>
@@ -134,6 +134,7 @@ import { useUserStore } from '@/store/user'
 import { useModalStore } from '@/store/modal'
 import { useTeamsStore } from '@/store/teams'
 import { useCompetitionsStore } from '@/store/competitions'
+import { getTeamLocation } from '@/helpers/teamHelper'
 import TeamForm from '@/components/team/TeamForm.vue'
 import ProjectInput from '@/components/project/ProjectInput.vue'
 import Loading from '@/components/Loading.vue'
@@ -201,6 +202,7 @@ export default defineComponent({
     }
   },
   methods: {
+    getTeamLocation,
     back() {
       this.step = STEPS.CHOOSE_TEAM
     },

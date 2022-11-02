@@ -6,7 +6,7 @@
       </h3>
     </header>
     <article class="article has-background-white-bis">
-      <competition-list :list="list" />
+      <competition-list :list="list" :showEnterButton="false" />
     </article>
   </section>
 </template>

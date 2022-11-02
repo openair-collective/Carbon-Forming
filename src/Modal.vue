@@ -40,11 +40,13 @@ import { defineComponent } from 'vue'
 
 import EnterCompetition from '@/modals/EnterCompetition.vue'
 import Message from '@/modals/Message.vue'
+import Confirm from '@/modals/Confirm.vue'
 
 export default defineComponent({
   components: { 
     EnterCompetition, 
-    Message
+    Message,
+    Confirm
   }, 
   name: 'app-modal',
   computed: {

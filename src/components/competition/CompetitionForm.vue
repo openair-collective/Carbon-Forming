@@ -44,7 +44,7 @@
       <div class="field">
         <div class="control">
         <label class="checkbox">
-          <input type="checkbox" v-model="clone.prizesDisabled">
+          <input type="checkbox" v-model="clone.prizes_disabled">
             Click this checkbox if you do not want to offer prizes as part of your competition
           </label>
         </div>
@@ -56,7 +56,7 @@
             class="input"
             type="text"
             v-model="clone.prizes.first"
-            :disabled="clone.prizesDisabled">
+            :disabled="clone.prizes_disabled">
         </div>
       </div>
       <div class="field"> 
@@ -66,7 +66,7 @@
             class="input"
             type="text"
             v-model="clone.prizes.second"
-            :disabled="clone.prizesDisabled">
+            :disabled="clone.prizes_disabled">
         </div>
       </div>
       <div class="field"> 
@@ -76,7 +76,33 @@
             class="input"
             type="text"
             v-model="clone.prizes.third"
-            :disabled="clone.prizesDisabled">
+            :disabled="clone.prizes_disabled">
+        </div>
+      </div>
+    </div>
+    <hr/>
+    <div>
+      <h2 class="title is-4">Success Criteria</h2>
+      <h3 class="subtitle">How will people win your comeptittion. Please describe in as much detail as possible what the competitors have to do to win the competition.</h3>
+      <div class="field"> 
+        <label class="label">Describe how you will assess the winners of the competition</label>
+        <div class="control">
+          <text-editor 
+            :value="clone.success_criteria"
+            :placeholder="'Tell us about your competition'"
+            @text-change="(change) => clone.success_criteria = change" 
+          />
+        </div>
+      </div>
+      <div class="field"> 
+      <label class="label">Metric that will be used to measure the winner</label>
+        <div class="control">
+          <input 
+            class="input" 
+            type="text" 
+            v-model="clone.assessment_metric" 
+            placeholder="Enter a value here e.g. &quot;grams of C02 captured&quot;"
+            required>
         </div>
       </div>
     </div>
@@ -108,9 +134,9 @@
         <label class="label">Criteria</label>
         <div class="control">
           <text-editor 
-            :value="clone.criteria"
+            :value="clone.judging_criteria"
             :placeholder="'How will the winning entries be selected?'"
-            @text-change="(change) => clone.criteria = change" 
+            @text-change="(change) => clone.judging_criteria = change" 
           />
         </div>
       </div>
@@ -159,14 +185,17 @@ const DEFAULT_COMP = {
   name: '',
   description: '',
   rules: '',
-  criteria: '',
-  prizesDisabled: false,
+  judging_criteria: '',
+  success_criteria: '',
+  assessment_metric: '',
+  prizes_disabled: false,
   prizes: {
     first: '',
     second: '',
     third: ''
   },
-  leaderboard: {},
+  results: {},
+  results_disabled:true,
   start_date: null,
   end_date: null,
   projects: []

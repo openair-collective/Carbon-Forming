@@ -70,10 +70,13 @@ export const compConverter = {
       name: comp.name,
       description: comp.description,
       rules: comp.rules,
-      criteria: comp.criteria,
-      prizesDisabled: comp.prizesDisabled,
+      judging_criteria: comp.judging_criteria,
+      success_criteria: comp.success_criteria,
+      assessment_metric: comp.assessment_metric,
+      prizes_disabled: comp.prizes_disabled,
       prizes: comp.prizes,
-      leaderboard: comp.leaderboard,
+      results: comp.results,
+      results_disabled: comp.results_disabled,
       start_date: comp.start_date,
       end_date: comp.end_date
     }
@@ -85,10 +88,13 @@ export const compConverter = {
       name: data.name,
       description: data.description || '',
       rules: data.rules || '',
-      criteria: data.criteria || '',
-      prizesDisabled: !!data.prizesDisabled,
+      judging_criteria: data.judging_criteria || '',
+      success_criteria: data.success_criteria || '',
+      assessment_metric: data.assessment_metric || '',
+      prizes_disabled: !!data.prizes_disabled,
       prizes: data.prizes || null,
-      leaderboard: data.leaderboard || null,
+      results: data.results || null,
+      results_disabled: !!data.results_disabled,
       start_date: data.start_date,
       end_date: data.end_date
     } as Competition

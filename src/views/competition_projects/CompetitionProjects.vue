@@ -16,15 +16,15 @@
       @click="onEnterCompetition"
       class="button"
       :class="{
-        'is-primary': acceptingEntries(competition),
-        'is-light': !acceptingEntries(competition)
+        'is-primary': getCompState(competition) === eCompStates.IN_PROGRESS,
+        'is-light': getCompState(competition) !== eCompStates.IN_PROGRESS
       }"
-      :disabled="!acceptingEntries(competition)" 
+      :disabled="getCompState(competition) !== eCompStates.IN_PROGRESS" 
     >
-      Enter this competition
+    {{ getCompState(competition) === eCompStates.FINISHED ? 'Judging in Progress' : 'Enter this competition' }}
     </button>
     <p
-      v-if="!acceptingEntries(competition)" 
+      v-if="getCompState(competition) === eCompStates.UNAVAILABLE" 
       class="help is-danger mt-4"
     >
       We cannot accept submissions until the start date
@@ -39,7 +39,10 @@ import { useCompetitionsStore } from '@/store/competitions'
 import { useModalStore } from '@/store/modal'
 import { mapStores } from 'pinia'
 import ProjectList from '@/components/project/ProjectList.vue'
-import { acceptingEntries } from  '@/helpers/compHelper'
+import { 
+  getCompState, 
+  COMP_STATES 
+} from  '@/helpers/compHelper'
 
 export default defineComponent({
   components: { ProjectList },
@@ -47,6 +50,11 @@ export default defineComponent({
     competition: {
       type: Object as () => Competition,
       required: true
+    }
+  },
+  data() {
+    return {
+      eCompStates: COMP_STATES,
     }
   },
   computed: {
@@ -59,7 +67,7 @@ export default defineComponent({
     this.fetchProjects()
   },
   methods: {
-    acceptingEntries,
+    getCompState,
     fetchProjects() {
       if (!this.competition.projects || !this.competition.projects.length) {
         this.competitionsStore.fetchCompetitionProjects(this.competition)

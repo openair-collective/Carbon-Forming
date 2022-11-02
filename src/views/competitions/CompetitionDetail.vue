@@ -9,10 +9,10 @@
         <h2 class="title is-4 mb-4">Competition Rules</h2>
         <text-editor-content :value="competition.rules" class="mb-6" />
         <h2 class="title is-4 mb-4">Judging Criteria</h2>
-        <text-editor-content :value="competition.criteria"/>
+        <text-editor-content :value="competition.judging_criteria"/>
       </div>
       <div
-        v-if="!competition.prizesDisabled"
+        v-if="!competition.prizes_disabled"
         class="column"
       >
         <table class="table is-fullwidth">

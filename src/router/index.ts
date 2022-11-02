@@ -8,6 +8,8 @@ import CompetitionNew from '@/views/competitions/CompetitionNew.vue'
 import CompetitionEdit from '@/views/competitions/CompetitionEdit.vue'
 import CompetitionProject from '@/views/competition_projects/CompetitionProject.vue'
 import CompetitionProjects from '@/views/competition_projects/CompetitionProjects.vue'
+import CompetitionResults from '@/views/competition_results/CompetitionResults.vue'
+import CompetitionResultsEdit from '@/views/competition_results/CompetitionResultsEdit.vue'
 import Teams from '@/views/teams/Teams.vue'
 import TeamShow from '@/views/teams/TeamShow.vue'
 import TeamDetail from '@/views/teams/TeamDetail.vue'
@@ -107,6 +109,16 @@ const routes: RouteRecordRaw[] = [
             path: 'projects',
             name: 'comp-projects',
             component: CompetitionProjects
+          },
+          {
+            path: 'results',
+            name: 'comp-results',
+            component: CompetitionResults
+          },
+          {
+            path: 'results/edit',
+            name: 'comp-results-edit',
+            component: CompetitionResultsEdit
           },
           {
             path: 'projects/:project_id',
