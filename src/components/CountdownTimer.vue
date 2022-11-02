@@ -34,6 +34,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { pad } from '@/utils/number'
 
 const DAY_MILLIS = 1000 * 60 * 60 * 24
 const HOUR_MILLIS = 1000 * 60 * 60
@@ -94,9 +95,7 @@ export default defineComponent({
     this.endCountdown()
   },
   methods: {
-    pad(value:number):string {
-      return value < 10 ? '0' + value : value.toString()
-    },
+    pad,
     startCountdown() {
       this.endCountdown()
       this.tick()
