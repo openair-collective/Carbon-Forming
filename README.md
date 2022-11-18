@@ -120,7 +120,7 @@ Firebase emulators require [Java](https://www.oracle.com/java/technologies/downl
 1. Copy and update your Environment Variable files ([Read Docs](https://github.com/openair-collective/Carbon-Forming/wiki/Environment-Variables))
    ```sh
    cp .sample.env .env.local
-   cp ./functions/.sample.secret.local ./functions/.secret.local
+   cp ./functions/.sample.env.local ./functions/.env.local
    ```
    For developing on the actual web interface, ask contributors or maintainers of this repo for specific ENV values, which may need to be generated. 
 
