@@ -2,6 +2,7 @@ const functions = require('firebase-functions')
 const { admin } = require('../admin.js')
 const cookieParser = require('cookie-parser')
 const crypto = require('crypto')
+const fetch = require('node-fetch')
 
 const URI_AUTH='https://discord.com/api/oauth2/authorize'
 const URI_TOKEN='https://discord.com/api/oauth2/token'
@@ -55,14 +56,15 @@ async function createFirebaseToken(uid, photoURL) {
 */
 exports.redirect = (req, res) => {
   let state = crypto.randomBytes(20).toString('hex')
-  if (req.cookies && req.cookies.state) {
-    state = req.cookies.state
-  }
+  const sessionCookie = { state }
   functions.logger.log('Setting verification state:', state)
-  res.cookie('state', state.toString(), {
-    maxAge: 3600000,
-    httpOnly: true
-  })
+  res.cookie('__session', 
+    JSON.stringify(sessionCookie), 
+    {
+      maxAge: 3600000,
+      httpOnly: true
+    }
+  )
 
   const uri = `${URI_AUTH}?response_type=code&client_id=${CLIENT_ID}&scope=identify%20guilds%20guilds.members.read&state=${state}&redirect_uri=${URI_REDIRECT}&prompt=none`
   
@@ -77,10 +79,12 @@ exports.redirect = (req, res) => {
 exports.token = async (req, res) => {
   try {
     return cookieParser()(req, res, async () => {
-      if (!req.cookies.state) {
+      const sessionCookie = JSON.parse(req.cookies.__session)
+      functions.logger.log(sessionCookie)
+      if (!sessionCookie.state) {
         throw new Error('State cookie not set or expired. Maybe you took too long to authorize. Please try again.');
       } 
-      else if (req.cookies.state !== req.query.state) {
+      else if (sessionCookie.state !== req.query.state) {
         throw new Error('State validation failed')
       }
       functions.logger.log('Received auth code:', req.query.code)
