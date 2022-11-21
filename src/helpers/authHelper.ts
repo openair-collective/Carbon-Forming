@@ -3,7 +3,9 @@ import { TeamRole } from '@/enums'
 import { DISCORD_ADMIN_IDS } from '@/consts'
 
 export function canEditTeamWithId(profile:UserProfile, id:string):boolean {
-  return id in profile.teams && profile.teams[id] === TeamRole.admin
+  return 'teams' in profile &&
+         id in profile.teams && 
+         profile.teams[id] === TeamRole.admin
 }
 
 export function canEditCompetitions(oauth:OAuth):boolean {
