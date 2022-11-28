@@ -194,11 +194,14 @@ export default defineComponent({
     }
     else {
       if (!this.userStore.teams) {
-      await this.userStore.fetchTeams()
-    }
-      if (this.userStore.teams && this.userStore.teams.length) {
-        this.step = STEPS.CHOOSE_TEAM
+        await this.userStore.fetchTeams()
       }
+    }
+    if (this.userStore.teams && this.userStore.teams.length) {
+      this.step = STEPS.CHOOSE_TEAM
+    }
+    else {
+      this.step = STEPS.CREATE_FIRST_TEAM
     }
   },
   methods: {
@@ -207,8 +210,9 @@ export default defineComponent({
       this.step = STEPS.CHOOSE_TEAM
     },
     cancel() {
-      if (confirm(CANCEL_WARNING))
-      this.$emit('close')
+      if (confirm(CANCEL_WARNING)) {
+        this.$emit('close')
+      }
     },
     onTeamSaved(team:Team) {
       this.userStore.addTeam(team, TeamRole.admin)
