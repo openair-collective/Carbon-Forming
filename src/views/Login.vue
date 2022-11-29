@@ -16,14 +16,18 @@ import { defineComponent } from 'vue'
 import auth from '@/services/auth'
 import { useUserStore } from '@/store/user'
 import Flash from '@/components/Flash.vue'
+import { KEY_REDIRECT_PATH } from '@/consts'
 
 export default defineComponent({
   components: { Flash },
   beforeRouteEnter(to, from) {
+    const redirect = to.query.redirect as string
     let store = useUserStore()
     if (store.oauth) {
-      let redirect = to.query.redirect as string
       return redirect || '/'
+    }
+    else {
+      sessionStorage.setItem(KEY_REDIRECT_PATH, redirect || from.path)
     }
   },
   methods: {

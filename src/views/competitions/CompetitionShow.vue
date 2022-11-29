@@ -262,13 +262,11 @@ export default defineComponent({
         })
     },
     onEnterCompetition() {
-      this.modalStore.options = {
-        component: 'EnterCompetition',
-        title: '',
-        fullscreen: true,
-        meta: {
-          competition: this.competition
-        }
+      if (this.competition) {
+        this.$router.push({
+          name: 'comp-enter',
+          params: { id: this.competition.id }
+        })
       }
     },
     saveCompetition(comp:Competition):Promise<Competition|undefined> {
