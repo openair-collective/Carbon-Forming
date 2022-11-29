@@ -6,6 +6,7 @@ import CompetitionShow from '@/views/competitions/CompetitionShow.vue'
 import CompetitionDetail from '@/views/competitions/CompetitionDetail.vue'
 import CompetitionNew from '@/views/competitions/CompetitionNew.vue'
 import CompetitionEdit from '@/views/competitions/CompetitionEdit.vue'
+import CompetitionEnter from '@/views/competitions/CompetitionEnter.vue'
 import CompetitionProject from '@/views/competition_projects/CompetitionProject.vue'
 import CompetitionProjects from '@/views/competition_projects/CompetitionProjects.vue'
 import CompetitionResults from '@/views/competition_results/CompetitionResults.vue'
@@ -106,6 +107,11 @@ const routes: RouteRecordRaw[] = [
             component: CompetitionDetail
           },
           {
+            path: 'enter',
+            name: 'comp-enter',
+            component: CompetitionEnter
+          },
+          {
             path: 'projects',
             name: 'comp-projects',
             component: CompetitionProjects
@@ -157,16 +163,15 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, from) => {
-  const store = useUserStore()
+  const userStore = useUserStore()
   const flash = useFlashStore()
   const modal = useModalStore()
   flash.$reset()
   modal.$reset()
 
-  if (store.oauth && !store.profile && to.name !== 'auth_callback') {
+  if (userStore.oauth && !userStore.profile && to.name !== 'auth_callback') {
     return { name: 'auth_callback', query: { redirect: to.path }}
   }
-
 })
 
 export default router
