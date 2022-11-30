@@ -13,6 +13,7 @@ import { useFlashStore } from '@/store/flash'
 import Loading from '@/components/Loading.vue'
 import log from '@/services/logger'
 import { LogLevel } from '@/enums'
+import { KEY_REDIRECT_PATH } from '@/consts'
 
 const MODULE_ID = 'views/AuthCallback'
 const LOGIN_ERROR = 'An unknown error occurred. Please try again.'
@@ -53,16 +54,20 @@ export default defineComponent({
           await this.userStore.fetchUser(user.uid, user.photoURL || '')
           await this.userStore.fetchUserGuild()
           if (!this.userStore.profile || !this.userStore.guild) {
-            unsubscribe()
             this.logout({
               message: !this.userStore.profile ? LOGIN_ERROR : GUILD_ERROR,
               level: LogLevel.error
             })
           }
           else {
-            let redirect = this.$route.query.redirect as string || '/'
+            const storedRedirect = sessionStorage.getItem(KEY_REDIRECT_PATH)
+            if (storedRedirect) {
+              sessionStorage.removeItem(KEY_REDIRECT_PATH)
+            }
+            const redirect = this.$route.query.redirect as string || storedRedirect || '/'
             this.$router.replace({ path: redirect })
           }
+          unsubscribe()
         }
         catch(error) {
           let message = (error instanceof Error) ? error.message : String(error)

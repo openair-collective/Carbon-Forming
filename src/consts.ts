@@ -16,3 +16,5 @@ export const PAGING_SIZE:number = 10
 export const ERROR_PAGE_LOAD:string = "We've hit an error. Please try a page refresh."
 export const ERROR_NOT_FOUND:string = "Sorry, but we couldn't find the resource you were looking for."
 export const ERROR_AUTH:string = "Sorry, but you don't have permission to access that page." 
+
+export const KEY_REDIRECT_PATH:string = "redirect_path"
