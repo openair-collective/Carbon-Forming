@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <section class="section">
     <form @submit.prevent="submitProjectForm" :disabled="isSaving">
       <project-input 
         :project="clone"
@@ -25,7 +25,22 @@
         </div>
       </div>
     </form>
-  </div>
+  </section>
+  <section class="section mt-6">
+    <div
+      v-if="project.id"
+      class="p-4 has-background-light"
+    >
+      <h3 class="title is-5">Delete Project</h3>
+      <p><strong>Warning:</strong> Deleting a Project is irreversible. All associated data will also be deleted.</p>
+      <button
+        class="button is-danger mt-3"
+        @click="confirmDelete(project)"
+      >
+        Delete Project
+      </button>
+    </div>
+  </section>
 </template>
 
 <script lang="ts">
@@ -35,6 +50,7 @@ import { LogLevel } from '@/enums'
 import { mapStores } from 'pinia'
 import { useTeamsStore } from '@/store/teams'
 import { useProjectsStore } from '@/store/projects'
+import { useModalStore } from '@/store/modal'
 import { useFlashStore } from '@/store/flash'
 import ProjectInput from '@/components/project/ProjectInput.vue'
 import Notification from '@/components/Notification.vue'
@@ -76,7 +92,7 @@ export default defineComponent({
     }
   },
   computed: {
-    ...mapStores(useTeamsStore, useProjectsStore, useFlashStore),
+    ...mapStores(useTeamsStore, useProjectsStore, useFlashStore, useModalStore),
     disableSubmit():boolean {
       return !this.clone.name || !this.clone.terms
     }
@@ -136,6 +152,31 @@ export default defineComponent({
           this.isSaving = false
         }
       }
+    },
+    confirmDelete(project:Project) {
+      this.modalStore.options = {
+        title: 'Delete Project?',
+        component: 'Confirm',
+        meta: {
+          message: `Are you sure you want to delete ${project.name}?`,
+          confirm: () => { this.deleteProject(project) },
+          confirmLabel: 'Delete',
+          cancelLabel: 'Cancel'
+        }
+      }
+    },
+    deleteProject(project:Project) {
+      this.projectsStore.deleteProject(project)
+        .then(result => {
+            this.$emit("project-deleted")
+          })
+          .catch(error => {
+            this.flashStore.$patch({ message: 'Error deleting project. Please try again.', level: LogLevel.error })
+            log.error(MODULE_ID, error)
+          })
+          .finally(() => {
+            this.isSaving = false
+          })
     }
   }
 })

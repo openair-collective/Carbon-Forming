@@ -64,14 +64,24 @@ export function teamsSync(pinia:Pinia) {
             const match = teamsStore.list.find(t => t.id === change.doc.id)
             if (match) {
               const idx = teamsStore.list.indexOf(match)
-              teamsStore.list[idx] = { ...match, ...team }
+              if (change.type === 'removed') {
+                teamsStore.list = teamsStore.list.splice(idx, 1)
+              }
+              else {
+                teamsStore.list[idx] = { ...match, ...team }
+              }
             }
           }
           if (userStore.teams) {
             const match = userStore.teams.find(t => change.doc.id === change.doc.id) as Team
             if (match) {
               const idx = userStore.teams.indexOf(match)
-              userStore.teams[idx] = { ...match, ...team }
+              if (change.type === 'removed') {
+                userStore.teams = userStore.teams.splice(idx, 1)
+              }
+              else {
+                userStore.teams[idx] = { ...match, ...team }
+              }
             }
           }
         })
