@@ -88,11 +88,11 @@ exports.deleteTeam = functions.firestore
         batch.delete(doc.ref)
       })
 
+      batch.commit()
+
       // delete team_projects ref
       const teamProjectsRef = db.collection(KEY_TEAM_PROJECTS).doc(`${snap.id}`)
-      batch.delete(teamProjectsRef)
-
-      batch.commit()
+       teamProjectsRef.delete()
 
       // delete team file uploads
       const bucket = admin.storage().bucket()
@@ -129,18 +129,19 @@ exports.updateCompetition = functions.firestore
 exports.deleteCompetition = functions.firestore
     .document('competitions/{competitionID}')
     .onDelete(async (snap, context) => {
-      // update projects Projects
+      // delete comp projects
       const batch = db.batch()
       const projectsRef = db.collection(KEY_PROJECTS)
       const projects = await projectsRef.where('competition.id', '==', snap.id).get()
       projects.forEach(doc => {
-        batch.update(doc.ref, { competition : null })
+        batch.delete(doc.ref)
       })
-      // delete competition_projects
-      const aggregateDoc =  db.doc(`${KEY_AGGREGATES}/${AGGREGATE_ID_COMPS}`)
-      batch.delete(aggregateDoc)
       
       batch.commit()
+
+      // delete competition_projects
+      const aggregateDoc =  db.doc(`${KEY_AGGREGATES}/${AGGREGATE_ID_COMPS}`)
+      aggregateDoc.delete()
     })
 
 exports.updateProject = functions.firestore
