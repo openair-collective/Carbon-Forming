@@ -69,6 +69,8 @@ const PROJECT_PARTIAL = {
 } as Project
 
 export default defineComponent({
+  name: 'project-form',
+  emits: ['cancel', 'project-saved', 'project-deleted'],
   components: { Notification, ProjectInput },
   props: {
     team: {

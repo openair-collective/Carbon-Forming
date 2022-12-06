@@ -167,6 +167,8 @@ const DEFAULT_TEAM = {
 } as Team
 
 export default defineComponent({
+  name: 'team-form',
+  emits: ['cancel', 'team-saved', 'team-deleted'],
   components: { TextEditor: defineAsyncComponent(() => import('@/components/TextEditor.vue')) },
   props: {
     team: {
@@ -237,7 +239,7 @@ export default defineComponent({
           .then(result => {
             Object.assign(this.team, result)
             this.clone = { ...this.team}
-            this.$emit("team-saved", this.clone)
+            this.$emit('team-saved', this.clone)
           })
           .catch(error => {
             this.flashStore.$patch({ message: 'Error saving team. Please try again.', level: LogLevel.error })
@@ -266,7 +268,7 @@ export default defineComponent({
     deleteTeam(team:Team) {
       this.teamsStore.deleteTeam(team)
         .then(result => {
-            this.$emit("team-deleted")
+            this.$emit('team-deleted')
           })
           .catch(error => {
             this.flashStore.$patch({ message: 'Error deleting team. Please try again.', level: LogLevel.error })
