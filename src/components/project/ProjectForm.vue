@@ -162,8 +162,9 @@ export default defineComponent({
         meta: {
           message: `Are you sure you want to delete ${project.name}?`,
           confirm: () => { this.deleteProject(project) },
-          confirmLabel: 'Delete',
-          cancelLabel: 'Cancel'
+          confirmLabel: 'Yes, I want to delete this project',
+          cancelLabel: 'No, don\'t delete',
+          danger: true
         }
       }
     },

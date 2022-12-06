@@ -293,8 +293,9 @@ export default defineComponent({
         meta: {
           message: `Are you sure you want to delete ${comp.name}?`,
           confirm: () => { this.deleteCompetition(comp) },
-          confirmLabel: 'Delete',
-          cancelLabel: 'Cancel'
+          confirmLabel: 'Yes, I want to delete this competition',
+          cancelLabel: 'No, don\'t delete',
+          danger: true
         }
       }
     },

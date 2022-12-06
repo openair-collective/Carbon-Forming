@@ -260,8 +260,9 @@ export default defineComponent({
         meta: {
           message: `Are you sure you want to delete ${team.name}?`,
           confirm: () => { this.deleteTeam(team) },
-          confirmLabel: 'Delete',
-          cancelLabel: 'Cancel'
+          confirmLabel: 'Yes, I want to delete this team',
+          cancelLabel: 'No, don\'t delete',
+          danger: true
         }
       }
     },

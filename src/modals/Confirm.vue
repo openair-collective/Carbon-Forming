@@ -7,6 +7,9 @@
           <button 
             class="button is-primary"
             @click="confirm"
+            :class="{
+              'is-danger': meta.danger
+            }"
           >
             {{ meta.confirmLabel }}
           </button>
@@ -26,6 +29,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { LogLevel } from '@/enums'
 
 export default defineComponent({
   props: {
@@ -35,12 +39,14 @@ export default defineComponent({
         confirm:() => void
         confirmLabel: 'Confirm',
         cancelLabel: 'Cancel'
+        danger:false
       },
       required: true
     }
   },
   data() {
     return {
+      LogLevel,
       message: this.meta.message
     }
   },
