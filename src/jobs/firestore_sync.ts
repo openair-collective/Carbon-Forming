@@ -73,15 +73,21 @@ export function teamsSync(pinia:Pinia) {
             }
           }
           if (userStore.teams) {
-            const match = userStore.teams.find(t => change.doc.id === change.doc.id) as Team
+            const match = userStore.teams.find(t => t.id === change.doc.id) as Team
             if (match) {
               const idx = userStore.teams.indexOf(match)
               if (change.type === 'removed') {
-                userStore.teams = userStore.teams.splice(idx, 1)
+                userStore.teams.splice(idx, 1)
               }
               else {
                 userStore.teams[idx] = { ...match, ...team }
               }
+            }
+          }
+          if (userStore.profile) {
+            const match = userStore.profile.teams && userStore.profile.teams[change.doc.id]
+            if (match && change.type === 'removed') {
+              delete userStore.profile.teams[change.doc.id]
             }
           }
         })
