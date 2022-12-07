@@ -78,8 +78,6 @@ export const useTeamsStore = defineStore('teams', {
         }
         if (avatar) {
           await this.saveTeamAvatar(team, avatar)
-          response = await firestore.saveTeam(team)
-          team = { ...team, ...response }
         }
         return team
       }
@@ -161,7 +159,7 @@ export const useTeamsStore = defineStore('teams', {
       try {
         const response = await storage.saveFile(avatar, team.id)
         team.avatar = response
-        return team
+        return await this.saveTeam(team)
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
