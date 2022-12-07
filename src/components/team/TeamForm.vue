@@ -153,18 +153,20 @@ const MODULE_ID = 'components/TeamForm'
 const AVATAR_MAX_FILE_SIZE = 200 * 1000 // 200kb
 const ABOUT_PLACEHOLDER = 'Tell us a bit about your team, what your areas of speciality are and what sort of projects you focus on.'
 
-const DEFAULT_TEAM = {
-  id: '',
-  name: '', 
-  city: '',
-  region: '',
-  country: '',
-  about: '',
-  avatar: null,
-  members: {},
-  recruiting: false,
-  discord_usernames: [''] as string[],
-} as Team
+function teamFactory():Team {
+  return {
+    id: '',
+    name: '', 
+    city: '',
+    region: '',
+    country: '',
+    about: '',
+    avatar: null,
+    members: {},
+    recruiting: false,
+    discord_usernames: [''] as string[]
+  }
+}
 
 export default defineComponent({
   name: 'team-form',
@@ -173,12 +175,16 @@ export default defineComponent({
   props: {
     team: {
       type: Object as () => Team,
-      default: DEFAULT_TEAM
+      default: teamFactory()
     }
   },
   data() {
     return {
-      clone: { ...DEFAULT_TEAM, ...this.team }, // clone so we can modify
+      clone: Object.assign(
+        {}, 
+        teamFactory(),
+        this.team
+      ), // clone so we can modify
       isSaving: false,
       kAvatarMaxSize: AVATAR_MAX_FILE_SIZE,
       kAvatarPlaceholder: TEAM_AVATAR_PLACEHOLDER,

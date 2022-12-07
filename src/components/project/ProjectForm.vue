@@ -59,14 +59,20 @@ import log from '@/services/logger'
 const MODULE_ID = 'components/project/ProjectForm'
 
 const PROJECT_PARTIAL = {
-  id: '',
-  name: '',
-  terms: false,
-  design_doc_url: '',
-  materials: [],
-  team: undefined,
-  image: null
+
 } as Project
+
+function projectFactory():Project {
+  return {
+    id: '',
+    name: '',
+    terms: false,
+    design_doc_url: '',
+    materials: [],
+    team: undefined,
+    image: null
+  }
+}
 
 export default defineComponent({
   name: 'project-form',
@@ -79,16 +85,16 @@ export default defineComponent({
     },
     project: {
       type: Object as () => Project,
-      default: PROJECT_PARTIAL
+      default: projectFactory()
     }
   },
   data() {
     return {
-      clone: {
-        ...PROJECT_PARTIAL,
-        ...this.project,
-        ...{ team: this.team } 
-      } as Project,
+      clone: Object.assign(
+        {},
+        projectFactory(),
+        { team: this.team } 
+      ), // clone so we can modify
       isSaving: false,
       inputRef: undefined as InstanceType<typeof ProjectInput>|undefined
     }

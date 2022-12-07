@@ -198,26 +198,28 @@ function dateForSave(iso:string):Timestamp {
   return { seconds: date.getTime() / 1000, nanoseconds: 0 }
 }
 
-const DEFAULT_COMP = {
-  id: '',
-  name: '',
-  description: '',
-  rules: '',
-  judging_criteria: '',
-  success_criteria: '',
-  assessment_metric: '',
-  prizes_disabled: false,
-  prizes: {
-    first: '',
-    second: '',
-    third: ''
-  },
-  results: {},
-  results_disabled:true,
-  start_date: null,
-  end_date: null,
-  projects: []
-} as Competition
+function compFactory():Competition {
+  return {
+    id: '',
+    name: '',
+    description: '',
+    rules: '',
+    judging_criteria: '',
+    success_criteria: '',
+    assessment_metric: '',
+    prizes_disabled: false,
+    prizes: {
+      first: '',
+      second: '',
+      third: ''
+    },
+    results: {},
+    results_disabled:true,
+    start_date: null,
+    end_date: null,
+    projects: []
+  }
+}
 
 export default defineComponent({
   name: 'competition-form',
@@ -226,12 +228,16 @@ export default defineComponent({
   props: {
     competition: {
       type: Object as () => Competition,
-      default: DEFAULT_COMP
+      default: compFactory()
     }
   },
   data() {
     return {
-      clone: { ...DEFAULT_COMP, ...this.competition },
+      clone: Object.assign(
+        {},
+        compFactory(),
+        this.competition
+      ), // clone so we can modify
       isSaving: false,
       startDate: this.competition.start_date && dateForInput(this.competition.start_date),
       endDate: this.competition.end_date && dateForInput(this.competition.end_date)
