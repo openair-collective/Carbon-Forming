@@ -209,27 +209,32 @@ exports.deleteProject = functions.firestore
       const bucket = admin.storage().bucket()
       bucket.deleteFiles({ prefix: snap.id })
 
-      const batch = db.batch()
-
       const data = snap.data()
 
-      // delete from Teams and Competitions
-      if (data.team && data.team.id) {
+      try {
         const teamProjectsRef = db.collection(KEY_TEAM_PROJECTS).doc(`${data.team.id}`)
-        batch.set(teamProjectsRef, {
-            [`${snap.id}`]: FieldValue.delete()
-          }, 
-          { merge: true }
-        )
+        await db.runTransaction(async (transaction) => {
+          const doc = await transaction.get(teamProjectsRef)
+          if (doc.exists) {
+            transaction.update(teamProjectsRef, { [`${snap.id}`]: FieldValue.delete() })
+          }
+        })
       }
-      if (data.competition && data.competition.id) {
-        const compProjectsRef = db.collection(KEY_COMP_PROJECTS).doc(`${data.competition.id}`)
-        batch.set(compProjectsRef, {
-            [`${snap.id}`]: FieldValue.delete()
-          }, 
-          { merge: true }
-        )
+      catch (e) {
+        console.error(e)
       }
 
-      batch.commit()
+      try {
+        const compProjectsRef = db.collection(KEY_COMP_PROJECTS).doc(`${data.competition.id}`)
+        await db.runTransaction(async (transaction) => {
+          const doc = await transaction.get(compProjectsRef)
+          if (doc.exists) {
+            transaction.update(compProjectsRef, { [`${snap.id}`]: FieldValue.delete() })
+          }
+        })
+      }
+      catch (e) {
+        console.error(e)
+      }
+
     })
