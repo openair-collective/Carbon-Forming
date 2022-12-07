@@ -139,9 +139,13 @@ exports.deleteCompetition = functions.firestore
       
       batch.commit()
 
-      // delete competition_projects
+      // delete competitions aggregate
       const aggregateDoc =  db.doc(`${KEY_AGGREGATES}/${AGGREGATE_ID_COMPS}`)
       aggregateDoc.delete()
+
+      // delete competition_projects ref
+      const compProjectsRef = db.collection(KEY_COMP_PROJECTS).doc(`${snap.id}`)
+      compProjectsRef.delete()
     })
 
 exports.updateProject = functions.firestore
