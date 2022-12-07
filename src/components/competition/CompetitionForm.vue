@@ -228,7 +228,9 @@ export default defineComponent({
   props: {
     competition: {
       type: Object as () => Competition,
-      default: compFactory()
+      default() {
+        return compFactory()
+      }
     }
   },
   data() {

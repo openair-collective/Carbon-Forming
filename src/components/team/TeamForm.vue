@@ -175,7 +175,9 @@ export default defineComponent({
   props: {
     team: {
       type: Object as () => Team,
-      default: teamFactory()
+      default() {
+        return teamFactory()
+      }
     }
   },
   data() {
@@ -218,8 +220,8 @@ export default defineComponent({
           .then(result => {
             if (result) {
               this.flashStore.$patch({ message: 'Team Avatar removed', level: LogLevel.success })
-              Object.assign(this.team, result)
-              this.clone = { ...this.team }
+              this.team.avatar = this.clone.avatar = null
+              this.avatarPreviewUrl = TEAM_AVATAR_PLACEHOLDER
             }
           })
           .catch(error => {
@@ -244,7 +246,7 @@ export default defineComponent({
         this.teamsStore.saveTeam(this.clone, file)
           .then(result => {
             Object.assign(this.team, result)
-            this.clone = { ...this.team}
+            this.clone = Object.assign({}, this.team)
             this.$emit('team-saved', this.clone)
           })
           .catch(error => {

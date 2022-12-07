@@ -85,7 +85,9 @@ export default defineComponent({
     },
     project: {
       type: Object as () => Project,
-      default: projectFactory()
+      default() {
+        return projectFactory()
+      }
     }
   },
   data() {
