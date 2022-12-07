@@ -94,7 +94,7 @@ export default defineComponent({
         {},
         projectFactory(),
         { team: this.team } 
-      ), // clone so we can modify
+      ) as Project, // clone so we can modify
       isSaving: false,
       inputRef: undefined as InstanceType<typeof ProjectInput>|undefined
     }
@@ -163,7 +163,7 @@ export default defineComponent({
     },
     confirmDelete(project:Project) {
       this.modalStore.options = {
-        title: 'Delete Project?',
+        title: '',
         component: 'Confirm',
         meta: {
           message: `Are you sure you want to delete ${project.name}?`,

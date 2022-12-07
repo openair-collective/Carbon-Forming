@@ -237,7 +237,7 @@ export default defineComponent({
         {},
         compFactory(),
         this.competition
-      ), // clone so we can modify
+      ) as Competition, // clone so we can modify
       isSaving: false,
       startDate: this.competition.start_date && dateForInput(this.competition.start_date),
       endDate: this.competition.end_date && dateForInput(this.competition.end_date)
@@ -294,7 +294,7 @@ export default defineComponent({
     },
     confirmDelete(comp:Competition) {
       this.modalStore.options = {
-        title: 'Delete Competition?',
+        title: '',
         component: 'Confirm',
         meta: {
           message: `Are you sure you want to delete ${comp.name}?`,

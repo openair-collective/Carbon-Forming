@@ -184,7 +184,7 @@ export default defineComponent({
         {}, 
         teamFactory(),
         this.team
-      ), // clone so we can modify
+      ) as Team, // clone so we can modify
       isSaving: false,
       kAvatarMaxSize: AVATAR_MAX_FILE_SIZE,
       kAvatarPlaceholder: TEAM_AVATAR_PLACEHOLDER,
@@ -261,7 +261,7 @@ export default defineComponent({
     },
     confirmDelete(team:Team) {
       this.modalStore.options = {
-        title: 'Delete Team?',
+        title: '',
         component: 'Confirm',
         meta: {
           message: `Are you sure you want to delete ${team.name}?`,
