@@ -59,10 +59,7 @@ export const useTeamsStore = defineStore('teams', {
     },
     async saveTeam(team:Team, avatar?:File):Promise<Team|undefined> {
       try {
-        let creating = !team.id
-        if (avatar) {
-          await this.saveTeamAvatar(team, avatar)
-        }
+        const creating = !team.id
         let response = await firestore.saveTeam(team)
         team = { ...team, ...response }
         if(response && creating && this.list) {
@@ -79,7 +76,12 @@ export const useTeamsStore = defineStore('teams', {
           }
           this.list = list_patch
         }
-        return response
+        if (avatar) {
+          await this.saveTeamAvatar(team, avatar)
+          response = await firestore.saveTeam(team)
+          team = { ...team, ...response }
+        }
+        return team
       }
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
