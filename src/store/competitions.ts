@@ -117,6 +117,16 @@ export const useCompetitionsStore = defineStore('competitions', {
         let message = (error instanceof Error) ? error.message : String(error)
         log.error(MODULE_ID, '#getCompetitionById > ' + message)
       }
+    },
+    async deleteCompetition(comp:Competition):Promise<void> {
+      try {
+        await firestore.deleteCompetition(comp)
+        this.list = this.list?.filter(c => c.id !== comp.id)
+      }
+      catch(error) {
+        let message = (error instanceof Error) ? error.message : String(error)
+        log.error(MODULE_ID, '#deleteCompetition > ' + message)
+      }
     }
   }
 })

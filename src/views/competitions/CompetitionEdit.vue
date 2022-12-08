@@ -17,6 +17,7 @@
         v-if="competition"
         :competition="competition"
         @cancel="onCancel"
+        @comp-deleted="onCompetitionDeleted"
       />
       <loading v-else />
     </article>
@@ -83,6 +84,15 @@ export default defineComponent({
             this.flashStore.$patch({ message: ERROR_AUTH, level: LogLevel.warning })
           })
       }
+    },
+    onCompetitionDeleted() {
+      this.$router.replace({ name: 'competitions'})
+        .then(()=> {
+          this.flashStore.$patch({ 
+            message: 'Competition deleted',
+            level: LogLevel.success
+          })
+        })
     },
     onCancel() {
       this.$router.replace({ name: 'comp-show', params: { id: this.$route.params.id }})

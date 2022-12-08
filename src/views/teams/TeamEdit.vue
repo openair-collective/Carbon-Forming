@@ -21,6 +21,7 @@
         :team="team"
         @cancel="onCancel"
         @team-saved="onTeamSaved"
+        @team-deleted="onTeamDeleted"
       />
     </article>
   </section>
@@ -89,6 +90,15 @@ export default defineComponent({
     },
     onTeamSaved(team:Team) {
       this.flashStore.$patch({ message: 'Team saved', level: LogLevel.success })
+    },
+    onTeamDeleted() {
+      this.$router.replace({ name: 'my-teams'})
+        .then(()=> {
+          this.flashStore.$patch({ 
+            message: 'Team deleted',
+            level: LogLevel.success
+          })
+        })
     },
     onCancel() {
       if (this.team){

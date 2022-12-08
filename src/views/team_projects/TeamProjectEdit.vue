@@ -15,6 +15,7 @@
       :team="team"
       :project="project"
       @cancel="onCancel"
+      @project-deleted="onProjectDeleted"
     />
     <loading v-else />
   </section>
@@ -68,7 +69,16 @@ export default defineComponent({
     onCancel() {
       const project_id = this.$route.params.project_id
       this.$router.replace({ name: 'team-project-show', params: { project_id }})
-    }
+    },
+    onProjectDeleted() {
+      this.$router.replace({ name: 'team-show', params: { id: this.team.id }})
+        .then(()=> {
+          this.flashStore.$patch({ 
+            message: 'Project deleted',
+            level: LogLevel.success
+          })
+        })
+    },
   }
 })
 
