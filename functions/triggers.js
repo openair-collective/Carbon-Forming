@@ -88,11 +88,11 @@ exports.deleteTeam = functions.firestore
         batch.delete(doc.ref)
       })
 
+      batch.commit()
+
       // delete team_projects ref
       const teamProjectsRef = db.collection(KEY_TEAM_PROJECTS).doc(`${snap.id}`)
-      batch.delete(teamProjectsRef)
-
-      batch.commit()
+       teamProjectsRef.delete()
 
       // delete team file uploads
       const bucket = admin.storage().bucket()
@@ -129,18 +129,23 @@ exports.updateCompetition = functions.firestore
 exports.deleteCompetition = functions.firestore
     .document('competitions/{competitionID}')
     .onDelete(async (snap, context) => {
-      // update projects Projects
+      // delete comp projects
       const batch = db.batch()
       const projectsRef = db.collection(KEY_PROJECTS)
       const projects = await projectsRef.where('competition.id', '==', snap.id).get()
       projects.forEach(doc => {
-        batch.update(doc.ref, { competition : null })
+        batch.delete(doc.ref)
       })
-      // delete competition_projects
-      const aggregateDoc =  db.doc(`${KEY_AGGREGATES}/${AGGREGATE_ID_COMPS}`)
-      batch.delete(aggregateDoc)
       
       batch.commit()
+
+      // delete competitions aggregate
+      const aggregateDoc =  db.doc(`${KEY_AGGREGATES}/${AGGREGATE_ID_COMPS}`)
+      aggregateDoc.delete()
+
+      // delete competition_projects ref
+      const compProjectsRef = db.collection(KEY_COMP_PROJECTS).doc(`${snap.id}`)
+      compProjectsRef.delete()
     })
 
 exports.updateProject = functions.firestore
@@ -208,27 +213,32 @@ exports.deleteProject = functions.firestore
       const bucket = admin.storage().bucket()
       bucket.deleteFiles({ prefix: snap.id })
 
-      const batch = db.batch()
-
       const data = snap.data()
 
-      // delete from Teams and Competitions
-      if (data.team && data.team.id) {
+      try {
         const teamProjectsRef = db.collection(KEY_TEAM_PROJECTS).doc(`${data.team.id}`)
-        batch.set(teamProjectsRef, {
-            [`${snap.id}`]: FieldValue.delete()
-          }, 
-          { merge: true }
-        )
+        await db.runTransaction(async (transaction) => {
+          const doc = await transaction.get(teamProjectsRef)
+          if (doc.exists) {
+            transaction.update(teamProjectsRef, { [`${snap.id}`]: FieldValue.delete() })
+          }
+        })
       }
-      if (data.competition && data.competition.id) {
-        const compProjectsRef = db.collection(KEY_COMP_PROJECTS).doc(`${data.competition.id}`)
-        batch.set(compProjectsRef, {
-            [`${snap.id}`]: FieldValue.delete()
-          }, 
-          { merge: true }
-        )
+      catch (e) {
+        console.error(e)
       }
 
-      batch.commit()
+      try {
+        const compProjectsRef = db.collection(KEY_COMP_PROJECTS).doc(`${data.competition.id}`)
+        await db.runTransaction(async (transaction) => {
+          const doc = await transaction.get(compProjectsRef)
+          if (doc.exists) {
+            transaction.update(compProjectsRef, { [`${snap.id}`]: FieldValue.delete() })
+          }
+        })
+      }
+      catch (e) {
+        console.error(e)
+      }
+
     })

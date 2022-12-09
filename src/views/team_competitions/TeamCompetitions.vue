@@ -6,7 +6,23 @@
       </h3>
     </header>
     <article class="article has-background-white-bis">
-      <competition-list :list="list" :showEnterButton="false" />
+      <competition-list
+        v-if="list.length"
+        :list="list" 
+        :showEnterButton="false" 
+      />
+      <div
+        v-else
+        class="is-flex is-flex-direction-column is-align-items-center is-justify-content-center"
+      >
+        <p class="mb-2">No competitions yet</p>
+        <router-link
+          :to="{ name: 'competitions' }"
+          class="button is-info"
+        >
+          Enter a competition
+        </router-link>
+      </div>
     </article>
   </section>
 </template>

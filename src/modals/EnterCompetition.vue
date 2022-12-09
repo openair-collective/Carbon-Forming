@@ -7,7 +7,7 @@
     <article class="is-flex-grow-1 px-4 py-6 has-background-white-bis">
       <loading v-if="step === eSteps.UNKNOWN" />
       <div v-if="step === eSteps.CREATE_FIRST_TEAM || step === eSteps.CREATE_TEAM">
-        <h3 class="title is-4">Create your first team</h3>
+        <h3 class="title is-4">Create your team</h3>
         <team-form 
           @team-saved="onTeamSaved"
           @cancel="onTeamFormCancel" 
