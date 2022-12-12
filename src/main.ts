@@ -22,3 +22,5 @@ import { teamProjectsSync, compProjectsSync, teamsSync } from '@/jobs/firestore_
 teamProjectsSync(pinia)
 compProjectsSync(pinia)
 teamsSync(pinia)
+
+console.info(`Version: ${__APP_VERSION__}+build.${__COMMIT_HASH__}`)
