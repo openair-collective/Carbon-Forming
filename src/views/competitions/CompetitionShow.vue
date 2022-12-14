@@ -320,8 +320,17 @@ export default defineComponent({
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .help {
   line-height: 30px;
 }
+
+p.help.is-danger {
+    @include tablet {
+      position: relative;
+      top: 2.5rem;
+      left: -13rem;
+    }
+}
 </style>
+

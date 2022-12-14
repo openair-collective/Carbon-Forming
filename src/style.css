@@ -41,11 +41,14 @@ body {
 .firebase-emulator-warning {
   display: none;
 }
-
+/* 
 @media (min-width: 769px) and (max-width: 1086px) {
   .is-danger {
     position: relative;
     top: 2.5rem;
     left: -13rem;
   }
-}
+} */
+
+
+/* everything seems to be working correctly so far to put this in  a new space */
