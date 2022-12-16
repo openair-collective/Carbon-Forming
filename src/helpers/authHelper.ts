@@ -1,6 +1,7 @@
-import { UserProfile, OAuth } from '@/types'
+import { Guild, UserProfile } from '@/types'
+import { intersect } from '@/utils/array'
 import { TeamRole } from '@/enums'
-import { DISCORD_ADMIN_IDS } from '@/consts'
+import { DISCORD_ADMIN_ROLE_IDS } from '@/consts'
 
 export function canEditTeamWithId(profile:UserProfile, id:string):boolean {
   return 'teams' in profile &&
@@ -8,7 +9,7 @@ export function canEditTeamWithId(profile:UserProfile, id:string):boolean {
          profile.teams[id] === TeamRole.admin
 }
 
-export function canEditCompetitions(oauth:OAuth):boolean {
+export function canEditCompetitions(guild:Guild):boolean {
   if (import.meta.env.DEV) return true
-  return DISCORD_ADMIN_IDS.indexOf(oauth.discord_id) !== -1
+  return intersect(DISCORD_ADMIN_ROLE_IDS, guild.roles).length > 0
 }
