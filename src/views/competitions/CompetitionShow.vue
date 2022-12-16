@@ -195,11 +195,11 @@ export default defineComponent({
   },
   computed: { 
     ...mapStores(useCompetitionsStore, useUserStore, useModalStore, useFlashStore),
-    ...mapState(useUserStore, ['oauth']),
+    ...mapState(useUserStore, ['oauth', 'guild']),
     canEdit():boolean {
       let result = false
-      if (this.oauth) {
-        result = canEditCompetitions(this.oauth)
+      if (this.guild) {
+        result = canEditCompetitions(this.guild)
       }
       return result
     }

@@ -57,8 +57,8 @@ export default defineComponent({
   },
   methods: {
     setCompetitonByID(id:string) {
-      const oauth = this.userStore.oauth
-      if (oauth && canEditCompetitions(oauth)) {
+      const guild = this.userStore.guild
+      if (guild && canEditCompetitions(guild)) {
         this.competitionsStore.getCompetitionById(id)
           .then(result => {
             if (result) {

@@ -84,7 +84,7 @@ export default defineComponent({
     ...mapState(useCompetitionsStore, ['list']),
     ...mapState(useUserStore, {
         canCreate(store) {
-          return store.oauth && canEditCompetitions(store.oauth)
+          return store.guild && canEditCompetitions(store.guild)
         }
       }),
     currentCompetitions():Competition[] {

@@ -99,7 +99,7 @@ export default defineComponent({
   },
   computed: { 
     ...mapStores(useCompetitionsStore),
-    ...mapState(useUserStore, ['oauth']),
+    ...mapState(useUserStore, ['oauth', 'guild']),
     results():any {
       const projects = this.competition.projects
       const values = { ...this.competition.results, ...{} } as { [key:Project['id']]: Ranking }
@@ -130,8 +130,8 @@ export default defineComponent({
     },
     canEdit():boolean {
       let result = false
-      if (this.oauth) {
-        result = canEditCompetitions(this.oauth)
+      if (this.guild) {
+        result = canEditCompetitions(this.guild)
       }
       return result
     }

@@ -37,8 +37,8 @@ export default defineComponent({
     ...mapStores(useFlashStore, useUserStore)
   },
   created() {
-    const oauth = this.userStore.oauth
-    if (!oauth || !canEditCompetitions(oauth)) {
+    const guild = this.userStore.guild
+    if (!guild || !canEditCompetitions(guild)) {
       this.$router.push({name: 'competitions'})
       .then(() => {
         this.flashStore.$patch({ message: ERROR_AUTH, level: LogLevel.warning })
