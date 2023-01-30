@@ -64,7 +64,8 @@ export type Competition = {
   results_disabled:boolean
   start_date:Timestamp | null
   end_date:Timestamp | null
-  projects?: Project[]
+  projects?: Project[],
+  image:FileUpload | null
 }
 
 export type Material = {

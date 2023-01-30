@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia'
-import { Competition, Project } from '@/types'
+import { Competition, FileUpload, Project } from '@/types'
 import firestore from '@/services/firestore'
 import { PAGING_SIZE } from '@/consts'
 import log from '@/services/logger'
+import storage from '@/services/storage'
 
 const MODULE_ID = 'store/competition'
 
@@ -74,7 +75,7 @@ export const useCompetitionsStore = defineStore('competitions', {
         log.error(MODULE_ID, '#getCompetitionProjectById > ' + message)
       }
     },
-    async saveCompetition(comp:Competition):Promise<Competition|undefined> {
+    async saveCompetition(comp:Competition, image?:File):Promise<Competition|undefined> {
       try {
         const creating = !comp.id
         const response = await firestore.saveCompetition(comp)
@@ -97,6 +98,9 @@ export const useCompetitionsStore = defineStore('competitions', {
             list_patch.push(comp)
           }
           this.list = list_patch
+        }
+        if (image) {
+          await this.saveCompetitionImage(comp, image)
         }
         return comp
       }
@@ -126,6 +130,30 @@ export const useCompetitionsStore = defineStore('competitions', {
       catch(error) {
         let message = (error instanceof Error) ? error.message : String(error)
         log.error(MODULE_ID, '#deleteCompetition > ' + message)
+      }
+    },
+    async saveCompetitionImage(comp:Competition, image:File):Promise<Competition|undefined> {
+      try {
+        const response = await storage.saveFile(image, comp.id)
+        comp.image = response
+        return await this.saveCompetition(comp)
+      }
+      catch(error) {
+        let message = (error instanceof Error) ? error.message : String(error)
+        log.error(MODULE_ID, '#saveCompetitionImage > ' + message)
+      }
+    },
+    async removeCompetitionImage(comp:Competition):Promise<Competition|undefined> {
+      try {
+        if (comp.image) {
+          const image_response = await storage.removeFile(comp.image)
+          comp.image = null
+          return await this.saveCompetition(comp)
+        }
+      }
+      catch(error) {
+        let message = (error instanceof Error) ? error.message : String(error)
+        log.error(MODULE_ID, '#removeCompetitionImage > ' + message)
       }
     }
   }
