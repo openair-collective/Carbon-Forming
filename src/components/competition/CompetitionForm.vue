@@ -8,6 +8,55 @@
         </div>
       </div>
       <hr/>
+      <div class="field"> 
+        <label class="label">Competition Image</label>
+        <p
+          v-if="!clone.image" 
+          class="mb-2"
+        >
+          Please upload an image to represent your competition.
+        </p>
+        <p 
+          v-if="!clone.image"
+          class="help is-info mb-2"
+        >
+          Accepts .jpeg, .jpg, and .png files only. Maximum file size is {{ kImageMaxSize / 1000 }}kb. Dimensions (----px x ----px).
+        </p>
+        <div class="is-flex is-flex-direction-row">
+          <div
+            v-if="imageUrl !== kImagePlaceholder" 
+            class="file-image mr-4 has-border-radius-6 has-background-grey-lighter has-text-centered"
+            :style="{ 'background-image': 'url(' + imageUrl + ')' }"
+          >
+          </div>
+          <button
+            v-if="clone.image"
+            @click.prevent="removeImage"
+            class="button is-warning"
+          >
+            Remove Image
+          </button>
+          <div
+            v-else
+            class="file mb-2">
+            <label class="file-label">
+              <input
+                @change="onImageFileChange"
+                class="file-input" 
+                type="file"
+                accept="image/*"
+                ref="file_image"
+              >
+              <span class="file-cta">
+                <span class="file-label">
+                  {{ imageUrl ===  kImagePlaceholder ?  'Upload Image' : 'Change Image' }}
+                </span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <hr />
       <div>
         <h2 class="title is-4">Dates</h2>
         <h3 class="subtitle">Please list the beginning and the end date for your competition</h3>
@@ -183,7 +232,9 @@ import { useCompetitionsStore } from '@/store/competitions'
 import { useFlashStore } from '@/store/flash'
 import { useModalStore } from '@/store/modal'
 import { fsTimestampToDate, lastDayOfMonth } from '@/utils/date'
+import { COMP_IMAGE_PLACEHOLDER } from '@/consts'
 import log from '@/services/logger'
+const IMAGE_MAX_FILE_SIZE = 400 * 1000 // 400kb
 
 const MODULE_ID = 'components/competition/CompetitionForm'
 
@@ -217,13 +268,14 @@ function compFactory():Competition {
     results_disabled:true,
     start_date: null,
     end_date: null,
-    projects: []
+    projects: [],
+    image: null
   }
 }
 
 export default defineComponent({
   name: 'competition-form',
-  emits: ['cancel', 'comp-saved', 'comp-deleted'],
+  emits: ['cancel', 'comp-saved', 'comp-deleted', 'remove-image'],
   components: { TextEditor: defineAsyncComponent(() => import('@/components/TextEditor.vue')) },
   props: {
     competition: {
@@ -242,7 +294,11 @@ export default defineComponent({
       ) as Competition, // clone so we can modify
       isSaving: false,
       startDate: this.competition.start_date && dateForInput(this.competition.start_date),
-      endDate: this.competition.end_date && dateForInput(this.competition.end_date)
+      endDate: this.competition.end_date && dateForInput(this.competition.end_date),
+      docFile: undefined as File|undefined,
+      imagePreviewUrl: '',
+      kImageMaxSize: IMAGE_MAX_FILE_SIZE,
+      kImagePlaceholder: COMP_IMAGE_PLACEHOLDER
     }
   },
   computed: {
@@ -256,7 +312,14 @@ export default defineComponent({
         result = min.toISOString().split('T')[0]
       }
       return result
-    }
+    },
+    imageUrl():string { 
+      let result = this.imagePreviewUrl || COMP_IMAGE_PLACEHOLDER
+      if (this.clone.image && this.clone.image.url) {
+        result = this.clone.image.url
+      }
+      return result
+    },
   },
   watch: {
     startDate(val) {
@@ -272,27 +335,37 @@ export default defineComponent({
     }
   },
   methods: {
+    validateFileSize(file:File):boolean {
+      return file.size < IMAGE_MAX_FILE_SIZE
+    },
     submitForm() {
-      this.isSaving = true
-      this.flashStore.$reset()
-      if (this.startDate && this.endDate) {
-        this.clone.start_date = dateForSave(this.startDate)
-        this.clone.end_date = dateForSave(this.endDate)
+      const image:HTMLInputElement = this.$refs.file_image as HTMLInputElement
+      const file:File = image && (image.files as FileList)[0]
+      if (file && !this.validateFileSize(file)) {
+        this.flashStore.$patch({ message:`The image file size cannot exceed ${IMAGE_MAX_FILE_SIZE / 1000}kb.`, level: LogLevel.error })
       }
-      this.competitionsStore.saveCompetition(this.clone)
-        .then(result => {
-          Object.assign(this.competition, result)
-          this.clone = { ...this.competition }
-          this.flashStore.$patch({ message: 'Competition saved', level: LogLevel.success })
-          this.$emit('comp-saved', result)
-        })
-        .catch(error => {
-          this.flashStore.$patch({ message: 'Error saving competition. Please try again.', level: LogLevel.error })
-          log.error(MODULE_ID, error)
-        })
-        .finally(() => {
-          this.isSaving = false
-        })
+      else {
+        this.isSaving = true
+        this.flashStore.$reset()
+        if (this.startDate && this.endDate) {
+          this.clone.start_date = dateForSave(this.startDate)
+          this.clone.end_date = dateForSave(this.endDate) 
+        }
+        this.competitionsStore.saveCompetition(this.clone, file)
+          .then(result => {
+            Object.assign(this.competition, result)
+            this.clone = { ...this.competition }
+            this.flashStore.$patch({ message: 'Competition saved', level: LogLevel.success })
+            this.$emit('comp-saved', result)
+          })
+          .catch(error => {
+            this.flashStore.$patch({ message: 'Error saving competition. Please try again.', level: LogLevel.error })
+            log.error(MODULE_ID, error)
+          })
+          .finally(() => {
+            this.isSaving = false
+          })
+      }
     },
     confirmDelete(comp:Competition) {
       this.modalStore.options = {
@@ -319,7 +392,47 @@ export default defineComponent({
           .finally(() => {
             this.isSaving = false
           })
+    },
+    removeImage() {
+      this.flashStore.$reset()
+      if (this.clone.image && confirm("Are you sure you want to remove the Competition image?")) {
+        this.isSaving = true
+        this.competitionsStore.removeCompetitionImage(this.clone)
+          .then(result => {
+            if (result) {
+              this.flashStore.$patch({ message: 'Competition image removed', level: LogLevel.success })
+              this.competition.image = this.clone.image = null
+            }
+          })
+          .catch(error => {
+            this.flashStore.$patch({ message: 'Error removing image. Please try again.', level: LogLevel.error })
+          })
+          .finally(()=> {
+            this.isSaving = false
+          })
+      }
+    },
+    onImageFileChange(event:Event) {
+      const files = (event.target as HTMLInputElement).files
+      this.docFile = files && files.length ? files[0] : undefined
+      this.showImagePreview()
+    },
+    showImagePreview (){
+      const image:HTMLInputElement = this.$refs.file_image as HTMLInputElement
+      const file: File = (image.files as FileList)[0]
+      this.imagePreviewUrl = file ? URL.createObjectURL(file) : COMP_IMAGE_PLACEHOLDER
     }
   }
 })
 </script>
+
+<style scoped="true">
+.file-image {
+  flex-grow: 1;
+  height: 200px;
+  max-width: 50%;
+  background-size: contain;
+  background-position: center ;
+  background-repeat: no-repeat;
+}
+</style>

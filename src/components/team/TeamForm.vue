@@ -215,7 +215,6 @@ export default defineComponent({
       this.flashStore.$reset()
       if (this.clone.avatar && confirm("Are you sure you want to remove the Team Avatar?")) {
         this.isSaving = true
-        const avatar = { ...this.clone.avatar }
         this.teamsStore.removeTeamAvatar(this.clone)
           .then(result => {
             if (result) {
@@ -258,7 +257,7 @@ export default defineComponent({
           })
       }
       else {
-        this.flashStore.$patch({ message:`The Avatar file size cannot exceed ${AVATAR_MAX_FILE_SIZE}kb.`, level: LogLevel.error })
+        this.flashStore.$patch({ message:`The Avatar file size cannot exceed ${AVATAR_MAX_FILE_SIZE / 1000}kb.`, level: LogLevel.error })
       }
     },
     confirmDelete(team:Team) {

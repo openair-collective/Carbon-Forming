@@ -78,7 +78,8 @@ export const compConverter = {
       results: comp.results,
       results_disabled: comp.results_disabled,
       start_date: comp.start_date,
-      end_date: comp.end_date
+      end_date: comp.end_date,
+      image: comp.image || null
     }
   },
   fromFirestore: (snapshot:QueryDocumentSnapshot, options:SnapshotOptions) => {
@@ -96,7 +97,8 @@ export const compConverter = {
       results: data.results || null,
       results_disabled: !!data.results_disabled,
       start_date: data.start_date,
-      end_date: data.end_date
+      end_date: data.end_date,
+      image: data.image
     } as Competition
   }
 }

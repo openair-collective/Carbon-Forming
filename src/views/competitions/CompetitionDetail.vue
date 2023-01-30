@@ -2,6 +2,13 @@
   <article 
     class="article is-flex-grow-1 has-background-white-bis "
     >
+    <div v-if="competition.image && competition.image.url">
+      <div 
+        class="competition-image has-border-radius-6 has-background-grey-dark mb-4"
+        :style="{ 'background-image': 'url(' + competition.image.url + ')' }"
+      >
+      </div>
+    </div>
     <div class="columns">
       <div class="column is-8">
         <h2 class="title is-4 mb-4">Competition Details</h2>
@@ -49,3 +56,12 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped>
+.competition-image {
+  height: 420px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+</style>
