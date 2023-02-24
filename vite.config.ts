@@ -18,7 +18,7 @@ export default defineConfig(({command, mode }) => {
     css: {
       preprocessorOptions: {
         scss: {
-          additionalData: `@import "bulma/sass/utilities/_all.sass";`
+          additionalData: `@import "src/_bulma.scss";`
         }
       },
     },

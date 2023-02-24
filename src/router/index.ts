@@ -1,6 +1,5 @@
 import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHistory } from 'vue-router'
-import Dashboard from '@/views/Dashboard.vue'
 import Competitions from '@/views/competitions/Competitions.vue'
 import CompetitionShow from '@/views/competitions/CompetitionShow.vue'
 import CompetitionDetail from '@/views/competitions/CompetitionDetail.vue'
@@ -23,6 +22,7 @@ import TeamProject from '@/views/team_projects/TeamProject.vue'
 import TeamCompetitions from '@/views/team_competitions/TeamCompetitions.vue'
 import Login from '@/views/Login.vue'
 import AuthCallback from '@/views/AuthCallback.vue'
+import About from '@/views/About.vue'
 import { useUserStore } from '@/store/user'
 import { useFlashStore } from '@/store/flash'
 import { useModalStore } from '@/store/modal'
@@ -31,7 +31,6 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'root',
-    component: Dashboard, // has router-view -- wraps team and competition views
     redirect: to => { return '/competitions' },
     children: [
       {
@@ -89,7 +88,7 @@ const routes: RouteRecordRaw[] = [
             name: 'team-competitions',
             component: TeamCompetitions
           }
-        ],
+        ]
       },
       {
         path: '/competitions',
@@ -154,6 +153,11 @@ const routes: RouteRecordRaw[] = [
     path: '/auth/callback',
     name: 'auth_callback',
     component: AuthCallback
+  },
+  {
+    path: '/about',
+    name: 'about',
+    component: About
   }
 ]
 

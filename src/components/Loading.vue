@@ -15,16 +15,16 @@ export default defineComponent({
 
 </script>
 
-<style scoped="true">
+<style lang="scss" scoped="true">
 .spinner {
   width: 40px;
   height: 40px;
-  background-color: #ddd;
+  background-color: $primary;
   animation: sk-rotateplane 1.2s infinite ease-in-out;
 }
 
 .title {
-  color: #ddd;
+  color: $light;
 }
 
 @keyframes sk-rotateplane {

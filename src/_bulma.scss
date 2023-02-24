@@ -1,9 +1,22 @@
-// @import "bulma/sass/utilities/_all.sass"; moved to vite.config.js
+@import "./_colors.scss";
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+$family-sans-serif: "Inter", BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+
+// utilities/_all defines all the primary variables. See https://bulma.io/documentation/customize/variables/
+@import "bulma/sass/utilities/_all.sass";
+
+$section-padding: 2rem 0;
+$section-padding-desktop: 2rem 0;
+$navbar-breakpoint: $tablet;
+
 @import "bulma/sass/base/_all.sass";
 @import "bulma/sass/form/_all.sass";
 @import "bulma/sass/grid/_all.sass";
 @import "bulma/sass/helpers/_all.sass";
 @import "bulma/sass/layout/hero.sass";
+@import "bulma/sass/layout/footer.sass";
+@import "bulma/sass/layout/section.sass";
 @import "bulma/sass/elements/container.sass";
 @import "bulma/sass/elements/box.sass";
 @import "bulma/sass/elements/button.sass";

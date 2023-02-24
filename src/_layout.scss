@@ -1,0 +1,32 @@
+html {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  position: relative;
+  background: $white;
+  background: linear-gradient(180deg, $black 400px, $white 400px, $white 100%);
+}
+
+#app {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.footer {
+  z-index: 2;
+  flex-grow: 0;
+  padding: 3rem 1.5rem;
+  background-color: $primary;
+
+  a,
+  a:visited,
+  a:hover {
+    color: $black;
+  }
+}

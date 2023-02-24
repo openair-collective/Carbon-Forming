@@ -5,7 +5,7 @@ import App from './App.vue'
 import router from './router'
 import Modal from './Modal.vue'
 
-import './_bulma.scss'
+import './_layout.scss'
 
 const pinia = createPinia()
 const app = createApp(App)
