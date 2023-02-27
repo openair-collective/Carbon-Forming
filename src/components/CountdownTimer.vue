@@ -134,7 +134,7 @@ export default defineComponent({
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
   .clock {
     display: flex;
     flex-direction: row;
@@ -158,7 +158,7 @@ export default defineComponent({
     flex: 0 1 auto;
     align-items: center;
     justify-content: center;
-    background: #181C71;
+    background: $black;
     border-radius: 4px;
     width: 50px;
     height: 56px;

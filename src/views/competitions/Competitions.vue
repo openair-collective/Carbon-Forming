@@ -1,18 +1,18 @@
 <template>
-  <section class="section">
-    <div class="columns is-vcentered">
-      <div class="column">
-        <figure class="image">
-          <img :src="logo_img" />
-        </figure>
+  <section class="my-2">
+    <header class="header mb-6">
+      <div class="columns is-vcentered">
+        <div class="column">
+          <figure class="image">
+            <img :src="logo_img" />
+          </figure>
+        </div>
+        <div class="column">
+          <h2 class="title is-4 mb-2 has-text-white">The carbon capture competition platform</h2>
+          <p class="has-text-white">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam sit amet blandit est. Suspendisse posuere purus vel sollicitudin finibus.</p>
+        </div>
       </div>
-      <div class="column">
-        <h2 class="title is-4 mb-2 has-text-white">The carbon capture competition platform</h2>
-        <p class="has-text-white">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam sit amet blandit est. Suspendisse posuere purus vel sollicitudin finibus.</p>
-      </div>
-    </div>
-  </section>
-  <section class="section">
+    </header>
     <loading v-if="isLoading" />
     <div v-else-if="hasComps" class="container">
       <competition-list 

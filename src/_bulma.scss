@@ -6,8 +6,6 @@ $family-sans-serif: "Inter", BlinkMacSystemFont, -apple-system, "Segoe UI", "Rob
 // utilities/_all defines all the primary variables. See https://bulma.io/documentation/customize/variables/
 @import "bulma/sass/utilities/_all.sass";
 
-$section-padding: 2rem 0;
-$section-padding-desktop: 2rem 0;
 $navbar-breakpoint: $tablet;
 
 @import "bulma/sass/base/_all.sass";
@@ -35,6 +33,11 @@ $navbar-breakpoint: $tablet;
 .button.is-disabled {
   cursor: not-allowed;
   opacity: .5;
+}
+
+.button.is-primary {
+	font-weight: 700;
+	color: $black;
 }
 
 .box.box--with-border {
@@ -75,4 +78,11 @@ $navbar-breakpoint: $tablet;
 
 .text-editor {
 	@import "bulma/sass/elements/content.sass";
+}
+
+.section--parent {
+	padding: 2em;
+	border-top-right-radius: .5em;
+	border-top-left-radius: .5em;
+	background-color: $white;
 }

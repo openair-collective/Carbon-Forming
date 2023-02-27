@@ -15,66 +15,64 @@
         'mb-4 mr-4': listType === eListType.grid
       }"
     >
-      <div 
-        class="is-flex is-justify-content-space-between"
-        :class="{ 
-          'is-flex-direction-column' : listType === eListType.grid,
-          'is-flex-direction-row': listType === eListType.column
-        }"
-      >
-        <router-link 
-          :to="{ name: 'comp-show', params: { id: comp.id } }"
-          class="mb-4"
-        > 
-          <div
-            v-if="getCompState(comp) === eCompStates.IN_PROGRESS"
-            class="tag mb-4 is-primary is-light"
+      <div class="columns">
+        <div class="column">
+          <router-link 
+            :to="{ name: 'comp-show', params: { id: comp.id } }"
+            class="mb-4"
           >
-            Open Competition
+            <div
+              v-if="getCompState(comp) === eCompStates.IN_PROGRESS"
+              class="tag mb-4 is-primary is-light"
+            >
+              Open Competition
+            </div>
+            <p class="title is-3">{{ comp.name }}</p>
+            <template v-if="showEnterButton">
+              <button
+                v-if="getCompState(comp) === eCompStates.IN_PROGRESS || getCompState(comp) === eCompStates.UNAVAILABLE"
+                @click.stop.prevent="onEnterCompetition(comp)"
+                class="button is-primary"
+                :disabled="getCompState(comp) === eCompStates.UNAVAILABLE"
+              >
+                Enter this competition
+              </button>
+              <button
+                v-else-if="getCompState(comp) === eCompStates.FINISHED"
+                @click.stop.prevent=""
+                class="button is-primary"
+                disabled
+              >
+                Judging in Progress
+              </button>
+              <router-link
+                v-else-if="getCompState(comp) === eCompStates.JUDGED"
+                :to="{name: 'comp-results', params: { id: comp.id }}"
+                class="button is-primary"
+              >
+                View Results
+              </router-link>
+            </template>
+          </router-link>
+        </div>
+        <div class="column is-narrow">
+          <div>
+            <p 
+              v-if="comp.start_date && comp.end_date"
+              class="title is-4 mb-3"
+            >
+              {{ kDayMonth(kfsTimestampToDate(comp.start_date)) }} - {{ kDayMonthYear(kfsTimestampToDate(comp.end_date)) }}
+            </p>
+            <p v-else>
+              Time TBD
+            </p>
+            <p v-if="getCompState(comp) === eCompStates.FINISHED" class="is-size-3">Competition finished</p>
+            <countdown-timer 
+              v-else-if="comp.start_date" 
+              :start_date="kfsTimestampToDate(comp.start_date)"
+              :end_date="kfsTimestampToDate(comp.end_date)"
+            />
           </div>
-          <h3 class="title is-3">{{ comp.name }}</h3>
-          <template v-if="showEnterButton">
-            <button
-              v-if="getCompState(comp) === eCompStates.IN_PROGRESS || getCompState(comp) === eCompStates.UNAVAILABLE"
-              @click.stop.prevent="onEnterCompetition(comp)"
-              class="button is-info"
-              :disabled="getCompState(comp) === eCompStates.UNAVAILABLE"
-            >
-              Enter this competition
-            </button>
-            <button
-              v-else-if="getCompState(comp) === eCompStates.FINISHED"
-              @click.stop.prevent=""
-              class="button is-info"
-              disabled
-            >
-              Judging in Progress
-            </button>
-            <router-link
-              v-else-if="getCompState(comp) === eCompStates.JUDGED"
-              :to="{name: 'comp-results', params: { id: comp.id }}"
-              class="button is-info"
-            >
-              View Results
-            </router-link>
-          </template>
-        </router-link>
-        <div>
-          <p 
-            v-if="comp.start_date && comp.end_date"
-            class="mb-3"
-          >
-            {{ kDayMonth(kfsTimestampToDate(comp.start_date)) }} - {{ kDayMonthYear(kfsTimestampToDate(comp.end_date)) }}
-          </p>
-          <p v-else>
-            Time TBD
-          </p>
-          <p v-if="getCompState(comp) === eCompStates.FINISHED" class="is-size-3">Competition finished</p>
-          <countdown-timer 
-            v-else-if="comp.start_date" 
-            :start_date="kfsTimestampToDate(comp.start_date)"
-            :end_date="kfsTimestampToDate(comp.end_date)"
-          />
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 <template>
-  <section class="p-4">
+  <section class="section--parent">
     <header class="mb-4">
       <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
@@ -12,15 +12,14 @@
       </nav>
       <h1 class="title is-3">Edit Competition</h1>
     </header>
-    <article>
-      <competition-form
-        v-if="competition"
-        :competition="competition"
-        @cancel="onCancel"
-        @comp-deleted="onCompetitionDeleted"
-      />
-      <loading v-else />
-    </article>
+    <competition-form
+      v-if="competition"
+      :competition="competition"
+      @cancel="onCancel"
+      @comp-deleted="onCompetitionDeleted"
+      @comp-saved="onSaved"
+    />
+    <loading v-else />
   </section>
 </template>
 
@@ -84,6 +83,9 @@ export default defineComponent({
             this.flashStore.$patch({ message: ERROR_AUTH, level: LogLevel.warning })
           })
       }
+    },
+    onSaved() {
+      window.scrollTo({top : 0})
     },
     onCompetitionDeleted() {
       this.$router.replace({ name: 'competitions'})

@@ -1,212 +1,210 @@
 <template>
-  <section class="section">
-    <form @submit.prevent="submitForm" :disabled="isSaving">
-      <div class="field"> 
-        <label class="label">Competition Name</label>
-        <div class="control">
-          <input class="input" type="text" v-model="clone.name" required>
-        </div>
+  <form @submit.prevent="submitForm" :disabled="isSaving">
+    <div class="field"> 
+      <label class="label">Competition Name</label>
+      <div class="control">
+        <input class="input" type="text" v-model="clone.name" required>
       </div>
-      <hr/>
-      <div class="field"> 
-        <label class="label">Competition Image</label>
-        <p
-          v-if="!clone.image" 
-          class="mb-2"
+    </div>
+    <hr/>
+    <div class="field"> 
+      <label class="label">Competition Image</label>
+      <p
+        v-if="!clone.image" 
+        class="mb-2"
+      >
+        Please upload an image to represent your competition.
+      </p>
+      <p 
+        v-if="!clone.image"
+        class="help is-info mb-2"
+      >
+        Accepts .jpeg, .jpg, and .png files only. Maximum file size is {{ kImageMaxSize / 1000 }}kb. Dimensions (----px x ----px).
+      </p>
+      <div class="is-flex is-flex-direction-row">
+        <div
+          v-if="imageUrl !== kImagePlaceholder" 
+          class="file-image mr-4 has-border-radius-6 has-background-grey-lighter has-text-centered"
+          :style="{ 'background-image': 'url(' + imageUrl + ')' }"
         >
-          Please upload an image to represent your competition.
-        </p>
-        <p 
-          v-if="!clone.image"
-          class="help is-info mb-2"
+        </div>
+        <button
+          v-if="clone.image"
+          @click.prevent="removeImage"
+          class="button is-warning"
         >
-          Accepts .jpeg, .jpg, and .png files only. Maximum file size is {{ kImageMaxSize / 1000 }}kb. Dimensions (----px x ----px).
-        </p>
-        <div class="is-flex is-flex-direction-row">
-          <div
-            v-if="imageUrl !== kImagePlaceholder" 
-            class="file-image mr-4 has-border-radius-6 has-background-grey-lighter has-text-centered"
-            :style="{ 'background-image': 'url(' + imageUrl + ')' }"
-          >
-          </div>
-          <button
-            v-if="clone.image"
-            @click.prevent="removeImage"
-            class="button is-warning"
-          >
-            Remove Image
-          </button>
-          <div
-            v-else
-            class="file mb-2">
-            <label class="file-label">
-              <input
-                @change="onImageFileChange"
-                class="file-input" 
-                type="file"
-                accept="image/*"
-                ref="file_image"
-              >
-              <span class="file-cta">
-                <span class="file-label">
-                  {{ imageUrl ===  kImagePlaceholder ?  'Upload Image' : 'Change Image' }}
-                </span>
+          Remove Image
+        </button>
+        <div
+          v-else
+          class="file mb-2">
+          <label class="file-label">
+            <input
+              @change="onImageFileChange"
+              class="file-input" 
+              type="file"
+              accept="image/*"
+              ref="file_image"
+            >
+            <span class="file-cta">
+              <span class="file-label">
+                {{ imageUrl ===  kImagePlaceholder ?  'Upload Image' : 'Change Image' }}
               </span>
-            </label>
-          </div>
+            </span>
+          </label>
         </div>
       </div>
-      <hr />
-      <div>
-        <h2 class="title is-4">Dates</h2>
-        <h3 class="subtitle">Please list the beginning and the end date for your competition</h3>
-        <div class="is-flex is-flex-direction-row">
-          <div class="field mr-6"> 
-            <label class="label">Start Date</label>
-            <div class="control">
-              <input
-                class="input"
-                type="date"
-                v-model="startDate"
-                pattern="\d{4})-(\d{1,2})-(\d{1,2})"
-                required>
-            </div>
-          </div>
-          <div class="field"> 
-            <label class="label">End Date</label>
-            <div class="control">
-              <input 
-                class="input" 
-                type="date"
-                v-model="endDate"
-                :disabled="!startDate"
-                :min="minEndDate"
-                pattern="\d{4})-(\d{1,2})-(\d{1,2})"
-                required>
-            </div>
-          </div>
-        </div>
-      </div>
-      <hr/>
-      <div>
-        <h2 class="title is-4">Prizes</h2>
-        <h3 class="subtitle">List the prize amounts you will be awarding to the winners of your competition</h3>
-        <div class="field">
-          <div class="control">
-          <label class="checkbox">
-            <input type="checkbox" v-model="clone.prizes_disabled">
-              Click this checkbox if you do not want to offer prizes as part of your competition
-            </label>
-          </div>
-        </div>
-        <div class="field"> 
-          <label class="label">First Prize</label>
+    </div>
+    <hr />
+    <div>
+      <h2 class="title is-4">Dates</h2>
+      <h3 class="subtitle">Please list the beginning and the end date for your competition</h3>
+      <div class="is-flex is-flex-direction-row">
+        <div class="field mr-6"> 
+          <label class="label">Start Date</label>
           <div class="control">
             <input
               class="input"
-              type="text"
-              v-model="clone.prizes.first"
-              :disabled="clone.prizes_disabled">
+              type="date"
+              v-model="startDate"
+              pattern="\d{4})-(\d{1,2})-(\d{1,2})"
+              required>
           </div>
         </div>
         <div class="field"> 
-          <label class="label">Second Prize</label>
-          <div class="control">
-            <input
-              class="input"
-              type="text"
-              v-model="clone.prizes.second"
-              :disabled="clone.prizes_disabled">
-          </div>
-        </div>
-        <div class="field"> 
-          <label class="label">Runner Up</label>
-          <div class="control">
-            <input
-              class="input"
-              type="text"
-              v-model="clone.prizes.third"
-              :disabled="clone.prizes_disabled">
-          </div>
-        </div>
-      </div>
-      <hr/>
-      <div>
-        <h2 class="title is-4">Success Criteria</h2>
-        <h3 class="subtitle">How will people win your comeptittion. Please describe in as much detail as possible what the competitors have to do to win the competition.</h3>
-        <div class="field"> 
-          <label class="label">Describe how you will assess the winners of the competition</label>
-          <div class="control">
-            <text-editor 
-              :value="clone.success_criteria"
-              :placeholder="'Tell us about your competition'"
-              @text-change="(change) => clone.success_criteria = change" 
-            />
-          </div>
-        </div>
-        <div class="field"> 
-        <label class="label">Metric that will be used to measure the winner</label>
+          <label class="label">End Date</label>
           <div class="control">
             <input 
               class="input" 
-              type="text" 
-              v-model="clone.assessment_metric" 
-              placeholder="Enter a value here e.g. &quot;grams of C02 captured&quot;"
+              type="date"
+              v-model="endDate"
+              :disabled="!startDate"
+              :min="minEndDate"
+              pattern="\d{4})-(\d{1,2})-(\d{1,2})"
               required>
           </div>
         </div>
       </div>
-      <hr/>
-      <div>
-        <h2 class="title is-4">Competition Details</h2>
-        <h3 class="subtitle">Please describe your competition in detail, the rules and the criteria by which a winner will be selected</h3>
-        <div class="field"> 
-          <label class="label">Description</label>
-          <div class="control">
-            <text-editor 
-              :value="clone.description"
-              :placeholder="'Tell us about your competition'"
-              @text-change="(change) => clone.description = change" 
-            />
-          </div>
-        </div>
-        <div class="field"> 
-          <label class="label">Rules</label>
-          <div class="control">
-            <text-editor 
-              :value="clone.rules"
-              :placeholder="'What are the rules of your competition?'"
-              @text-change="(change) => clone.rules = change" 
-            />
-          </div>
-        </div>
-        <div class="field"> 
-          <label class="label">Criteria</label>
-          <div class="control">
-            <text-editor 
-              :value="clone.judging_criteria"
-              :placeholder="'How will the winning entries be selected?'"
-              @text-change="(change) => clone.judging_criteria = change" 
-            />
-          </div>
+    </div>
+    <hr/>
+    <div>
+      <h2 class="title is-4">Prizes</h2>
+      <h3 class="subtitle">List the prize amounts you will be awarding to the winners of your competition</h3>
+      <div class="field">
+        <div class="control">
+        <label class="checkbox">
+          <input type="checkbox" v-model="clone.prizes_disabled">
+            Click this checkbox if you do not want to offer prizes as part of your competition
+          </label>
         </div>
       </div>
-      <hr/>
-      <div class="field is-grouped is-grouped-right">
+      <div class="field"> 
+        <label class="label">First Prize</label>
         <div class="control">
-          <button @click="$emit('cancel')" class="button is-outlined">
-            Cancel
-          </button>
-        </div>
-        <div class="control">
-          <button type="submit" class="button is-primary">
-            Save Competition
-          </button>
+          <input
+            class="input"
+            type="text"
+            v-model="clone.prizes.first"
+            :disabled="clone.prizes_disabled">
         </div>
       </div>
-    </form>
-  </section>
-  <section class="section mt-6">
+      <div class="field"> 
+        <label class="label">Second Prize</label>
+        <div class="control">
+          <input
+            class="input"
+            type="text"
+            v-model="clone.prizes.second"
+            :disabled="clone.prizes_disabled">
+        </div>
+      </div>
+      <div class="field"> 
+        <label class="label">Runner Up</label>
+        <div class="control">
+          <input
+            class="input"
+            type="text"
+            v-model="clone.prizes.third"
+            :disabled="clone.prizes_disabled">
+        </div>
+      </div>
+    </div>
+    <hr/>
+    <div>
+      <h2 class="title is-4">Success Criteria</h2>
+      <h3 class="subtitle">How will people win your comeptittion. Please describe in as much detail as possible what the competitors have to do to win the competition.</h3>
+      <div class="field"> 
+        <label class="label">Describe how you will assess the winners of the competition</label>
+        <div class="control">
+          <text-editor 
+            :value="clone.success_criteria"
+            :placeholder="'Tell us about your competition'"
+            @text-change="(change) => clone.success_criteria = change" 
+          />
+        </div>
+      </div>
+      <div class="field"> 
+      <label class="label">Metric that will be used to measure the winner</label>
+        <div class="control">
+          <input 
+            class="input" 
+            type="text" 
+            v-model="clone.assessment_metric" 
+            placeholder="Enter a value here e.g. &quot;grams of C02 captured&quot;"
+            required>
+        </div>
+      </div>
+    </div>
+    <hr/>
+    <div>
+      <h2 class="title is-4">Competition Details</h2>
+      <h3 class="subtitle">Please describe your competition in detail, the rules and the criteria by which a winner will be selected</h3>
+      <div class="field"> 
+        <label class="label">Description</label>
+        <div class="control">
+          <text-editor 
+            :value="clone.description"
+            :placeholder="'Tell us about your competition'"
+            @text-change="(change) => clone.description = change" 
+          />
+        </div>
+      </div>
+      <div class="field"> 
+        <label class="label">Rules</label>
+        <div class="control">
+          <text-editor 
+            :value="clone.rules"
+            :placeholder="'What are the rules of your competition?'"
+            @text-change="(change) => clone.rules = change" 
+          />
+        </div>
+      </div>
+      <div class="field"> 
+        <label class="label">Criteria</label>
+        <div class="control">
+          <text-editor 
+            :value="clone.judging_criteria"
+            :placeholder="'How will the winning entries be selected?'"
+            @text-change="(change) => clone.judging_criteria = change" 
+          />
+        </div>
+      </div>
+    </div>
+    <hr/>
+    <div class="field is-grouped is-grouped-right">
+      <div class="control">
+        <button @click="$emit('cancel')" class="button is-outlined">
+          Cancel
+        </button>
+      </div>
+      <div class="control">
+        <button type="submit" class="button is-primary">
+          Save Competition
+        </button>
+      </div>
+    </div>
+  </form>
+  <div class="mt-6">
     <div
       v-if="competition.id"
       class="p-4 has-background-light"
@@ -220,7 +218,7 @@
         Delete Competition
       </button>
     </div>
-  </section>
+  </div>
 </template>
 
 <script lang="ts">

@@ -1,9 +1,9 @@
 <template>
-  <section 
+  <section
     v-if="competition"
-    class="is-flex is-flex-direction-column"
+    class="section--parent"
   >
-    <header class="header px-4 pt-4 pb-0">
+    <header class="header">
       <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
           <li>
@@ -19,19 +19,13 @@
             <h1 class="title is-2 mr-4 mb-0">
               {{ competition.name }}
             </h1>
-            <router-link 
-              v-if="canEdit"
-              :to="{ name: 'comp-edit', params: {id: competition.id }}"
-              class="button is-small is-info is-outlined">
-              Edit this competition
-            </router-link>
           </div>
           <div class="field is-grouped mb-4">
             <div class="control">
               <button
                 v-if="competitionState === eCompStates.UNAVAILABLE || competitionState === eCompStates.IN_PROGRESS "
                 @click.stop.prevent="onEnterCompetition"
-                class="button is-info"
+                class="button is-primary"
                 :disabled="isSaving || competitionState === eCompStates.UNAVAILABLE"
               >
                 Enter this competition
@@ -39,7 +33,7 @@
               <button
                 v-if="competitionState === eCompStates.FINISHED"
                 @click.stop.prevent=""
-                class="button is-info"
+                class="button is-primary"
                 disabled
               >
                 Judging in Progress
@@ -49,44 +43,47 @@
               <router-link
                 v-if="canEdit && competitionState === eCompStates.FINISHED"
                 :to="{name: 'comp-results-edit', params: { id: competition.id }}"
-                class="button is-info"
+                class="button is-primary"
               >
                 Enter Results
               </router-link>
               <router-link
                 v-if="competitionState === eCompStates.JUDGED"
                 :to="{name: 'comp-results', params: { id: competition.id }}"
-                class="button is-info"
+                class="button is-primary"
               >
                 View Results
               </router-link>
-              <p
-                v-if="competitionState === eCompStates.UNAVAILABLE" 
-                class="help is-danger"
+            </div>
+            <div class="control">
+              <router-link 
+                v-if="canEdit"
+                :to="{ name: 'comp-edit', params: {id: competition.id }}"
+                class="button is-info"
               >
-                We cannot accept submissions until the start date
-              </p>
+                Edit this competition
+              </router-link>
             </div>
           </div>
-        </div>
-        <div class="column">
-          <div class="is-pulled-right">
-            <p 
-              v-if="competition.start_date && competition.end_date"
-              class="is-size-4 mb-2"
+          <p
+              v-if="competitionState === eCompStates.UNAVAILABLE" 
+              class="help is-danger"
             >
+              We cannot accept submissions until the start date
+          </p>
+        </div>
+        <div class="column is-narrow">
+          <template v-if="competition.start_date && competition.end_date"> 
+            <h2 class="title is-4">
               {{ kDayMonth(kfsTimestampToDate(competition.start_date)) }} - {{ kDayMonthYear(kfsTimestampToDate(competition.end_date)) }}
-            </p>
-            <p v-else>
-              Time TBD
-            </p>
+            </h2>
             <countdown-timer
               v-if="competitionState !== eCompStates.FINISHED && competitionState !== eCompStates.JUDGED"
               :start_date="kfsTimestampToDate(competition.start_date)"
               :end_date="kfsTimestampToDate(competition.end_date)"
             />
             <div v-else>
-              <p class="is-size-3 mb-3">Competition finished</p>
+              <h3 class="title is-3">Competition finished</h3>
               <template v-if="canEdit">
                 <button
                   v-if="competitionState !== eCompStates.JUDGED && !isEmpty(competition.results) && competition.results_disabled"
@@ -106,35 +103,41 @@
                 </button>
               </template>
             </div>
-          </div>
+          </template>
         </div>
       </div>
       <div class="tabs mb-0 pb-0">
-        <ul>
+        <ul role="tablist" aria-label="Competition Sections">
           <li 
             @click="onTabClick(eTabs.DETAILS)"
             :class="{'is-active': activeTab === eTabs.DETAILS}"
+            role="tab"
+            :aria-selected="activeTab === eTabs.DETAILS"
           >
             <a>Competition Details</a>
           </li>
           <li
             @click="onTabClick(eTabs.PROJECTS)"
             :class="{'is-active': activeTab === eTabs.PROJECTS}"
+            role="tab"
+            :aria-selected="activeTab === eTabs.PROJECTS"
           >
             <a>Submitted Projects</a>
           </li>
           <li
             @click="onTabClick(eTabs.RESULTS)"
             :class="{'is-active': activeTab === eTabs.RESULTS}"
+            role="tab"
+            :aria-selected="activeTab === eTabs.RESULTS"
           >
             <a>Results</a>
           </li>
         </ul>
       </div>
     </header>
-    <article class="article has-background-white-bis p-5 my-0 is-flex-grow-1">
+    <div class="has-background-white-bis p-5 my-0 is-flex-grow-1">
       <router-view :competition="competition" />
-    </article>
+    </div>
   </section>
   <loading v-else />
 </template>
