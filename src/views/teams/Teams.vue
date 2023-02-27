@@ -1,25 +1,30 @@
 <template>
-  <section class="teams">
+  <section class="section">
     <div class="tabs">
-      <ul>
+      <ul role="tablist" aria-label="Teams">
         <li 
           @click="onTabClick(eTabs.TEAMS)"
           :class="{'is-active': activeTab === eTabs.TEAMS}"
+          role="tab"
+          :aria-selected="activeTab === eTabs.TEAMS"
         >
-          <a class="is-size-3">Teams</a>
+          <a class="is-size-5">Teams</a>
         </li>
         <li
           v-if="userStore.isAuthenticated"
           @click="onTabClick(eTabs.MY_TEAMS)"
           :class="{'is-active': activeTab === eTabs.MY_TEAMS}"
+          role="tab"
+          :aria-selected="activeTab === eTabs.MY_TEAMS"
         >
-          <a class="is-size-3">My Teams</a>
+          <a class="is-size-5">My Teams</a>
         </li>
         <li v-if="userStore.isAuthenticated && activeTab === eTabs.MY_TEAMS">
           <router-link
             v-if="activeList.length > 0"
             :to="{ name: 'teams-new'}"
-            class="button is-info is-outlined is-small"
+            class="button is-info is-rounded is-small mx-4"
+            :aria-selected="activeTab === eTabs.MY_TEAMS"
           >
           Create a new team
           </router-link>

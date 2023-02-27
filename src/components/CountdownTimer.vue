@@ -168,4 +168,11 @@ export default defineComponent({
   .clock.disabled .value {
     background:whitesmoke;
   }
+  .timer.is-small {
+    .value {
+      width: 25px;
+      height: 28px;
+      font-size: .875em;
+    }
+  }
 </style>

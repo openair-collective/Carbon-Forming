@@ -1,5 +1,5 @@
 <template>
-  <section class="section--parent">
+  <section class="section">
     <header class="mb-4">
       <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>

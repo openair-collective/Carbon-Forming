@@ -1,33 +1,25 @@
 <template>
   <div
-    class="is-flex" 
-    :class="{ 
-      'is-flex-direction-column': listType === eListType.column,
-      'is-flex-direction-row': listType === eListType.grid
-    }">
+    class="is-flex is-flex-wrap-wrap"
+    :class="{ 'is-grid' : listType === eListType.grid}"
+  >
     <div  
       v-for="(comp, i) in list" 
       :key="i"
       @click="$router.push({ name: 'comp-show', params: { id: comp.id } })" 
-      class="box box--comp p-6"
-      :class="{
-        'is-flex-grow-1': listType === eListType.column,
-        'mb-4 mr-4': listType === eListType.grid
-      }"
+      class="box box--comp p-6 mb-4 mr-4"
     >
-      <div class="columns">
+      <div 
+        class="columns"
+        :class="{ 'is-flex-direction-column' : listType === eListType.grid }"
+      >
         <div class="column">
           <router-link 
             :to="{ name: 'comp-show', params: { id: comp.id } }"
             class="mb-4"
           >
-            <div
-              v-if="getCompState(comp) === eCompStates.IN_PROGRESS"
-              class="tag mb-4 is-primary is-light"
-            >
-              Open Competition
-            </div>
             <p class="title is-3">{{ comp.name }}</p>
+            <p v-if="showDescription" v-html="comp.description" class="subtitle is-6" />
             <template v-if="showEnterButton">
               <button
                 v-if="getCompState(comp) === eCompStates.IN_PROGRESS || getCompState(comp) === eCompStates.UNAVAILABLE"
@@ -56,23 +48,26 @@
           </router-link>
         </div>
         <div class="column is-narrow">
-          <div>
-            <p 
-              v-if="comp.start_date && comp.end_date"
-              class="title is-4 mb-3"
-            >
-              {{ kDayMonth(kfsTimestampToDate(comp.start_date)) }} - {{ kDayMonthYear(kfsTimestampToDate(comp.end_date)) }}
-            </p>
-            <p v-else>
-              Time TBD
-            </p>
-            <p v-if="getCompState(comp) === eCompStates.FINISHED" class="is-size-3">Competition finished</p>
-            <countdown-timer 
-              v-else-if="comp.start_date" 
-              :start_date="kfsTimestampToDate(comp.start_date)"
-              :end_date="kfsTimestampToDate(comp.end_date)"
-            />
-          </div>
+          <p 
+            v-if="comp.start_date && comp.end_date"
+            class="title mb-3"
+            :class="{ 
+              'is-4' : listType === eListType.column,
+              'is-6' : listType === eListType.grid 
+            }"
+          >
+            {{ kDayMonth(kfsTimestampToDate(comp.start_date)) }} - {{ kDayMonthYear(kfsTimestampToDate(comp.end_date)) }}
+          </p>
+          <p v-else>
+            Time TBD
+          </p>
+          <p v-if="getCompState(comp) === eCompStates.FINISHED" class="is-size-3">Competition finished</p>
+          <countdown-timer 
+            v-else-if="comp.start_date" 
+            :class="{ 'is-small' : listType === eListType.grid }"
+            :start_date="kfsTimestampToDate(comp.start_date)"
+            :end_date="kfsTimestampToDate(comp.end_date)"
+          />
         </div>
       </div>
     </div>
@@ -98,6 +93,10 @@ export default defineComponent({
     list: {
       type: Array as PropType<Competition[]>,
       required: true
+    },
+    showDescription: {
+      type:Boolean,
+      default: true
     },
     showEnterButton: {
       type:Boolean,
@@ -135,5 +134,8 @@ export default defineComponent({
 <style scoped>
   .box--comp {
     cursor:pointer;
+  }
+  .is-grid .box--comp {
+    width: 405px;
   }
 </style>

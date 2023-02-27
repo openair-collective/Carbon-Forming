@@ -1,5 +1,5 @@
 <template>
-  <section class="p-4">
+  <section class="section is-flex-grow-1">
     <loading />
   </section>
 </template>

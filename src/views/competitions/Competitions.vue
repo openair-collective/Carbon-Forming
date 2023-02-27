@@ -14,7 +14,7 @@
       </div>
     </header>
     <loading v-if="isLoading" />
-    <div v-else-if="hasComps" class="container">
+    <div v-else-if="hasComps">
       <competition-list 
           :list="currentCompetitions"
           :listType="eListType.column"
@@ -33,15 +33,14 @@
       />
     </div>
     <div 
-      v-else
-      class="is-flex is-flex-direction-column is-align-items-center is-justify-content-center"
+      v-if="canCreate"
+      class="is-flex is-flex-direction-column is-align-items-center is-justify-content-center my-4"
     >
       <router-link
-        v-if="canCreate"
         :to="{ name: 'comp-new' }"
         class="button is-info"
       >
-        Create Your First Competition
+        Create {{ hasComps ? 'a New' : 'Your First' }} Competition
       </router-link>
     </div>
   </section>

@@ -204,20 +204,18 @@
       </div>
     </div>
   </form>
-  <div class="mt-6">
-    <div
-      v-if="competition.id"
-      class="p-4 has-background-light"
+  <div 
+    v-if="competition.id"
+    class="mt-6 p-4 has-background-light"
+  >
+    <h3 class="title is-5">Delete Competition</h3>
+    <p><strong>Warning:</strong> Deleting a Competition is irreversible. All associated data, including any submitted Projects, will also be deleted.</p>
+    <button
+      class="button is-danger mt-3"
+      @click="confirmDelete(competition)"
     >
-      <h3 class="title is-5">Delete Competition</h3>
-      <p><strong>Warning:</strong> Deleting a Competition is irreversible. All associated data, including any submitted Projects, will also be deleted.</p>
-      <button
-        class="button is-danger mt-3"
-        @click="confirmDelete(competition)"
-      >
-        Delete Competition
-      </button>
-    </div>
+      Delete Competition
+    </button>
   </div>
 </template>
 

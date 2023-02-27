@@ -1,7 +1,7 @@
 <template>
   <section
     v-if="competition"
-    class="section--parent"
+    class="section"
   >
     <header class="header">
       <nav class="breadcrumb" aria-label="breadcrumbs">
@@ -106,36 +106,45 @@
           </template>
         </div>
       </div>
-      <div class="tabs mb-0 pb-0">
-        <ul role="tablist" aria-label="Competition Sections">
-          <li 
-            @click="onTabClick(eTabs.DETAILS)"
-            :class="{'is-active': activeTab === eTabs.DETAILS}"
-            role="tab"
-            :aria-selected="activeTab === eTabs.DETAILS"
-          >
-            <a>Competition Details</a>
-          </li>
-          <li
-            @click="onTabClick(eTabs.PROJECTS)"
-            :class="{'is-active': activeTab === eTabs.PROJECTS}"
-            role="tab"
-            :aria-selected="activeTab === eTabs.PROJECTS"
-          >
-            <a>Submitted Projects</a>
-          </li>
-          <li
-            @click="onTabClick(eTabs.RESULTS)"
-            :class="{'is-active': activeTab === eTabs.RESULTS}"
-            role="tab"
-            :aria-selected="activeTab === eTabs.RESULTS"
-          >
-            <a>Results</a>
-          </li>
-        </ul>
-      </div>
     </header>
-    <div class="has-background-white-bis p-5 my-0 is-flex-grow-1">
+    <div class="tabs mb-0 pb-0">
+      <ul 
+        role="tablist" 
+        aria-label="Competition Sections" 
+        aria-controls="teamInfo"
+      >
+        <li 
+          @click="onTabClick(eTabs.DETAILS)"
+          :class="{'is-active': activeTab === eTabs.DETAILS}"
+          role="tab"
+          :aria-selected="activeTab === eTabs.DETAILS"
+        >
+          <a>Competition Details</a>
+        </li>
+        <li
+          @click="onTabClick(eTabs.PROJECTS)"
+          :class="{'is-active': activeTab === eTabs.PROJECTS}"
+          role="tab"
+          :aria-selected="activeTab === eTabs.PROJECTS"
+        >
+          <a>Submitted Projects</a>
+        </li>
+        <li
+          @click="onTabClick(eTabs.RESULTS)"
+          :class="{'is-active': activeTab === eTabs.RESULTS}"
+          role="tab"
+          :aria-selected="activeTab === eTabs.RESULTS"
+        >
+          <a>Results</a>
+        </li>
+      </ul>
+    </div>
+    <div
+      id="teamInfo"
+      class="has-background-white-bis p-5"
+      role="tabpanel"
+      aria-live="polite"
+    >
       <router-view :competition="competition" />
     </div>
   </section>

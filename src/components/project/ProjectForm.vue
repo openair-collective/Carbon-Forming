@@ -1,46 +1,42 @@
 <template>
-  <section class="section">
-    <form @submit.prevent="submitProjectForm" :disabled="isSaving">
-      <project-input 
-        :project="clone"
-        ref="project_input"
-        @remove-image="removeImage"
-      />
-      <hr/>
-      <div class="field is-grouped is-grouped-right">
-        <div class="control">
-          <a @click.prevent="$emit('cancel')" class="button is-outlined">
-            Cancel
-          </a>
-        </div>
-        <div class="control">
-          <button 
-            type="submit" 
-            class="button is-primary"
-            :class="{'is-loading': isSaving}"
-            :disabled="disableSubmit"
-          >
-            Save Project
-          </button>
-        </div>
+  <form @submit.prevent="submitProjectForm" :disabled="isSaving">
+    <project-input 
+      :project="clone"
+      ref="project_input"
+      @remove-image="removeImage"
+    />
+    <hr/>
+    <div class="field is-grouped is-grouped-right">
+      <div class="control">
+        <a @click.prevent="$emit('cancel')" class="button is-outlined">
+          Cancel
+        </a>
       </div>
-    </form>
-  </section>
-  <section class="section mt-6">
-    <div
-      v-if="project.id"
-      class="p-4 has-background-light"
-    >
-      <h3 class="title is-5">Delete Project</h3>
-      <p><strong>Warning:</strong> Deleting a Project is irreversible. All associated data will also be deleted.</p>
-      <button
-        class="button is-danger mt-3"
-        @click="confirmDelete(project)"
-      >
-        Delete Project
-      </button>
+      <div class="control">
+        <button 
+          type="submit" 
+          class="button is-primary"
+          :class="{'is-loading': isSaving}"
+          :disabled="disableSubmit"
+        >
+          Save Project
+        </button>
+      </div>
     </div>
-  </section>
+  </form>
+  <div
+    v-if="project.id"
+    class="mt-6 p-4 has-background-light"
+  >
+    <h3 class="title is-5">Delete Project</h3>
+    <p><strong>Warning:</strong> Deleting a Project is irreversible. All associated data will also be deleted.</p>
+    <button
+      class="button is-danger mt-3"
+      @click="confirmDelete(project)"
+    >
+      Delete Project
+    </button>
+  </div>
 </template>
 
 <script lang="ts">
@@ -95,7 +91,8 @@ export default defineComponent({
       clone: Object.assign(
         {},
         projectFactory(),
-        { team: this.team } 
+        { team: this.team },
+        this.project
       ) as Project, // clone so we can modify
       isSaving: false,
       inputRef: undefined as InstanceType<typeof ProjectInput>|undefined

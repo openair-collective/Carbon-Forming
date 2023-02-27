@@ -1,21 +1,15 @@
 <template>
-  <section>
-    <nav class="breadcrumb" aria-label="breadcrumbs">
-      <ul>
-        <li>
-          <router-link :to="{ name: 'team-projects', params: { id: $route.params.id }}">
-            &lt; Back to projects
-          </router-link>
-        </li>
-      </ul>
-    </nav>
-    <article class="article">
-      <template v-if="project">
-        <project-view :project="project" />
-      </template>
-      <loading v-else />
-    </article>
-  </section>
+  <nav class="breadcrumb" aria-label="breadcrumbs">
+    <ul>
+      <li>
+        <router-link :to="{ name: 'team-projects', params: { id: $route.params.id }}">
+          &lt; Back to projects
+        </router-link>
+      </li>
+    </ul>
+  </nav>
+  <project-view v-if="project" :project="project"/>
+  <loading v-else />
 </template>
 
 <script lang="ts">

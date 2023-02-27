@@ -52,13 +52,25 @@ export default defineComponent({
   }
 }
 .main > .container {
+  display: flex;
+  flex-grow: 1;
+  width: 100%;
   padding-top: 1em;
-  padding-bottom: 1em;
+  padding-bottom: 0;
   z-index: 2;
 }
 .main > .container {
   padding-right: calc($gap / 2);
   padding-left: calc($gap / 2);
+}
+
+.main > .container > .section {
+	flex-grow: 1;
+	padding: 2em;
+  overflow: hidden;
+	border-top-right-radius: .5em;
+	border-top-left-radius: .5em;
+	background-color: $white;
 }
 
 </style>

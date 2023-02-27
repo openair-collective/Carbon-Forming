@@ -23,9 +23,9 @@
         </a>
       </div>
       <div id="mainNavbar" class="navbar-menu is-black" :class="{ 'is-active': mobileMenuActive}">
-        <div class="navbar-start" v-if="isAuthenticated">
-          <router-link :to="{ name: 'teams' }" class="navbar-item button is-black">Teams</router-link>
-          <router-link :to="{ name: 'competitions' }" class="navbar-item button is-black">Competitions</router-link>
+        <div class="navbar-start">
+          <router-link :to="{ name: 'teams' }" class="navbar-item button is-black" :class="{'router-link-active': activeTeamRoute}">Teams</router-link>
+          <router-link :to="{ name: 'competitions' }" class="navbar-item button is-black" :class="{'router-link-active': activeCompRoute}">Competitions</router-link>
           <router-link :to="{ name: 'about' }" class="navbar-item button is-black">About</router-link>
         </div>
         <div v-if="isAuthenticated" class="navbar-end">
@@ -70,6 +70,14 @@ export default defineComponent({
     ...mapStores(useUserStore, useFlashStore),
     ...mapState(useUserStore, ['profile', 'isAuthenticated'])
   },
+  watch: {
+    $route() {
+      this.navStateCheck()
+    }
+  },
+  mounted() {
+    this.navStateCheck()
+  },
   methods: {
     logout() {
       this.userStore.logout()
@@ -79,6 +87,12 @@ export default defineComponent({
               this.flashStore.$patch({ message: 'You have been logged out.', level: LogLevel.success })
             })
       })
+    },
+    navStateCheck() {
+      const path = this.$route.path
+      const chunks = this.$route.path.split('/')
+      this.activeTeamRoute = chunks[1] === 'teams' || chunks[1] === 'my-teams'
+      this.activeCompRoute = chunks[1] === 'competitions'
     }
   }
 })
