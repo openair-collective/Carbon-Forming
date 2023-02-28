@@ -1,5 +1,5 @@
 <template>
-  <section class="p-4">
+  <section class="section">
     <header class="mb-4">
       <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
@@ -12,9 +12,7 @@
       </nav>
       <h1 class="title is-3">Create Competition</h1>
     </header>
-    <article>
-      <competition-form @cancel="onCancel" />
-    </article>
+    <competition-form @cancel="onCancel" @comp-saved="onSaved" />
   </section>
 </template>
 
@@ -46,6 +44,9 @@ export default defineComponent({
     }
   },
   methods: {
+    onSaved() {
+      window.scrollTo({top: 0})
+    },
     onCancel() {
       this.$router.replace({ name: 'competitions'})
     }

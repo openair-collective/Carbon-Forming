@@ -1,32 +1,46 @@
 <template>
-  <nav class="navbar is-light is-expanded" role="navigation" aria-label="main navigation">
-    <div class="navbar-brand">
-      <div class="navbar-item">
-        <h1 class="title is-4">
-          <router-link :to="{ name: 'root'}">
-            Carbon Hackers
-          </router-link>
-        </h1>
-      </div>
-    </div>
-    <div class="navbar-menu">
-      <div class="navbar-start"></div>
-      <div v-if="profile" class="navbar-end">
+  <nav class="navbar is-black is-spaced" role="navigation" aria-label="main navigation">
+    <div class="container">
+      <div class="navbar-brand">
         <div class="navbar-item">
-          <div class="buttons">
-            <button @click="logout" class="button is-text">Logout</button>
+          <h1 class="title is-4">
+            <router-link :to="{ name: 'root'}">
+              CC
+            </router-link>
+          </h1>
+        </div>
+        <a role="button" 
+          class="navbar-burger"
+          :class="{ 'is-active': mobileMenuActive}"
+          aria-label="menu"
+          :aria-expanded="mobileMenuActive"
+          data-target="mainNavbar"
+          @click="mobileMenuActive = !mobileMenuActive"
+          >
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </a>
+      </div>
+      <div id="mainNavbar" class="navbar-menu is-black" :class="{ 'is-active': mobileMenuActive}">
+        <div class="navbar-start">
+          <router-link :to="{ name: 'teams' }" class="navbar-item button is-black" :class="{'router-link-active': activeTeamRoute}">Teams</router-link>
+          <router-link :to="{ name: 'competitions' }" class="navbar-item button is-black" :class="{'router-link-active': activeCompRoute}">Competitions</router-link>
+          <router-link :to="{ name: 'about' }" class="navbar-item button is-black">About</router-link>
+        </div>
+        <div v-if="isAuthenticated" class="navbar-end">
+          <div class="navbar-item">
+            <button @click="logout" class="button is-primary is-small">Logout</button>
+          </div>
+          <div class="navbar-item is-hidden-touch" v-if="profile">
+            <div class="image image--avatar is-48x48">
+              <img class="is-rounded" :src="profile.avatar" />
+            </div>
           </div>
         </div>
-        <div class="navbar-item">
-          <div class="image image--avatar is-48x48">
-            <img class="is-rounded" :src="profile.avatar" />
-          </div>
-        </div>
-      </div>
-      <div v-else class="navbar-end">
-        <div class="navbar-item">
-          <div class="buttons">
-            <router-link :to="{name: 'login'}" class="button is-text">
+        <div v-else class="navbar-end">
+          <div class="navbar-item">
+            <router-link :to="{name: 'login'}" class="button is-primary is-small">
               Login
             </router-link>
           </div>
@@ -45,9 +59,24 @@ import { LogLevel } from '@/enums'
 
 export default defineComponent({
   name: "nav-bar",
+  data() {
+    return {
+      mobileMenuActive:false,
+      activeTeamRoute: false,
+      activeCompRoute: false
+    }
+  },
   computed: {
     ...mapStores(useUserStore, useFlashStore),
-    ...mapState(useUserStore, ['profile'])
+    ...mapState(useUserStore, ['profile', 'isAuthenticated'])
+  },
+  watch: {
+    $route() {
+      this.navStateCheck()
+    }
+  },
+  mounted() {
+    this.navStateCheck()
   },
   methods: {
     logout() {
@@ -58,23 +87,58 @@ export default defineComponent({
               this.flashStore.$patch({ message: 'You have been logged out.', level: LogLevel.success })
             })
       })
+    },
+    navStateCheck() {
+      const path = this.$route.path
+      const chunks = this.$route.path.split('/')
+      this.activeTeamRoute = chunks[1] === 'teams' || chunks[1] === 'my-teams'
+      this.activeCompRoute = chunks[1] === 'competitions'
     }
   }
 })
 </script>
 
-<style scoped>
-.navbar .is-light {
-  background-color: #D9D9D9;
+<style scoped lang="scss">
+.navbar.is-spaced {
+  padding: 1rem 0;
+}
+.navbar > .container {
+  padding-right: calc($gap / 2);
+  padding-left: calc($gap / 2);
 }
 .navbar-brand a,
 .navbar-brand a:visited {
-  color: #1A1A1A;
-}
-.navbar-brand a:hover {
-  color: #707070
+  color: $white;
 }
 .image--avatar img {
   max-height: none;
+}
+.navbar-menu {
+  background-color: $black;
+}
+.navbar.is-black .navbar-menu.is-active {
+  border-bottom: 1px solid $grey-dark;
+  .navbar-start > a.navbar-item,
+  .navbar-start > a.navbar-item:hover {
+    margin-right: 0;
+    margin-bottom: .5rem;
+  }
+}
+.navbar.is-black .navbar-start > a.navbar-item,
+.navbar.is-black .navbar-start > a.navbar-item:visited {
+  margin-right: 2rem;
+  color:$primary;
+  font-weight: 700;
+}
+.navbar.is-black .navbar-start > a.navbar-item:hover,
+.navbar.is-black .navbar-menu a.router-link-active,
+.navbar.is-black .navbar-menu a.router-link-active:visited,
+.navbar.is-black .navbar-menu a.router-link-active:focus {
+  color: $primary;
+  background-color: rgba(217, 217, 217, 0.15);
+}
+.navbar.is-black .navbar-end button {
+  color:$black;
+  font-weight: 700;
 }
 </style>

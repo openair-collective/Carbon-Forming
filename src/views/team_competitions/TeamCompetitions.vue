@@ -1,30 +1,23 @@
 <template>
-  <section>
-    <header class="header mb-4">
-      <h3 class="title is-3">
-        Competitions Entered
-      </h3>
-    </header>
-    <article class="article has-background-white-bis">
-      <competition-list
-        v-if="list.length"
-        :list="list" 
-        :showEnterButton="false" 
-      />
-      <div
-        v-else
-        class="is-flex is-flex-direction-column is-align-items-center is-justify-content-center"
-      >
-        <p class="mb-2">No competitions yet</p>
-        <router-link
-          :to="{ name: 'competitions' }"
-          class="button is-info"
-        >
-          Enter a competition
-        </router-link>
-      </div>
-    </article>
-  </section>
+  <h3 class="title is-3">Competitions Entered</h3>
+  <competition-list
+    v-if="list.length"
+    :list="list" 
+    :showEnterButton="false"
+    :showDescription="false"
+  />
+  <div
+    v-else
+    class="is-flex is-flex-direction-column is-align-items-center is-justify-content-center"
+  >
+    <p class="mb-2">No competitions yet</p>
+    <router-link
+      :to="{ name: 'competitions' }"
+      class="button is-info"
+    >
+      Enter a competition
+    </router-link>
+  </div>
 </template>
 
 <script lang="ts">

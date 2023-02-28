@@ -1,9 +1,9 @@
 <template>
-  <section 
+  <section
     v-if="competition"
-    class="is-flex is-flex-direction-column"
+    class="section"
   >
-    <header class="header px-4 pt-4 pb-0">
+    <header class="header pb-4">
       <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
           <li>
@@ -13,80 +13,69 @@
           </li>
         </ul>
       </nav>
-      <div class="columns">
+      <div class="columns is-multiline">
         <div class="column">
-          <div class="is-flex is-flex-direction-row is-align-items-center mb-4">
-            <h1 class="title is-2 mr-4 mb-0">
-              {{ competition.name }}
-            </h1>
+          <h1 class="title is-2 is-size-4-mobile mb-4">
+            {{ competition.name }}
+          </h1>
+          <div class="buttons mb-4">
+            <button
+              v-if="competitionState === eCompStates.UNAVAILABLE || competitionState === eCompStates.IN_PROGRESS "
+              @click.stop.prevent="onEnterCompetition"
+              class="button is-primary"
+              :disabled="isSaving || competitionState === eCompStates.UNAVAILABLE"
+            >
+              Enter this competition
+            </button>
+            <button
+              v-if="competitionState === eCompStates.FINISHED"
+              @click.stop.prevent=""
+              class="button is-primary"
+              disabled
+            >
+              Judging in Progress
+            </button>
+            <router-link
+              v-if="canEdit && competitionState === eCompStates.FINISHED"
+              :to="{name: 'comp-results-edit', params: { id: competition.id }}"
+              class="button is-primary"
+            >
+              Enter Results
+            </router-link>
+            <router-link
+              v-if="competitionState === eCompStates.JUDGED"
+              :to="{name: 'comp-results', params: { id: competition.id }}"
+              class="button is-primary"
+            >
+              View Results
+            </router-link>
             <router-link 
               v-if="canEdit"
               :to="{ name: 'comp-edit', params: {id: competition.id }}"
-              class="button is-small is-info is-outlined">
+              class="button is-info"
+            >
               Edit this competition
             </router-link>
           </div>
-          <div class="field is-grouped mb-4">
-            <div class="control">
-              <button
-                v-if="competitionState === eCompStates.UNAVAILABLE || competitionState === eCompStates.IN_PROGRESS "
-                @click.stop.prevent="onEnterCompetition"
-                class="button is-info"
-                :disabled="isSaving || competitionState === eCompStates.UNAVAILABLE"
-              >
-                Enter this competition
-              </button>
-              <button
-                v-if="competitionState === eCompStates.FINISHED"
-                @click.stop.prevent=""
-                class="button is-info"
-                disabled
-              >
-                Judging in Progress
-              </button>
-            </div>
-            <div class="control">
-              <router-link
-                v-if="canEdit && competitionState === eCompStates.FINISHED"
-                :to="{name: 'comp-results-edit', params: { id: competition.id }}"
-                class="button is-info"
-              >
-                Enter Results
-              </router-link>
-              <router-link
-                v-if="competitionState === eCompStates.JUDGED"
-                :to="{name: 'comp-results', params: { id: competition.id }}"
-                class="button is-info"
-              >
-                View Results
-              </router-link>
-              <p
-                v-if="competitionState === eCompStates.UNAVAILABLE" 
-                class="help is-danger"
-              >
-                We cannot accept submissions until the start date
-              </p>
-            </div>
-          </div>
-        </div>
-        <div class="column">
-          <div class="is-pulled-right">
-            <p 
-              v-if="competition.start_date && competition.end_date"
-              class="is-size-4 mb-2"
+          <p
+              v-if="competitionState === eCompStates.UNAVAILABLE" 
+              class="help is-danger"
             >
+              We cannot accept submissions until the start date
+          </p>
+        </div>
+        <div class="column is-narrow">
+          <template v-if="competition.start_date && competition.end_date"> 
+            <h2 class="title is-4 mb-4">
               {{ kDayMonth(kfsTimestampToDate(competition.start_date)) }} - {{ kDayMonthYear(kfsTimestampToDate(competition.end_date)) }}
-            </p>
-            <p v-else>
-              Time TBD
-            </p>
+            </h2>
             <countdown-timer
               v-if="competitionState !== eCompStates.FINISHED && competitionState !== eCompStates.JUDGED"
               :start_date="kfsTimestampToDate(competition.start_date)"
               :end_date="kfsTimestampToDate(competition.end_date)"
             />
             <div v-else>
-              <p class="is-size-3 mb-3">Competition finished</p>
+              <h3 class="title is-3">Competition finished</h3>
               <template v-if="canEdit">
                 <button
                   v-if="competitionState !== eCompStates.JUDGED && !isEmpty(competition.results) && competition.results_disabled"
@@ -106,35 +95,50 @@
                 </button>
               </template>
             </div>
-          </div>
+          </template>
         </div>
       </div>
-      <div class="tabs mb-0 pb-0">
-        <ul>
-          <li 
-            @click="onTabClick(eTabs.DETAILS)"
-            :class="{'is-active': activeTab === eTabs.DETAILS}"
-          >
-            <a>Competition Details</a>
-          </li>
-          <li
-            @click="onTabClick(eTabs.PROJECTS)"
-            :class="{'is-active': activeTab === eTabs.PROJECTS}"
-          >
-            <a>Submitted Projects</a>
-          </li>
-          <li
-            @click="onTabClick(eTabs.RESULTS)"
-            :class="{'is-active': activeTab === eTabs.RESULTS}"
-          >
-            <a>Results</a>
-          </li>
-        </ul>
-      </div>
     </header>
-    <article class="article has-background-white-bis p-5 my-0 is-flex-grow-1">
+    <div class="tabs mb-0 pb-0">
+      <ul 
+        role="tablist" 
+        aria-label="Competition Sections" 
+        aria-controls="teamInfo"
+      >
+        <li 
+          @click="onTabClick(eTabs.DETAILS)"
+          :class="{'is-active': activeTab === eTabs.DETAILS}"
+          role="tab"
+          :aria-selected="activeTab === eTabs.DETAILS"
+        >
+          <a>Competition Details</a>
+        </li>
+        <li
+          @click="onTabClick(eTabs.PROJECTS)"
+          :class="{'is-active': activeTab === eTabs.PROJECTS}"
+          role="tab"
+          :aria-selected="activeTab === eTabs.PROJECTS"
+        >
+          <a>Submitted Projects</a>
+        </li>
+        <li
+          @click="onTabClick(eTabs.RESULTS)"
+          :class="{'is-active': activeTab === eTabs.RESULTS}"
+          role="tab"
+          :aria-selected="activeTab === eTabs.RESULTS"
+        >
+          <a>Results</a>
+        </li>
+      </ul>
+    </div>
+    <div
+      id="teamInfo"
+      class="has-background-white-bis p-5"
+      role="tabpanel"
+      aria-live="polite"
+    >
       <router-view :competition="competition" />
-    </article>
+    </div>
   </section>
   <loading v-else />
 </template>
@@ -320,7 +324,7 @@ export default defineComponent({
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .help {
   line-height: 30px;
 }

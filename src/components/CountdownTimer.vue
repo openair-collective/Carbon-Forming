@@ -1,6 +1,6 @@
 <template>
   <div class="timer">
-    <div class="mb-1">{{ prompt }}</div>
+    <div class="prompt">{{ prompt }}</div>
     <div
       :class="{ 'disabled' : !start_date || !end_date }" 
       class="clock"
@@ -134,7 +134,11 @@ export default defineComponent({
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+  .prompt {
+    margin-bottom: .5rem;
+    font-weight: 700;
+  }
   .clock {
     display: flex;
     flex-direction: row;
@@ -146,6 +150,7 @@ export default defineComponent({
     flex-direction: column;
     flex: 0 1 auto;
     justify-content: flex-start;
+    font-weight: 600;
   }
   .panels {
     display: flex;
@@ -158,7 +163,7 @@ export default defineComponent({
     flex: 0 1 auto;
     align-items: center;
     justify-content: center;
-    background: #181C71;
+    background: $black;
     border-radius: 4px;
     width: 50px;
     height: 56px;
@@ -167,5 +172,10 @@ export default defineComponent({
   }
   .clock.disabled .value {
     background:whitesmoke;
+  }
+  .timer.is-small .value {
+    width: 25px;
+    height: 28px;
+    font-size: .875em;
   }
 </style>

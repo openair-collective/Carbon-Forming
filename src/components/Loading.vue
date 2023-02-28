@@ -1,5 +1,5 @@
 <template>
-  <div class="is-flex is-flex-direction-column is-align-items-center p-6">
+  <div class="is-flex is-flex-grow-1 is-flex-direction-column is-align-items-center">
     <div class="spinner mb-2"></div>
     <div class="title is-6">{ loading }</div>
   </div>
@@ -15,16 +15,16 @@ export default defineComponent({
 
 </script>
 
-<style scoped="true">
+<style lang="scss" scoped="true">
 .spinner {
   width: 40px;
   height: 40px;
-  background-color: #ddd;
+  background-color: $primary;
   animation: sk-rotateplane 1.2s infinite ease-in-out;
 }
 
 .title {
-  color: #ddd;
+  color: $light;
 }
 
 @keyframes sk-rotateplane {

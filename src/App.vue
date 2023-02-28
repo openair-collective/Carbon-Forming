@@ -1,42 +1,76 @@
 <template>
-  <nav-bar v-if="showNavBar"/>
+  <nav-bar />
   <main class="main">
-    <router-view />
+    <div class="container">
+      <flash id="flash" />
+      <router-view />
+    </div>
   </main>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import NavBar from '@/components/NavBar.vue'
-import { mapState } from 'pinia'
-import { useUserStore } from '@/store/user'
-import log from '@/services/logger'
+import Flash from '@/components/Flash.vue'
 
 const MODULE_ID = 'app'
 
 export default defineComponent({
   name: "app",
   components: {
-    NavBar
-  },
-  computed: {
-    ...mapState(useUserStore, ['isAuthenticated']),
-    showNavBar():boolean {
-      const name = this.$route.name
-      return name !== 'login' && name !== 'auth_callback' 
-    }
+    NavBar,
+    Flash
   }
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+#flash {
+  position: sticky;
+  top: 0;
+  right: 0;
+  left: 132px;
+  z-index: 2;
+} 
 .main {
   display: flex;
-  flex-direction: row;
+  flex-grow: 1;
+  z-index: 2;
+  position: relative;
+  overflow: hidden;
+  
+  &::after {
+    content: "";
+    background: $black;
+    clip-path: polygon(0 0, 100% 0, 100% 500px, 0 400px);
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    z-index: 1;
+  }
 }
-.main > div,
-.main > section {
-  flex: 2;
-  min-height: calc(100vh - 56px);
+.main > .container {
+  display: flex;
+  flex-grow: 1;
+  width: 100%;
+  padding-top: 1em;
+  padding-bottom: 0;
+  z-index: 2;
 }
+.main > .container {
+  padding-right: calc($gap / 2);
+  padding-left: calc($gap / 2);
+}
+
+.main > .container > .section {
+	flex-grow: 1;
+	padding: 2em;
+  overflow: hidden;
+	border-top-right-radius: .5em;
+	border-top-left-radius: .5em;
+	background-color: $white;
+}
+
 </style>

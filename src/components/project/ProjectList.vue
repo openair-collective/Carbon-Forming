@@ -4,7 +4,7 @@
       v-for="(project, i) in list" 
       :key="i"
       @click="$emit('project-click', project)"
-      class="box box--project mb-5 mr-5"
+      class="box box--project elevation-0 mb-5 mr-5"
     >
       <div class="is-flex is-flex-direction-row is-justify-content-space-between is-align-items-center">
         <p class="title is-3 mb-0">{{ project.name }}</p>

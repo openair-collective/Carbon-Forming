@@ -1,23 +1,21 @@
 <template>
-  <section class="p-4">
-    <header class="mb-4">
+  <section class="section">
+    <header class="header mb-4">
       <nav class="breadcrumb" aria-label="breadcrumbs">
-      <ul>
-        <li>
-          <router-link :to="{ name: 'my-teams'}">
-            &lt; Back to My Teams
-          </router-link>
-        </li>
-      </ul>
-    </nav>
-    <h1 class="title is-3">Create Team</h1>
+        <ul>
+          <li>
+            <router-link :to="{ name: 'my-teams'}">
+              &lt; Back to My Teams
+            </router-link>
+          </li>
+        </ul>
+      </nav>
+      <h1 class="title is-3">Create Team</h1>
     </header>
-    <article>
-      <team-form
-        @team-saved="onTeamSaved"
-        @cancel="onCancel"
-      />
-    </article>
+    <team-form
+      @team-saved="onTeamSaved"
+      @cancel="onCancel"
+    />
   </section>
 </template>
 
@@ -50,6 +48,7 @@ export default defineComponent({
           this.$router.replace({ name: 'team-show', params: { id: team.id }})
             .then(() => {
               this.flashStore.$patch({ message: 'Team saved', level: LogLevel.success })
+              window.scrollTo({ top: 0 })
             })
         })
         .catch(error => {

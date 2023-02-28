@@ -1,6 +1,6 @@
 <template>
-  <section v-if="team" class="is-flex is-flex-direction-column">
-    <header class="header px-4 pt-4 pb-0 has-background-white is-clearfix">
+  <section v-if="team" class="section section--parent">
+    <header class="header mb-4">
       <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
           <li>
@@ -10,48 +10,69 @@
           </li>
         </ul>
       </nav>
-      <figure 
-        class="image is-pulled-left mr-4"
-        :style="{backgroundImage: `url(${getTeamAvatar(team)})`}  "
-      >
-      </figure>
-      <h1 class="title is-4">
-        {{ team.name }}
-        <router-link
-          v-if="canEdit"
-          :to="{ name: 'team-edit'}"
-          class="button is-info is-small is-outlined ml-2"
-        >
-          Edit Team
-        </router-link>
-      </h1>
-      <h2 class="subtitle">{{ getTeamLocation(team) }}</h2>
-      <div class="tabs mb-0 pb-0">
-        <ul>
-          <li 
-            @click="onTabClick(eTabs.DETAILS)"
-            :class="{'is-active': activeTab === eTabs.DETAILS}"
+      <div class="columns is-vcentered">
+        <div class="column is-narrow">
+          <figure 
+            class="image"
+            :style="{backgroundImage: `url(${getTeamAvatar(team)})`}  "
           >
-            <a>Team Details</a>
-          </li>
-          <li 
-            @click="onTabClick(eTabs.PROJECTS)"
-            :class="{'is-active': activeTab === eTabs.PROJECTS}"
-          >
-            <a>Projects</a>
-          </li>
-          <li
-            @click="onTabClick(eTabs.COMPS)"
-            :class="{'is-active': activeTab === eTabs.COMPS}"
-          >
-            <a>Competitions</a>
-          </li>
-        </ul>
+          </figure>
+        </div>
+        <div class="column">
+          <h1 class="title is-2 is-size-4-mobile">
+            {{ team.name }}
+            <router-link
+              v-if="canEdit"
+              :to="{ name: 'team-edit'}"
+              class="button is-info is-rounded is-small ml-2"
+            >
+              Edit Team
+            </router-link>
+          </h1>
+          <h2 class="subtitle">{{ getTeamLocation(team) }}</h2>
+        </div>
       </div>
     </header>
-    <article class="article has-background-white-bis p-5 my-0 is-flex-grow-1">
+    <div class="tabs mb-0 pb-0">
+      <ul 
+        role="tablist" 
+        aria-controls="competitionInfo" 
+        aria-label="Team Info"
+      >
+        <li 
+          @click="onTabClick(eTabs.DETAILS)"
+          :class="{'is-active': activeTab === eTabs.DETAILS}"
+          role="tab"
+          :aria-selected="activeTab === eTabs.DETAILS"
+        >
+          <a>Team Details</a>
+        </li>
+        <li 
+          @click="onTabClick(eTabs.PROJECTS)"
+          :class="{'is-active': activeTab === eTabs.PROJECTS}"
+          role="tab"
+          :aria-selected="activeTab === eTabs.PROJECTS"
+        >
+          <a>Projects</a>
+        </li>
+        <li
+          @click="onTabClick(eTabs.COMPS)"
+          :class="{'is-active': activeTab === eTabs.COMPS}"
+          role="tab"
+          :aria-selected="activeTab === eTabs.COMPS"
+        >
+          <a>Competitions</a>
+        </li>
+      </ul>
+    </div>
+    <div
+      id="competitionInfo"
+      class="has-background-white-bis p-5"
+      role="tabpanel" 
+      aria-live="polite"
+    >
       <router-view :team="team" />
-    </article>
+    </div>
   </section>
   <loading v-else />
 </template>

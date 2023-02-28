@@ -1,32 +1,23 @@
 <template>
-  <section>
-    <header class="header mb-4">
-      <h3 class="title is-3">
-        Projects
-      </h3>
-    </header>
-    <article>
-      <project-list
-        v-if="team.projects && team.projects.length" 
-        :list="team.projects"
-        :can-edit="true"
-        :show-team="false"
-        @project-click="onProjectClick"
-      />
-      <div
-        v-else
-        class="is-flex is-flex-direction-column is-align-items-center is-justify-content-center"
-      >
-        <p class="mb-2">You’ve got no projects, you must enter a competition to upload a project</p>
-        <router-link
-          :to="{ name: 'competitions' }"
-          class="button is-info"
-        >
-          Enter a competition
-        </router-link>
-      </div>
-    </article>
-  </section>
+  <project-list
+    v-if="team.projects && team.projects.length" 
+    :list="team.projects"
+    :can-edit="true"
+    :show-team="false"
+    @project-click="onProjectClick"
+  />
+  <div
+    v-else
+    class="is-flex is-flex-direction-column is-align-items-center is-justify-content-center"
+  >
+    <p class="mb-2">You’ve got no projects, you must enter a competition to upload a project</p>
+    <router-link
+      :to="{ name: 'competitions' }"
+      class="button is-info"
+    >
+      Enter a competition
+    </router-link>
+  </div>
 </template>
 
 <script lang="ts">

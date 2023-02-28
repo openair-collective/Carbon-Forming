@@ -4,7 +4,7 @@
     :message="message" 
     :level="level"
     @remove="reset"
-    class="has-border-radius-0 is-flex-grow-0 m-0"
+    class="is-flex-grow-0"
   />
 </template>
 
