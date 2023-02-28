@@ -43,7 +43,6 @@
         :showEnterButton="true"
       />
     </div>
-
   </section>
 </template>
 

@@ -1,18 +1,16 @@
 <template>
+  <nav class="breadcrumb" aria-label="breadcrumbs">
+    <ul>
+      <li>
+        <router-link :to="{ name: 'comp-projects', params: { id: $route.params.id }}">
+          &lt; Back to projects
+        </router-link>
+      </li>
+    </ul>
+  </nav>
   <section>
-    <nav class="breadcrumb" aria-label="breadcrumbs">
-      <ul>
-        <li>
-          <router-link :to="{ name: 'comp-projects', params: { id: $route.params.id }}">
-            &lt; Back to projects
-          </router-link>
-        </li>
-      </ul>
-    </nav>
-    <article class="article">
-      <project-view v-if="project" :project="project"/>
-      <loading v-else />
-    </article>
+    <project-view v-if="project" :project="project"/>
+    <loading v-else />
   </section>
 </template>
 

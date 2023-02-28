@@ -1,5 +1,4 @@
 <template>
-  <h3 class="title is-3">Projects</h3>
   <project-list
     v-if="team.projects && team.projects.length" 
     :list="team.projects"
