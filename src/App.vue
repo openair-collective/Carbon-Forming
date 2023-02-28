@@ -53,6 +53,7 @@ export default defineComponent({
 }
 .main > .container {
   display: flex;
+  flex-direction: column;
   flex-grow: 1;
   width: 100%;
   padding-top: 1em;
