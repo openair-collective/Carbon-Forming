@@ -165,6 +165,7 @@ function initMaterial():Material {
 }
 
 export default defineComponent({
+  emits: ['remove-image'],
   props: {
     project: {
       type: Object as () => Project,
