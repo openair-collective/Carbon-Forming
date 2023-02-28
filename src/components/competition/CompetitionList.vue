@@ -7,7 +7,8 @@
       v-for="(comp, i) in list" 
       :key="i"
       @click="$router.push({ name: 'comp-show', params: { id: comp.id } })" 
-      class="box box--comp p-6 mb-4 mr-4"
+      class="box box--comp mb-4 elevation-0"
+      :class="{ 'mr-4' : listType === eListType.grid }"
     >
       <div 
         class="columns"
@@ -18,7 +19,7 @@
             :to="{ name: 'comp-show', params: { id: comp.id } }"
             class="mb-4"
           >
-            <p class="title is-3">{{ comp.name }}</p>
+            <p class="title is-3 is-size-4-mobile">{{ comp.name }}</p>
             <p v-if="showDescription" v-html="comp.description" class="subtitle is-6" />
             <template v-if="showEnterButton">
               <button
@@ -50,7 +51,7 @@
         <div class="column is-narrow">
           <p 
             v-if="comp.start_date && comp.end_date"
-            class="title mb-3"
+            class="title is-4 mb-3"
             :class="{ 
               'is-4' : listType === eListType.column,
               'is-6' : listType === eListType.grid 
@@ -133,9 +134,11 @@ export default defineComponent({
 
 <style scoped>
   .box--comp {
+    padding: 2rem;
     cursor:pointer;
+    border: 1px solid #E0E0E0;
   }
   .is-grid .box--comp {
-    width: 405px;
+    width: 400px;
   }
 </style>

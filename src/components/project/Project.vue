@@ -27,7 +27,7 @@
         </router-link>
       </div>
       <h2 class="title is-4">Bill of Materials</h2>
-      <div class="box box--with-border">
+      <div class="box box--with-border table-container">
         <table class="table is-fullwidth">
           <thead>
             <tr>

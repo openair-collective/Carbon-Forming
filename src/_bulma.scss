@@ -7,6 +7,7 @@ $family-sans-serif: "Inter", BlinkMacSystemFont, -apple-system, "Segoe UI", "Rob
 @import "bulma/sass/utilities/_all.sass";
 
 $navbar-breakpoint: $tablet;
+$tabs-link-padding: .75em 1em;
 
 @import "bulma/sass/base/_all.sass";
 @import "bulma/sass/form/_all.sass";
@@ -32,6 +33,7 @@ $navbar-breakpoint: $tablet;
 
 .button {
 	font-weight: 700;
+	border-radius: 12px;
 }
 
 .button.is-disabled {
@@ -50,6 +52,13 @@ $navbar-breakpoint: $tablet;
 .box.box--with-border {
 	border: 1px solid #E0E0E0;
 	box-shadow: 0px 1px 2px 0px #00000029;
+}
+
+.tabs a {
+	@include from($tablet) {
+		font-size: 1.25rem;
+	}
+	font-weight: 700;
 }
 
 .file .file-input[disabled] ~ .file-cta:hover, 
@@ -75,12 +84,14 @@ $navbar-breakpoint: $tablet;
 	cursor: not-allowed;
 }
 
-.has-border-radius-0 {
-	border-radius: 0;
-}
+// bulma-esque modifiers
 
 .has-border-radius-6 {
 	border-radius: 6px;
+}
+
+.elevation-0 {
+	box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.16);
 }
 
 .text-editor {

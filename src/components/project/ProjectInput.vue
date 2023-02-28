@@ -57,7 +57,7 @@
   <hr/>
   <h2 class="title is-4">Bill of Materials</h2>
     <p class="mb-2">Please list all of the materials used in the construction of your project.</p>
-    <div>
+    <div class="table-container">
       <table class="table is-fullwidth">
         <thead>
           <tr>

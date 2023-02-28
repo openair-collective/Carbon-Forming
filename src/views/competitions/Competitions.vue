@@ -14,7 +14,18 @@
       </div>
     </header>
     <loading v-if="isLoading" />
-    <div v-else-if="hasComps">
+    <div 
+      v-if="canCreate"
+      class="is-flex is-flex-direction-column is-align-items-center is-justify-content-center my-6"
+    >
+      <router-link
+        :to="{ name: 'comp-new' }"
+        class="button is-info"
+      >
+        Create a Competition
+      </router-link>
+    </div>
+    <div v-if="hasComps">
       <competition-list 
           :list="currentCompetitions"
           :listType="eListType.column"
@@ -32,17 +43,7 @@
         :showEnterButton="true"
       />
     </div>
-    <div 
-      v-if="canCreate"
-      class="is-flex is-flex-direction-column is-align-items-center is-justify-content-center my-4"
-    >
-      <router-link
-        :to="{ name: 'comp-new' }"
-        class="button is-info"
-      >
-        Create {{ hasComps ? 'a New' : 'Your First' }} Competition
-      </router-link>
-    </div>
+
   </section>
 </template>
 

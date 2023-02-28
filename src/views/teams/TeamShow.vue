@@ -19,7 +19,7 @@
           </figure>
         </div>
         <div class="column">
-          <h1 class="title is-4">
+          <h1 class="title is-2 is-size-4-mobile">
             {{ team.name }}
             <router-link
               v-if="canEdit"

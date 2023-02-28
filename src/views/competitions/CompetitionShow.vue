@@ -3,7 +3,7 @@
     v-if="competition"
     class="section"
   >
-    <header class="header">
+    <header class="header pb-4">
       <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
           <li>
@@ -13,57 +13,49 @@
           </li>
         </ul>
       </nav>
-      <div class="columns">
+      <div class="columns is-multiline">
         <div class="column">
-          <div class="is-flex is-flex-direction-row is-align-items-center mb-4">
-            <h1 class="title is-2 mr-4 mb-0">
-              {{ competition.name }}
-            </h1>
-          </div>
-          <div class="field is-grouped mb-4">
-            <div class="control">
-              <button
-                v-if="competitionState === eCompStates.UNAVAILABLE || competitionState === eCompStates.IN_PROGRESS "
-                @click.stop.prevent="onEnterCompetition"
-                class="button is-primary"
-                :disabled="isSaving || competitionState === eCompStates.UNAVAILABLE"
-              >
-                Enter this competition
-              </button>
-              <button
-                v-if="competitionState === eCompStates.FINISHED"
-                @click.stop.prevent=""
-                class="button is-primary"
-                disabled
-              >
-                Judging in Progress
-              </button>
-            </div>
-            <div class="control">
-              <router-link
-                v-if="canEdit && competitionState === eCompStates.FINISHED"
-                :to="{name: 'comp-results-edit', params: { id: competition.id }}"
-                class="button is-primary"
-              >
-                Enter Results
-              </router-link>
-              <router-link
-                v-if="competitionState === eCompStates.JUDGED"
-                :to="{name: 'comp-results', params: { id: competition.id }}"
-                class="button is-primary"
-              >
-                View Results
-              </router-link>
-            </div>
-            <div class="control">
-              <router-link 
-                v-if="canEdit"
-                :to="{ name: 'comp-edit', params: {id: competition.id }}"
-                class="button is-info"
-              >
-                Edit this competition
-              </router-link>
-            </div>
+          <h1 class="title is-2 is-size-4-mobile mb-4">
+            {{ competition.name }}
+          </h1>
+          <div class="buttons mb-4">
+            <button
+              v-if="competitionState === eCompStates.UNAVAILABLE || competitionState === eCompStates.IN_PROGRESS "
+              @click.stop.prevent="onEnterCompetition"
+              class="button is-primary"
+              :disabled="isSaving || competitionState === eCompStates.UNAVAILABLE"
+            >
+              Enter this competition
+            </button>
+            <button
+              v-if="competitionState === eCompStates.FINISHED"
+              @click.stop.prevent=""
+              class="button is-primary"
+              disabled
+            >
+              Judging in Progress
+            </button>
+            <router-link
+              v-if="canEdit && competitionState === eCompStates.FINISHED"
+              :to="{name: 'comp-results-edit', params: { id: competition.id }}"
+              class="button is-primary"
+            >
+              Enter Results
+            </router-link>
+            <router-link
+              v-if="competitionState === eCompStates.JUDGED"
+              :to="{name: 'comp-results', params: { id: competition.id }}"
+              class="button is-primary"
+            >
+              View Results
+            </router-link>
+            <router-link 
+              v-if="canEdit"
+              :to="{ name: 'comp-edit', params: {id: competition.id }}"
+              class="button is-info"
+            >
+              Edit this competition
+            </router-link>
           </div>
           <p
               v-if="competitionState === eCompStates.UNAVAILABLE" 
@@ -74,7 +66,7 @@
         </div>
         <div class="column is-narrow">
           <template v-if="competition.start_date && competition.end_date"> 
-            <h2 class="title is-4">
+            <h2 class="title is-4 mb-4">
               {{ kDayMonth(kfsTimestampToDate(competition.start_date)) }} - {{ kDayMonthYear(kfsTimestampToDate(competition.end_date)) }}
             </h2>
             <countdown-timer
@@ -332,7 +324,7 @@ export default defineComponent({
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .help {
   line-height: 30px;
 }

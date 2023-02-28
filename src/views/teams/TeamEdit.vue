@@ -1,9 +1,6 @@
 <template>
-  <section 
-    v-if="team" 
-    class="p-4"
-  >
-    <header class="mb-4">
+  <section class="section">
+    <header class="header mb-4">
       <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
           <li>
@@ -15,17 +12,15 @@
       </nav>
       <h1 class="title is-3">Edit Team</h1>
     </header>
-    <article>
-      <team-form
-        v-if="team"
-        :team="team"
-        @cancel="onCancel"
-        @team-saved="onTeamSaved"
-        @team-deleted="onTeamDeleted"
-      />
-    </article>
+    <team-form
+      v-if="team"
+      :team="team"
+      @cancel="onCancel"
+      @team-saved="onTeamSaved"
+      @team-deleted="onTeamDeleted"
+    />
+    <loading v-else />
   </section>
-  <loading v-else />
 </template>
 
 <script lang="ts">
