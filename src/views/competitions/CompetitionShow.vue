@@ -146,13 +146,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Competition, Project } from '@/types'
-import { LogLevel } from '@/enums'
-import { mapState, mapStores } from 'pinia'
+import { LogLevel, UserRole } from '@/enums'
+import { mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
 import { useCompetitionsStore } from '@/store/competitions'
 import { useModalStore } from '@/store/modal'
 import { useFlashStore } from '@/store/flash'
-import { canEditCompetitions } from '@/helpers/authHelper'
 import { dayMonth, dayMonthYear, fsTimestampToDate } from '@/utils/date'
 import { isEmpty } from '@/utils/object'
 import Loading from '@/components/Loading.vue'
@@ -199,13 +198,8 @@ export default defineComponent({
   },
   computed: { 
     ...mapStores(useCompetitionsStore, useUserStore, useModalStore, useFlashStore),
-    ...mapState(useUserStore, ['oauth']),
     canEdit():boolean {
-      let result = false
-      if (this.oauth) {
-        result = canEditCompetitions(this.oauth)
-      }
-      return result
+      return this.userStore.role === UserRole.admin
     }
   },
   async created() {

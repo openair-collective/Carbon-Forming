@@ -26,7 +26,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Competition } from '@/types'
-import { LogLevel } from '@/enums'
+import { LogLevel, UserRole } from '@/enums'
 import CompetitionForm from '@/components/competition/CompetitionForm.vue'
 import Loading from '@/components/Loading.vue'
 import { mapState, mapStores } from 'pinia'
@@ -34,7 +34,6 @@ import { useCompetitionsStore } from '@/store/competitions'
 import { useUserStore } from '@/store/user'
 import { useFlashStore } from '@/store/flash'
 import { ERROR_NOT_FOUND, ERROR_AUTH } from '@/consts'
-import { canEditCompetitions } from '@/helpers/authHelper'
 import log from '@/services/logger'
 
 const MODULE_ID = 'views/CompetitionNew'
@@ -48,7 +47,10 @@ export default defineComponent({
   },
   computed: { 
     ...mapStores(useCompetitionsStore, useUserStore, useFlashStore),
-    ...mapState(useCompetitionsStore, ['list'])
+    ...mapState(useCompetitionsStore, ['list']),
+    canEdit():boolean {
+      return this.userStore.role === UserRole.admin
+    }
   },
   created() {
     const id = this.$route.params.id as string
@@ -56,8 +58,7 @@ export default defineComponent({
   },
   methods: {
     setCompetitonByID(id:string) {
-      const oauth = this.userStore.oauth
-      if (oauth && canEditCompetitions(oauth)) {
+      if (this.canEdit) {
         this.competitionsStore.getCompetitionById(id)
           .then(result => {
             if (result) {
