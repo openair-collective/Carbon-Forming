@@ -8,6 +8,7 @@ export const FIREBASE_CONFIG = {
 }
 
 export const DISCORD_ADMIN_IDS:string[] = import.meta.env.VITE_DISCORD_ADMIN_IDS.split(',')
+export const DISCORD_ADMIN_ROLE_IDS:string[] = import.meta.env.VITE_DISCORD_ADMIN_ROLE_IDS.split(',')
 export const TEAM_AVATAR_PLACEHOLDER:string = 'https://bulma.io/images/placeholders/128x128.png'
 export const PROJECT_IMAGE_PLACEHOLDER:string = 'https://bulma.io/images/placeholders/480x320.png'
 export const COMP_IMAGE_PLACEHOLDER:string = 'https://bulma.io/images/placeholders/480x320.png'
