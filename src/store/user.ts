@@ -1,10 +1,13 @@
 import { defineStore } from 'pinia'
 import {OAuth, Team, UserProfile, Guild } from '@/types'
-import { TeamRole } from '@/enums'
+import { TeamRole, UserRole } from '@/enums'
 import auth from '@/services/auth'
 import discord from '@/services/discord'
 import firestore from '@/services/firestore'
 import log from '@/services/logger'
+import { intersect } from '@/utils/array'
+import { DISCORD_ADMIN_IDS } from '@/consts'
+import { DISCORD_ADMIN_ROLE_IDS } from '@/consts'
 
 const MODULE_ID = 'store/user'
 const KEY_OAUTH = 'oauth'
@@ -31,6 +34,17 @@ export const useUserStore = defineStore('user', {
       let result = false
       if(state.oauth && state.profile && state.guild) {
         result = true
+      }
+      return result
+    },
+    role: (state):UserRole => {
+      if (import.meta.env.DEV) return UserRole.admin
+      let result = UserRole.default 
+      if (DISCORD_ADMIN_IDS && state.oauth && state.oauth.discord_id) {
+        result =  DISCORD_ADMIN_IDS.indexOf(state.oauth.discord_id) !== -1 ? UserRole.admin : UserRole.default
+      }
+      if (DISCORD_ADMIN_ROLE_IDS && state.guild && state.guild.roles) {
+        result = intersect(DISCORD_ADMIN_ROLE_IDS, state.guild.roles).length > 0 ? UserRole.admin : UserRole.default
       }
       return result
     }

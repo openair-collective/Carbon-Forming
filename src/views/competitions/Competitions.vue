@@ -15,7 +15,7 @@
     </header>
     <loading v-if="isLoading" />
     <div 
-      v-if="canCreate"
+      v-if="canEdit"
       class="is-flex is-flex-direction-column is-align-items-center is-justify-content-center my-6"
     >
       <router-link
@@ -51,13 +51,12 @@ import { defineComponent } from 'vue'
 import { mapState, mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
 import { useCompetitionsStore } from '@/store/competitions'
-import { canEditCompetitions } from '@/helpers/authHelper'
 import { fsTimestampToDate, dayMonth, dayMonthYear } from '@/utils/date'
 import Loading from '@/components/Loading.vue'
 import CompetitionList from '@/components/competition/CompetitionList.vue'
 import { PAGING_SIZE } from '@/consts'
 import { Competition } from '@/types'
-import { ListType } from '@/enums'
+import { ListType, UserRole } from '@/enums'
 import { COMP_STATES, getCompState } from '@/helpers/compHelper'
 import logo_img from '@/images/cc_logo.png'
 
@@ -76,11 +75,9 @@ export default defineComponent({
   computed: {
     ...mapStores(useCompetitionsStore, useUserStore),
     ...mapState(useCompetitionsStore, ['list']),
-    ...mapState(useUserStore, {
-        canCreate(store) {
-          return store.oauth && canEditCompetitions(store.oauth)
-        }
-      }),
+    canEdit():boolean {
+      return this.userStore.role === UserRole.admin
+    },
     currentCompetitions():Competition[] {
       let result = [] as Competition[]
       if (this.list) {

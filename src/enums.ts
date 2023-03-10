@@ -1,3 +1,8 @@
+export enum UserRole {
+  default,
+  admin
+}
+
 export enum TeamRole {
   default,
   admin

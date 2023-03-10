@@ -68,10 +68,10 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { Competition, Team, Project, Ranking } from '@/types'
-import { mapState, mapStores } from 'pinia'
+import { UserRole } from '@/enums'
+import { mapStores } from 'pinia'
 import { useCompetitionsStore } from '@/store/competitions'
 import { useUserStore } from '@/store/user'
-import { canEditCompetitions } from '@/helpers/authHelper'
 import { getTeamAvatar, getTeamLocation } from '@/helpers/teamHelper'
 import { pad } from '@/utils/number'
 import { isEmpty } from '@/utils/object'
@@ -98,8 +98,7 @@ export default defineComponent({
     }
   },
   computed: { 
-    ...mapStores(useCompetitionsStore),
-    ...mapState(useUserStore, ['oauth']),
+    ...mapStores(useCompetitionsStore, useUserStore),
     results():any {
       const projects = this.competition.projects
       const values = { ...this.competition.results, ...{} } as { [key:Project['id']]: Ranking }
@@ -129,11 +128,7 @@ export default defineComponent({
       return result
     },
     canEdit():boolean {
-      let result = false
-      if (this.oauth) {
-        result = canEditCompetitions(this.oauth)
-      }
-      return result
+      return this.userStore.role === UserRole.admin
     }
   },
   methods: {
