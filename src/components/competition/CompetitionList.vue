@@ -19,7 +19,7 @@
             :to="{ name: 'comp-show', params: { id: comp.id } }"
             class="mb-4"
           >
-            <p class="title is-3 is-size-4-mobile">{{ comp.name }}</p>
+            <p class="title is-3 mb-6 is-size-4-mobile">{{ comp.name }}</p>
             <p v-if="showDescription" v-html="comp.description" class="subtitle is-6" />
             <template v-if="showEnterButton">
               <button
@@ -134,7 +134,7 @@ export default defineComponent({
 
 <style scoped>
   .box--comp {
-    padding: 2rem;
+    padding: 2.25rem;
     cursor:pointer;
     border: 1px solid #E0E0E0;
   }

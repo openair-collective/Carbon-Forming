@@ -1,5 +1,6 @@
 import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHistory } from 'vue-router'
+import Home from '@/views/Home.vue'
 import Competitions from '@/views/competitions/Competitions.vue'
 import CompetitionShow from '@/views/competitions/CompetitionShow.vue'
 import CompetitionDetail from '@/views/competitions/CompetitionDetail.vue'
@@ -31,8 +32,12 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'root',
-    redirect: to => { return '/competitions' },
     children: [
+      {
+        path: '',
+        name: 'home',
+        component: Home
+      },
       {
         path: '/teams',
         name: 'teams',

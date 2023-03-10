@@ -37,7 +37,7 @@ export default defineComponent({
     }
   },
   created() {
-    if (this.canEdit) {
+    if (!this.canEdit) {
       this.$router.push({name: 'competitions'})
       .then(() => {
         this.flashStore.$patch({ message: ERROR_AUTH, level: LogLevel.warning })

@@ -1,18 +1,30 @@
 <template>
   <section class="my-2">
-    <header class="header is-flex is-flex-direction-row">
-      <h1 class="title is-3 has-text-white mr-4">
-        Competitions
-      </h1>
-      <router-link
-          v-if="canEdit"
-          :to="{ name: 'comp-new' }"
-          class="button is-info is-small"
-        >
-          Create a Competition
-      </router-link>
+    <header class="header mb-6">
+      <div class="columns is-vcentered">
+        <div class="column">
+          <figure class="image">
+            <img :src="logo_img" />
+          </figure>
+        </div>
+        <div class="column">
+          <h2 class="title is-4 mb-2 has-text-white">The carbon capture competition platform</h2>
+          <p class="has-text-white">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam sit amet blandit est. Suspendisse posuere purus vel sollicitudin finibus.</p>
+        </div>
+      </div>
     </header>
     <loading v-if="isLoading" />
+    <div 
+      v-if="canEdit"
+      class="is-flex is-flex-direction-column is-align-items-center is-justify-content-center my-6"
+    >
+      <router-link
+        :to="{ name: 'comp-new' }"
+        class="button is-info"
+      >
+        Create a Competition
+      </router-link>
+    </div>
     <div v-if="hasComps">
       <competition-list 
           :list="currentCompetitions"

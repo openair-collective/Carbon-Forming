@@ -1,7 +1,7 @@
 <template>
   <nav-bar />
   <main class="main">
-    <div class="container">
+    <div class="container is-max-widescreen">
       <flash id="flash" />
       <router-view />
     </div>
