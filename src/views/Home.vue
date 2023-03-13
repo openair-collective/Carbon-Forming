@@ -8,40 +8,46 @@
           </figure>
         </div>
         <div class="column">
-          <h2 class="title is-4 mb-2 has-text-white">The carbon capture competition platform</h2>
+          <h2 class="title is-4 mb-2 has-text-white">The carbon capture collaboration platform</h2>
           <p class="has-text-white">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam sit amet blandit est. Suspendisse posuere purus vel sollicitudin finibus.</p>
         </div>
       </div>
     </header>
     <loading v-if="isLoading" />
-    <div 
-      v-if="canEdit"
-      class="is-flex is-flex-direction-column is-align-items-center is-justify-content-center my-6"
-    >
-      <router-link
-        :to="{ name: 'comp-new' }"
-        class="button is-info"
-      >
-        Create a Competition
-      </router-link>
-    </div>
     <div v-if="hasComps">
+      <div
+        v-if="currentCompetitions && currentCompetitions.length"
+      class="tag is-medium is-dark mb-3"
+      >
+        Current Collaborations
+      </div>
       <competition-list 
           :list="currentCompetitions"
           :listType="eListType.column"
           :showEnterButton="true"
         />
-      <h2
+      <div
         v-if="pastCompetitions && pastCompetitions.length"
-        class="title is-5 my-4 px-4"
+        class="tag is-medium is-dark my-3"
       >
         Past Competitions
-      </h2>
+      </div>
       <competition-list
         :list="pastCompetitions"
         :listType="eListType.column"
         :showEnterButton="true"
       />
+      <div 
+        v-if="canEdit"
+        class="is-flex is-flex-direction-column is-align-items-center is-justify-content-center my-6"
+      >
+        <router-link
+          :to="{ name: 'comp-new' }"
+          class="button is-info"
+        >
+          Create a Competition
+        </router-link>
+      </div>
     </div>
   </section>
 </template>

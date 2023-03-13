@@ -28,7 +28,7 @@
                 class="button is-primary"
                 :disabled="getCompState(comp) === eCompStates.UNAVAILABLE"
               >
-                Enter this competition
+                Join this collaboration
               </button>
               <button
                 v-else-if="getCompState(comp) === eCompStates.FINISHED"

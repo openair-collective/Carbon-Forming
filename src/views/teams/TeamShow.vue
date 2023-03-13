@@ -1,5 +1,5 @@
 <template>
-  <section v-if="team" class="section section--parent">
+  <section v-if="team" class="section is-flex is-flex-direction-column pb-0">
     <header class="header mb-4">
       <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
@@ -67,7 +67,7 @@
     </div>
     <div
       id="competitionInfo"
-      class="has-background-white-bis p-5"
+      class="has-background-white-bis p-5 is-flex-grow-1"
       role="tabpanel" 
       aria-live="polite"
     >

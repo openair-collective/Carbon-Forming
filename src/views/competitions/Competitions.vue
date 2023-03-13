@@ -16,18 +16,18 @@
     <div v-if="hasComps">
       <competition-list 
           :list="currentCompetitions"
-          :listType="eListType.column"
+          :listType="currentCompetitions.length > 1 ? ListType.grid : ListType.column"
           :showEnterButton="true"
         />
       <h2
         v-if="pastCompetitions && pastCompetitions.length"
         class="title is-5 my-4 px-4"
       >
-        Past Competitions
+        Past Collaborations
       </h2>
       <competition-list
         :list="pastCompetitions"
-        :listType="eListType.column"
+        :listType="pastCompetitions.length > 1 ? ListType.grid : ListType.column"
         :showEnterButton="true"
       />
     </div>
@@ -52,9 +52,9 @@ export default defineComponent({
   components: { Loading, CompetitionList },
   data() {
     return {
+      ListType,
       logo_img,
       isLoading: false,
-      eListType: ListType,
       kDayMonth: dayMonth,
       kDayMonthYear: dayMonthYear,
       kfsTimestampToDate: fsTimestampToDate
@@ -98,6 +98,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+  .header {
+    padding: 0 2.25rem;
+  }
   figure img {
     max-width: 371px;
   }

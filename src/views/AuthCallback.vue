@@ -1,7 +1,5 @@
 <template>
-  <section class="section is-flex-grow-1">
-    <loading />
-  </section>
+  <loading class="my-6"/>
 </template>
 
 <script lang="ts">

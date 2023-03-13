@@ -1,5 +1,4 @@
 <template>
-  <h3 class="title is-3">Competitions Entered</h3>
   <competition-list
     v-if="list.length"
     :list="list" 
@@ -8,12 +7,12 @@
   />
   <div
     v-else
-    class="is-flex is-flex-direction-column is-align-items-center is-justify-content-center"
+    class="is-flex is-flex-direction-column is-align-items-center p-6"
   >
-    <p class="mb-2">No competitions yet</p>
+    <p class="mb-4 is-size-4">No competitions yet</p>
     <router-link
       :to="{ name: 'competitions' }"
-      class="button is-info"
+      class="button is-primary"
     >
       Enter a competition
     </router-link>
