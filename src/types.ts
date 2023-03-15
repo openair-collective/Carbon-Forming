@@ -98,3 +98,9 @@ export type Timestamp = {
   nanoseconds:number
   seconds:number
 }
+
+export type TeamLocation = {
+  city:string
+  region:string
+  country:string
+}

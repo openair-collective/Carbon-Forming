@@ -53,6 +53,12 @@ export default defineComponent({
     }
   },
   created() {
+    if (!this.canEdit) {
+      this.$router.push({name: 'competitions'})
+      .then(() => {
+        this.flashStore.$patch({ message: ERROR_AUTH, level: LogLevel.warning })
+      })
+    }
     const id = this.$route.params.id as string
     this.setCompetitonByID(id)
   },
