@@ -17,7 +17,7 @@
         </button>
         <div v-else>
           <p class="help is-info mb-2">
-          Accepts .jpeg, .jpg, and .png files only. Maximum file size is {{ kAvatarMaxSize / 1000 }}kb.
+          Accepts .jpeg, .jpg, and .png files only. Maximum file size is {{ AVATAR_MAX_FILE_SIZE / 1000 }}kb.
           </p>
           <div class="file mb-2">
             <label class="file-label">
@@ -30,7 +30,7 @@
               >
               <span class="file-cta">
                 <span class="file-label">
-                  {{ teamImageUrl === kAvatarPlaceholder  ?  'Upload Team Avatar' : 'Change Avatar' }}
+                  {{ teamImageUrl === TEAM_AVATAR_PLACEHOLDER  ?  'Upload Team Avatar' : 'Change Avatar' }}
                 </span>
               </span>
             </label>
@@ -44,22 +44,14 @@
         <input class="input" type="text" v-model="clone.name" required>
       </div>
     </div>
-    <div class="field"> 
-      <label class="label">Where is your team located?</label>
-      <div class="control">
-        <input class="input" type="text" placeholder="City" v-model="clone.city" required>
-      </div>
-    </div>
-    <div class="field">
-      <div class="control">
-        <input class="input" type="text" placeholder="State/Province/Region" v-model="clone.region" required>
-      </div>
-    </div>
-    <div class="field">
-      <div class="control">
-        <input class="input" type="text" placeholder="Country" v-model="clone.country" required>
-      </div>
-    </div>
+    <autocomplete
+      :label-text="'Where is your team located?'"
+      :defaultValue="locationAsString"
+      :values="locationValues"
+      :placeholder="'Search by city'"
+      @updated="onLocationSearch"
+      @selected="onLocationSelected"
+    />
     <hr/>
     <div class="field"> 
       <h2 class="title is-4">Team Members</h2>
@@ -97,7 +89,7 @@
       <label class="label">About your team</label>
       <text-editor 
         :value="clone.about"
-        :placeholder="kAboutPlacehoder"
+        :placeholder="ABOUT_PLACEHOLDER"
         @text-change="(change) => clone.about = change" 
       />
     </div>
@@ -144,6 +136,8 @@ import { useFlashStore } from '@/store/flash'
 import { useModalStore } from '@/store/modal'
 import { TEAM_AVATAR_PLACEHOLDER } from '@/consts'
 import log from '@/services/logger'
+import Autocomplete from '@/components/Autocomplete.vue'
+import teleport from '@/services/teleport'
 
 const MODULE_ID = 'components/TeamForm'
 const AVATAR_MAX_FILE_SIZE = 200 * 1000 // 200kb
@@ -167,7 +161,10 @@ function teamFactory():Team {
 export default defineComponent({
   name: 'team-form',
   emits: ['cancel', 'team-saved', 'team-deleted'],
-  components: { TextEditor: defineAsyncComponent(() => import('@/components/TextEditor.vue')) },
+  components: { 
+    TextEditor: defineAsyncComponent(() => import('@/components/TextEditor.vue')),
+    Autocomplete
+  },
   props: {
     team: {
       type: Object as () => Team,
@@ -178,16 +175,17 @@ export default defineComponent({
   },
   data() {
     return {
+      AVATAR_MAX_FILE_SIZE,
+      TEAM_AVATAR_PLACEHOLDER,
+      ABOUT_PLACEHOLDER,
+      avatarPreviewUrl: '',
       clone: Object.assign(
         {}, 
         teamFactory(),
         this.team
       ) as Team, // clone so we can modify
       isSaving: false,
-      kAvatarMaxSize: AVATAR_MAX_FILE_SIZE,
-      kAvatarPlaceholder: TEAM_AVATAR_PLACEHOLDER,
-      kAboutPlacehoder: ABOUT_PLACEHOLDER,
-      avatarPreviewUrl: ''
+      locationValues: [] as string[]
     }
   },
   computed: {
@@ -201,6 +199,13 @@ export default defineComponent({
     },
     disableSubmit():boolean {
       return !this.clone.name || !this.clone.country || !this.clone.region || !this.clone.city
+    },
+    locationAsString():string {
+      let result = ''
+      if (this.clone.city && this.clone.region && this.clone.country) {
+        result = `${this.clone.city}, ${this.clone.region}, ${this.clone.country}`
+      }
+      return result
     }
   },
   methods: {
@@ -281,6 +286,25 @@ export default defineComponent({
           .finally(() => {
             this.isSaving = false
           })
+    },
+    onLocationSearch(value:string) {
+      if (value) {
+        teleport.cities(value)
+          .then(result => {
+            this.locationValues= result.map(location => {
+              return Object.values(location).join(', ')
+            })
+          })
+      }
+      else {
+        this.locationValues = []
+      }
+    },
+    onLocationSelected(value:string) {
+      const parts = value.split(',')
+      this.clone.city = (parts[0] || '').trim()
+      this.clone.region = (parts[1] || '').trim()
+      this.clone.country = (parts[2] || '').trim()
     }
   }
 })
