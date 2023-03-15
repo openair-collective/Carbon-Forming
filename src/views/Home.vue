@@ -1,35 +1,53 @@
 <template>
   <section class="my-2">
-    <header class="header is-flex is-flex-direction-row">
-      <h1 class="title is-3 has-text-white mr-4">
-        Competitions
-      </h1>
-      <router-link
-          v-if="canEdit"
-          :to="{ name: 'comp-new' }"
-          class="button is-info is-small"
-        >
-          Create a Competition
-      </router-link>
+    <header class="header mb-6">
+      <div class="columns is-vcentered">
+        <div class="column">
+          <figure class="image">
+            <img :src="logo_img" />
+          </figure>
+        </div>
+        <div class="column">
+          <h2 class="title is-4 mb-2 has-text-white">The carbon capture collaboration platform</h2>
+          <p class="has-text-white">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam sit amet blandit est. Suspendisse posuere purus vel sollicitudin finibus.</p>
+        </div>
+      </div>
     </header>
     <loading v-if="isLoading" />
     <div v-if="hasComps">
+      <div
+        v-if="currentCompetitions && currentCompetitions.length"
+      class="tag is-medium is-dark mb-3"
+      >
+        Current Collaborations
+      </div>
       <competition-list 
           :list="currentCompetitions"
-          :listType="currentCompetitions.length > 1 ? ListType.grid : ListType.column"
+          :listType="eListType.column"
           :showEnterButton="true"
         />
-      <h2
+      <div
         v-if="pastCompetitions && pastCompetitions.length"
-        class="title is-5 my-4 px-4"
+        class="tag is-medium is-dark my-3"
       >
-        Past Collaborations
-      </h2>
+        Past Competitions
+      </div>
       <competition-list
         :list="pastCompetitions"
-        :listType="pastCompetitions.length > 1 ? ListType.grid : ListType.column"
+        :listType="eListType.column"
         :showEnterButton="true"
       />
+      <div 
+        v-if="canEdit"
+        class="is-flex is-flex-direction-column is-align-items-center is-justify-content-center my-6"
+      >
+        <router-link
+          :to="{ name: 'comp-new' }"
+          class="button is-info"
+        >
+          Create a Competition
+        </router-link>
+      </div>
     </div>
   </section>
 </template>
@@ -52,9 +70,9 @@ export default defineComponent({
   components: { Loading, CompetitionList },
   data() {
     return {
-      ListType,
       logo_img,
       isLoading: false,
+      eListType: ListType,
       kDayMonth: dayMonth,
       kDayMonthYear: dayMonthYear,
       kfsTimestampToDate: fsTimestampToDate
@@ -98,9 +116,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-  .header {
-    padding: 0 2.25rem;
-  }
   figure img {
     max-width: 371px;
   }

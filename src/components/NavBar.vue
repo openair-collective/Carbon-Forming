@@ -1,10 +1,10 @@
 <template>
   <nav class="navbar is-black is-spaced" role="navigation" aria-label="main navigation">
-    <div class="container">
+    <div class="container is-max-widescreen">
       <div class="navbar-brand">
         <div class="navbar-item">
           <h1 class="title is-4">
-            <router-link :to="{ name: 'root'}">
+            <router-link :to="{ name: 'home'}">
               CC
             </router-link>
           </h1>
@@ -33,7 +33,7 @@
             <button @click="logout" class="button is-primary is-small">Logout</button>
           </div>
           <div class="navbar-item is-hidden-touch" v-if="profile">
-            <div class="image image--avatar is-48x48">
+            <div class="image image--avatar is-32x32">
               <img class="is-rounded" :src="profile.avatar" />
             </div>
           </div>

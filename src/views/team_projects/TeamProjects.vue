@@ -3,17 +3,17 @@
     v-if="team.projects && team.projects.length" 
     :list="team.projects"
     :can-edit="true"
-    :show-team="false"
+    :show-team="false" 
     @project-click="onProjectClick"
   />
   <div
     v-else
-    class="is-flex is-flex-direction-column is-align-items-center is-justify-content-center"
+    class="is-flex is-flex-direction-column is-align-items-center p-6"
   >
-    <p class="mb-2">You’ve got no projects, you must enter a competition to upload a project</p>
+    <p class="mb-4 is-size-4 has-text-centered">No projects yet. You must enter a competition to upload a project</p>
     <router-link
       :to="{ name: 'competitions' }"
-      class="button is-info"
+      class="button is-primary"
     >
       Enter a competition
     </router-link>

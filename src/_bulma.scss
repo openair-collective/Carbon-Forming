@@ -32,7 +32,7 @@ $tabs-link-padding: .75em 1em;
 
 .button {
 	font-weight: 700;
-	border-radius: 12px;
+	border-radius: 5px;
 }
 
 .button.is-disabled {
@@ -44,8 +44,14 @@ $tabs-link-padding: .75em 1em;
 	color: $black;
 }
 
+.button.is-info {
+	background-color: transparent;
+	border: 2px solid $primary;
+	color: $primary;
+}
+
 .button.is-rounded.is-small {
-	border-radius: .5em;
+	border-radius: 5px;
 }
 
 .box.box--with-border {
