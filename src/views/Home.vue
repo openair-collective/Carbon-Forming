@@ -15,11 +15,10 @@
     </header>
     <loading v-if="isLoading" />
     <div v-if="hasComps">
-      <div
-        v-if="currentCompetitions && currentCompetitions.length"
-      class="tag is-medium is-dark mb-3"
-      >
-        Current Collaborations
+      <div v-if="currentCompetitions && currentCompetitions.length" class="has-text-centered mt-6 mb-4" >
+        <div class="tag is-medium is-link is-light is-rounded">
+          Current Collaborations
+        </div>
       </div>
       <competition-list 
           :list="currentCompetitions"
@@ -87,7 +86,7 @@ export default defineComponent({
     currentCompetitions():Competition[] {
       let result = [] as Competition[]
       if (this.list) {
-        result = this.list.filter(c => getCompState(c) !== COMP_STATES.JUDGED)
+        result = this.list.filter(c => getCompState(c) !== COMP_STATES.FINISHED)
       }
       return result.sort((a,b) => {
         const aEnd = a.end_date ? fsTimestampToDate(a.end_date).getTime() : 0
@@ -98,7 +97,7 @@ export default defineComponent({
     pastCompetitions() {
       let result = [] as Competition[]
       if (this.list) {
-        result = this.list.filter(c => getCompState(c) === COMP_STATES.JUDGED)
+        result = this.list.filter(c => getCompState(c) === COMP_STATES.FINISHED)
       }
       return result
     },
@@ -119,8 +118,14 @@ export default defineComponent({
   figure img {
     max-width: 371px;
   }
-
+  .tag:not(body) {
+    background-color: $white-ter;
+    color: $black;
+  }
   @include until($tablet) {
+    .header {
+      padding: 0 1rem;
+    }
     .column {
       text-align: center;
     }

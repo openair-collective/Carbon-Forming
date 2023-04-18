@@ -36,7 +36,7 @@
     <div class="tabs mb-0 pb-0">
       <ul 
         role="tablist" 
-        aria-controls="competitionInfo" 
+        aria-controls="teamInfo" 
         aria-label="Team Info"
       >
         <li 
@@ -61,13 +61,13 @@
           role="tab"
           :aria-selected="activeTab === eTabs.COMPS"
         >
-          <a>Competitions</a>
+          <a>Collaborations</a>
         </li>
       </ul>
     </div>
     <div
-      id="competitionInfo"
-      class="has-background-white-bis p-5 is-flex-grow-1"
+      id="teamInfo"
+      class="panel has-background-white-bis p-5 mb-5 is-flex-grow-1"
       role="tabpanel" 
       aria-live="polite"
     >
@@ -102,7 +102,7 @@ enum TABS {
 const TEAM_PATHS = {
   TEAM: 'team-show',
   PROJECTS: 'team-projects',
-  COMPS: 'team-competitions'
+  COMPS: 'team-collaborations'
 }
 
 const TEAM_PROJECT_ROOT_PATH = 'team-project'
@@ -209,5 +209,9 @@ export default defineComponent({
   background-size: cover;
   height: 80px;
   width: 80px;
+}
+.panel {
+  border-bottom-left-radius: .5em;
+  border-bottom-right-radius: .5em;
 }
 </style>

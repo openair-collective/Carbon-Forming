@@ -10,7 +10,7 @@
           </li>
         </ul>
       </nav>
-      <h1 class="title is-3">Edit Competition</h1>
+      <h1 class="title is-3">Edit Collaboration</h1>
     </header>
     <competition-form
       v-if="competition"
@@ -54,7 +54,7 @@ export default defineComponent({
   },
   created() {
     if (!this.canEdit) {
-      this.$router.push({name: 'competitions'})
+      this.$router.push({name: 'collaborations'})
       .then(() => {
         this.flashStore.$patch({ message: ERROR_AUTH, level: LogLevel.warning })
       })
@@ -71,11 +71,11 @@ export default defineComponent({
               this.competition = result
             }
             else {
-              throw new Error('Competition not found.')
+              throw new Error('Collaboration not found.')
             }
           })
           .catch(error => {
-            this.$router.replace({ name: 'competitions'})
+            this.$router.replace({ name: 'collaborations'})
               .then(()=> {
                 this.flashStore.$patch({ 
                   message: ERROR_NOT_FOUND,
@@ -95,10 +95,10 @@ export default defineComponent({
       window.scrollTo({top : 0})
     },
     onCompetitionDeleted() {
-      this.$router.replace({ name: 'competitions'})
+      this.$router.replace({ name: 'collaborations'})
         .then(()=> {
           this.flashStore.$patch({ 
-            message: 'Competition deleted',
+            message: 'Collaboration deleted',
             level: LogLevel.success
           })
         })

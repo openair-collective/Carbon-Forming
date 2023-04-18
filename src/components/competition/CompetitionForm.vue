@@ -1,19 +1,19 @@
 <template>
   <form @submit.prevent="submitForm" :disabled="isSaving">
     <div class="field"> 
-      <label class="label">Competition Name</label>
+      <label class="label">Collaboration Name</label>
       <div class="control">
         <input class="input" type="text" v-model="clone.name" required>
       </div>
     </div>
     <hr/>
     <div class="field"> 
-      <label class="label">Competition Image</label>
+      <label class="label">Image</label>
       <p
         v-if="!clone.image" 
         class="mb-2"
       >
-        Please upload an image to represent your competition.
+        Please upload an image for your collaboration.
       </p>
       <p 
         v-if="!clone.image"
@@ -58,7 +58,7 @@
     <hr />
     <div>
       <h2 class="title is-4">Dates</h2>
-      <h3 class="subtitle">Please list the beginning and the end date for your competition</h3>
+      <h3 class="subtitle">Please list the beginning and the end date for your collaboration</h3>
       <div class="is-flex is-flex-direction-row">
         <div class="field mr-6"> 
           <label class="label">Start Date</label>
@@ -88,104 +88,15 @@
     </div>
     <hr/>
     <div>
-      <h2 class="title is-4">Prizes</h2>
-      <h3 class="subtitle">List the prize amounts you will be awarding to the winners of your competition</h3>
-      <div class="field">
-        <div class="control">
-        <label class="checkbox">
-          <input type="checkbox" v-model="clone.prizes_disabled">
-            Click this checkbox if you do not want to offer prizes as part of your competition
-          </label>
-        </div>
-      </div>
+      <h2 class="title is-4">Collaboration Details</h2>
+      <h3 class="subtitle">Please describe your collaboration in detail.</h3>
       <div class="field"> 
-        <label class="label">First Prize</label>
-        <div class="control">
-          <input
-            class="input"
-            type="text"
-            v-model="clone.prizes.first"
-            :disabled="clone.prizes_disabled">
-        </div>
-      </div>
-      <div class="field"> 
-        <label class="label">Second Prize</label>
-        <div class="control">
-          <input
-            class="input"
-            type="text"
-            v-model="clone.prizes.second"
-            :disabled="clone.prizes_disabled">
-        </div>
-      </div>
-      <div class="field"> 
-        <label class="label">Runner Up</label>
-        <div class="control">
-          <input
-            class="input"
-            type="text"
-            v-model="clone.prizes.third"
-            :disabled="clone.prizes_disabled">
-        </div>
-      </div>
-    </div>
-    <hr/>
-    <div>
-      <h2 class="title is-4">Success Criteria</h2>
-      <h3 class="subtitle">How will people win your comeptittion. Please describe in as much detail as possible what the competitors have to do to win the competition.</h3>
-      <div class="field"> 
-        <label class="label">Describe how you will assess the winners of the competition</label>
-        <div class="control">
-          <text-editor 
-            :value="clone.success_criteria"
-            :placeholder="'Tell us about your competition'"
-            @text-change="(change) => clone.success_criteria = change" 
-          />
-        </div>
-      </div>
-      <div class="field"> 
-      <label class="label">Metric that will be used to measure the winner</label>
-        <div class="control">
-          <input 
-            class="input" 
-            type="text" 
-            v-model="clone.assessment_metric" 
-            placeholder="Enter a value here e.g. &quot;grams of C02 captured&quot;"
-            required>
-        </div>
-      </div>
-    </div>
-    <hr/>
-    <div>
-      <h2 class="title is-4">Competition Details</h2>
-      <h3 class="subtitle">Please describe your competition in detail, the rules and the criteria by which a winner will be selected</h3>
-      <div class="field"> 
-        <label class="label">Description</label>
+        <label class="label">Collaboration Details</label>
         <div class="control">
           <text-editor 
             :value="clone.description"
-            :placeholder="'Tell us about your competition'"
+            :placeholder="'Tell us about your collaboration'"
             @text-change="(change) => clone.description = change" 
-          />
-        </div>
-      </div>
-      <div class="field"> 
-        <label class="label">Rules</label>
-        <div class="control">
-          <text-editor 
-            :value="clone.rules"
-            :placeholder="'What are the rules of your competition?'"
-            @text-change="(change) => clone.rules = change" 
-          />
-        </div>
-      </div>
-      <div class="field"> 
-        <label class="label">Criteria</label>
-        <div class="control">
-          <text-editor 
-            :value="clone.judging_criteria"
-            :placeholder="'How will the winning entries be selected?'"
-            @text-change="(change) => clone.judging_criteria = change" 
           />
         </div>
       </div>
@@ -208,8 +119,8 @@
     v-if="competition.id"
     class="mt-6 p-4 has-background-light"
   >
-    <h3 class="title is-5">Delete Competition</h3>
-    <p><strong>Warning:</strong> Deleting a Competition is irreversible. All associated data, including any submitted Projects, will also be deleted.</p>
+    <h3 class="title is-5">Delete Collaboration</h3>
+    <p><strong>Warning:</strong> Deleting a Collaboration is irreversible. All associated data, including any submitted Projects, will also be deleted.</p>
     <button
       class="button is-danger mt-3"
       @click="confirmDelete(competition)"
@@ -250,18 +161,6 @@ function compFactory():Competition {
     id: '',
     name: '',
     description: '',
-    rules: '',
-    judging_criteria: '',
-    success_criteria: '',
-    assessment_metric: '',
-    prizes_disabled: false,
-    prizes: {
-      first: '',
-      second: '',
-      third: ''
-    },
-    results: {},
-    results_disabled:true,
     start_date: null,
     end_date: null,
     projects: [],
@@ -351,11 +250,11 @@ export default defineComponent({
           .then(result => {
             Object.assign(this.competition, result)
             this.clone = { ...this.competition }
-            this.flashStore.$patch({ message: 'Competition saved', level: LogLevel.success })
+            this.flashStore.$patch({ message: 'Collaboration saved', level: LogLevel.success })
             this.$emit('comp-saved', result)
           })
           .catch(error => {
-            this.flashStore.$patch({ message: 'Error saving competition. Please try again.', level: LogLevel.error })
+            this.flashStore.$patch({ message: 'Error saving collaboration. Please try again.', level: LogLevel.error })
             log.error(MODULE_ID, error)
           })
           .finally(() => {
@@ -370,7 +269,7 @@ export default defineComponent({
         meta: {
           message: `Are you sure you want to delete ${comp.name}?`,
           confirm: () => { this.deleteCompetition(comp) },
-          confirmLabel: 'Yes, I want to delete this competition',
+          confirmLabel: 'Yes, I want to delete this collaboration',
           cancelLabel: 'No, don\'t delete',
           danger: true
         }
@@ -382,7 +281,7 @@ export default defineComponent({
             this.$emit('comp-deleted')
           })
           .catch(error => {
-            this.flashStore.$patch({ message: 'Error deleting competition. Please try again.', level: LogLevel.error })
+            this.flashStore.$patch({ message: 'Error deleting collaboration. Please try again.', level: LogLevel.error })
             log.error(MODULE_ID, error)
           })
           .finally(() => {
@@ -391,12 +290,12 @@ export default defineComponent({
     },
     removeImage() {
       this.flashStore.$reset()
-      if (this.clone.image && confirm("Are you sure you want to remove the Competition image?")) {
+      if (this.clone.image && confirm("Are you sure you want to remove the Collaboration image?")) {
         this.isSaving = true
         this.competitionsStore.removeCompetitionImage(this.clone)
           .then(result => {
             if (result) {
-              this.flashStore.$patch({ message: 'Competition image removed', level: LogLevel.success })
+              this.flashStore.$patch({ message: 'Collaboration image removed', level: LogLevel.success })
               this.competition.image = this.clone.image = null
             }
           })

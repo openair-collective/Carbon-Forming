@@ -16,8 +16,7 @@ export function compEnded(comp:Competition):boolean {
 export enum COMP_STATES {
   UNAVAILABLE,
   IN_PROGRESS,
-  FINISHED,
-  JUDGED
+  FINISHED
 }
 
 export function getCompState(comp:Competition):COMP_STATES {
@@ -26,12 +25,7 @@ export function getCompState(comp:Competition):COMP_STATES {
     result = COMP_STATES.IN_PROGRESS
   }
   else if (compEnded(comp)) {
-    if (comp.results_disabled) {
-      result = COMP_STATES.FINISHED
-    }
-    else {
-      result = COMP_STATES.JUDGED
-    }
+    result = COMP_STATES.FINISHED
   }
   return result
 }
