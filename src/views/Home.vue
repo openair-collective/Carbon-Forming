@@ -16,7 +16,7 @@
     <loading v-if="isLoading" />
     <div v-if="hasComps">
       <div v-if="currentCompetitions && currentCompetitions.length" class="has-text-centered mt-6 mb-4" >
-        <div class="tag is-medium is-link is-light is-rounded">
+        <div class="tag is-medium is-rounded">
           Current Collaborations
         </div>
       </div>
@@ -119,8 +119,9 @@ export default defineComponent({
     max-width: 371px;
   }
   .tag:not(body) {
-    background-color: $white-ter;
-    color: $black;
+    background-color: $black;
+    color: $white-ter;
+    border: 2px solid $white-ter;
   }
   @include until($tablet) {
     .header {
