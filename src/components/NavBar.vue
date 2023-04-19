@@ -85,7 +85,7 @@ export default defineComponent({
     logout() {
       this.userStore.logout()
         .then(() => {
-          this.$router.push({'name': 'root'})
+          this.$router.push({'name': 'home'})
             .then(() => {
               this.flashStore.$patch({ message: 'You have been logged out.', level: LogLevel.success })
             })
