@@ -40,10 +40,10 @@ export const useUserStore = defineStore('user', {
     role: (state):UserRole => {
       if (import.meta.env.DEV) return UserRole.admin
       let result = UserRole.default 
-      if (DISCORD_ADMIN_IDS && state.oauth && state.oauth.discord_id) {
+      if (DISCORD_ADMIN_IDS && DISCORD_ADMIN_IDS.length && state.oauth && state.oauth.discord_id) {
         result =  DISCORD_ADMIN_IDS.indexOf(state.oauth.discord_id) !== -1 ? UserRole.admin : UserRole.default
       }
-      if (DISCORD_ADMIN_ROLE_IDS && state.guild && state.guild.roles) {
+      if (DISCORD_ADMIN_ROLE_IDS && DISCORD_ADMIN_ROLE_IDS.length && state.guild && state.guild.roles) {
         result = intersect(DISCORD_ADMIN_ROLE_IDS, state.guild.roles).length > 0 ? UserRole.admin : UserRole.default
       }
       return result

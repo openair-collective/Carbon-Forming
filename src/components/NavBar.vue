@@ -33,7 +33,10 @@
             <button @click="logout" class="button is-primary is-small">Logout</button>
           </div>
           <div class="navbar-item is-hidden-touch" v-if="profile">
-            <div class="image image--avatar is-32x32">
+            <div class="image image--avatar is-32x32" 
+              :data-role="userStore.role" 
+              :data-id="userStore.profile && userStore.profile.id"
+            >
               <img class="is-rounded" :src="profile.avatar" />
             </div>
           </div>
