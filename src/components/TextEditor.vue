@@ -33,11 +33,12 @@ export default defineComponent({
       modules: {
         toolbar: [
           ['bold', 'italic', 'underline'],
+          [{ 'header': 1 }, { 'header': 2 }], 
           [{ 'list': 'ordered'}, { 'list': 'bullet' }],
         ]
       },
       theme: 'snow',
-      formats: ['bold', 'underline', 'italic', 'list'],
+      formats: ['bold', 'underline', 'italic', 'list', 'header'],
       placeholder: this.placeholder
     })
     this.editor.root.innerHTML = this.value

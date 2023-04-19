@@ -9,12 +9,12 @@
     v-else
     class="is-flex is-flex-direction-column is-align-items-center p-6"
   >
-    <p class="mb-4 is-size-4">No competitions yet</p>
+    <p class="mb-4 is-size-4">No collaborations yet</p>
     <router-link
-      :to="{ name: 'competitions' }"
+      :to="{ name: 'collaborations' }"
       class="button is-primary"
     >
-      Enter a competition
+      Enter a collaboration
     </router-link>
   </div>
 </template>

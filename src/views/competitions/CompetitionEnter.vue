@@ -60,7 +60,7 @@ export default defineComponent({
         })
         .then(() => {
           this.flashStore.$patch({
-            message: 'This competition is not currently accepting submissions.',
+            message: 'This collaboration is not currently accepting submissions.',
             level: LogLevel.warning
           })
         })

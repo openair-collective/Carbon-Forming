@@ -66,11 +66,12 @@ export default defineComponent({
 }
 
 .main > .container > .section {
+  @extend .elevation-5;
 	flex-grow: 1;
 	padding: 2em;
+  margin-bottom: 4em;
   overflow: hidden;
-	border-top-right-radius: .5em;
-	border-top-left-radius: .5em;
+	border-radius: .5em;
 	background-color: $white;
 }
 

@@ -2,14 +2,14 @@
   <section class="my-2">
     <header class="header is-flex is-flex-direction-row">
       <h1 class="title is-3 has-text-white mr-4">
-        Competitions
+        Collaborations
       </h1>
       <router-link
           v-if="canEdit"
           :to="{ name: 'comp-new' }"
           class="button is-info is-small"
         >
-          Create a Competition
+          Create a Collaboration
       </router-link>
     </header>
     <loading v-if="isLoading" />
@@ -69,7 +69,7 @@ export default defineComponent({
     currentCompetitions():Competition[] {
       let result = [] as Competition[]
       if (this.list) {
-        result = this.list.filter(c => getCompState(c) !== COMP_STATES.JUDGED)
+        result = this.list.filter(c => getCompState(c) !== COMP_STATES.FINISHED)
       }
       return result.sort((a,b) => {
         const aEnd = a.end_date ? fsTimestampToDate(a.end_date).getTime() : 0
@@ -80,7 +80,7 @@ export default defineComponent({
     pastCompetitions() {
       let result = [] as Competition[]
       if (this.list) {
-        result = this.list.filter(c => getCompState(c) === COMP_STATES.JUDGED)
+        result = this.list.filter(c => getCompState(c) === COMP_STATES.FINISHED)
       }
       return result
     },
@@ -106,6 +106,9 @@ export default defineComponent({
   }
 
   @include until($tablet) {
+    .header {
+      padding: 0 1rem;
+    }
     .column {
       text-align: center;
     }

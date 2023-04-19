@@ -7,8 +7,8 @@
       <nav class="breadcrumb" aria-label="breadcrumbs">
         <ul>
           <li>
-            <router-link :to="{ name: 'competitions'}">
-              &lt; Back to competitions
+            <router-link :to="{ name: 'collaborations'}">
+              &lt; Back to collaborations
             </router-link>
           </li>
         </ul>
@@ -25,7 +25,7 @@
               class="button is-primary"
               :disabled="isSaving || competitionState === eCompStates.UNAVAILABLE"
             >
-              Enter this competition
+              Enter this collaboration
             </button>
             <button
               v-if="competitionState === eCompStates.FINISHED"
@@ -33,28 +33,14 @@
               class="button is-primary"
               disabled
             >
-              Judging in Progress
+              Collaboration finished
             </button>
-            <router-link
-              v-if="canEdit && competitionState === eCompStates.FINISHED"
-              :to="{name: 'comp-results-edit', params: { id: competition.id }}"
-              class="button is-primary"
-            >
-              Enter Results
-            </router-link>
-            <router-link
-              v-if="competitionState === eCompStates.JUDGED"
-              :to="{name: 'comp-results', params: { id: competition.id }}"
-              class="button is-primary"
-            >
-              View Results
-            </router-link>
             <router-link 
               v-if="canEdit"
               :to="{ name: 'comp-edit', params: {id: competition.id }}"
               class="button is-info"
             >
-              Edit this competition
+              Edit this Collaboration
             </router-link>
           </div>
           <p
@@ -70,31 +56,10 @@
               {{ kDayMonth(kfsTimestampToDate(competition.start_date)) }} - {{ kDayMonthYear(kfsTimestampToDate(competition.end_date)) }}
             </h2>
             <countdown-timer
-              v-if="competitionState !== eCompStates.FINISHED && competitionState !== eCompStates.JUDGED"
+              v-if="competitionState !== eCompStates.FINISHED"
               :start_date="kfsTimestampToDate(competition.start_date)"
               :end_date="kfsTimestampToDate(competition.end_date)"
             />
-            <div v-else>
-              <h3 class="title is-3">Competition finished</h3>
-              <template v-if="canEdit">
-                <button
-                  v-if="competitionState !== eCompStates.JUDGED && !isEmpty(competition.results) && competition.results_disabled"
-                  @click="prompResultsToggle"
-                  class="button is-primary"
-                  :disabled="isSaving"
-                >
-                  Announce Results
-                </button>
-                <button
-                  v-else-if="!competition.results_disabled"
-                  @click="prompResultsToggle"
-                  class="button is-primary"
-                  :disabled="isSaving"
-                >
-                  Hide Results
-                </button>
-              </template>
-            </div>
           </template>
         </div>
       </div>
@@ -102,7 +67,7 @@
     <div class="tabs mb-0 pb-0">
       <ul 
         role="tablist" 
-        aria-label="Competition Sections" 
+        aria-label="Collaboration Sections" 
         aria-controls="teamInfo"
       >
         <li 
@@ -111,7 +76,7 @@
           role="tab"
           :aria-selected="activeTab === eTabs.DETAILS"
         >
-          <a>Competition Details</a>
+          <a>Collaboration Details</a>
         </li>
         <li
           @click="onTabClick(eTabs.PROJECTS)"
@@ -121,19 +86,11 @@
         >
           <a>Submitted Projects</a>
         </li>
-        <li
-          @click="onTabClick(eTabs.RESULTS)"
-          :class="{'is-active': activeTab === eTabs.RESULTS}"
-          role="tab"
-          :aria-selected="activeTab === eTabs.RESULTS"
-        >
-          <a>Results</a>
-        </li>
       </ul>
     </div>
     <div
       id="teamInfo"
-      class="has-background-white-bis p-5 is-flex-grow-1"
+      class="panel has-background-white-bis p-5 mb-5 is-flex-grow-1"
       role="tabpanel"
       aria-live="polite"
     >
@@ -229,9 +186,6 @@ export default defineComponent({
         if (tab === TABS.PROJECTS) {
           path =  { name: COMP_PATHS.PROJECTS }
         }
-        else if (tab === TABS.RESULTS) {
-          path = { name: COMP_PATHS.RESULTS }
-        }
         else {
           path = { name: COMP_PATHS.DETAILS }
         }
@@ -246,11 +200,11 @@ export default defineComponent({
             this.competitionState = getCompState(this.competition)
           }
           else {
-            throw new Error('Competition not found.')
+            throw new Error('Collaboration not found.')
           }
         })
         .catch(error => {
-          this.$router.replace({ name: 'competitions'})
+          this.$router.replace({ name: 'collaborations'})
             .then(()=> {
               this.flashStore.$patch({ 
                 message: ERROR_NOT_FOUND,
@@ -269,49 +223,6 @@ export default defineComponent({
     },
     saveCompetition(comp:Competition):Promise<Competition|undefined> {
       return this.competitionsStore.saveCompetition(comp)
-    },
-    prompResultsToggle() {
-      if (this.competition) {
-        const disabled = this.competition.results_disabled
-        const prompt = disabled ? 'Are you ready to' : 'Do you want to'
-        const action = disabled ? 'announce' : 'hide'
-        const message = `${prompt} ${action} the results of ${this.competition.name}?`
-        this.modalStore.options = {
-          component: 'Confirm',
-          title: '',
-          meta: {
-            message,
-            confirm: this.toggleResultsDisabled,
-            confirmLabel: `Yes, ${action} results`,
-            cancelLabel: `No, don’t ${action}`
-          }
-        }
-      }
-    },
-    toggleResultsDisabled() {
-      if (this.competition) {
-        let clone = { ...this.competition, ...{ results_disabled: !this.competition.results_disabled }}
-        this.isSaving = true
-        this.saveCompetition(clone)
-          .then(result => {
-            if (result) {
-              this.competition = Object.assign(this.competition || {}, result)
-              this.competitionState = getCompState(this.competition)
-            }
-            else {
-              throw new Error('Error saving competition results. Please try again.')
-            }
-          })
-          .catch(error => {
-            this.flashStore.$patch({ 
-            message: error,
-              level: LogLevel.error
-            })
-          })
-          .finally(() => {
-            this.isSaving = false
-          })
-      }
     }
   }
 })
@@ -321,5 +232,9 @@ export default defineComponent({
 <style lang="scss" scoped>
 .help {
   line-height: 30px;
+}
+.panel {
+  border-bottom-left-radius: .5em;
+  border-bottom-right-radius: .5em;
 }
 </style>

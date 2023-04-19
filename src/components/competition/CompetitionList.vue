@@ -12,15 +12,33 @@
     >
       <div 
         class="columns"
-        :class="{ 'is-flex-direction-column' : listType === eListType.grid }"
+        :class="{ 'is-flex-direction-column-reverse' : listType === eListType.grid }"
       >
         <div class="column">
           <router-link 
             :to="{ name: 'comp-show', params: { id: comp.id } }"
             class="mb-4"
           >
-            <p class="title is-3 mb-6 is-size-4-mobile">{{ comp.name }}</p>
-            <p v-if="showDescription" v-html="comp.description" class="subtitle is-6" />
+            <p class="title is-3 mb-4 is-size-4-mobile">{{ comp.name }}</p>
+            <div class="is-size-6 mb-0">
+              <p 
+                v-if="comp.start_date && comp.end_date"
+                class="title mb-4"
+                :class="{ 
+                  'is-5' : listType === eListType.column,
+                  'is-6' : listType === eListType.grid 
+                }"
+              >
+                Dates: {{ kDayMonth(kfsTimestampToDate(comp.start_date)) }} - {{ kDayMonthYear(kfsTimestampToDate(comp.end_date)) }}
+              </p>
+              <p v-else>
+                Time TBD
+              </p>
+              <p v-if="getCompState(comp) === eCompStates.FINISHED" class="is-size-3">Competition finished</p>
+            </div>
+            <div class="description mb-4">
+              {{ getExcerpt(comp) }}
+            </div>
             <template v-if="showEnterButton">
               <button
                 v-if="getCompState(comp) === eCompStates.IN_PROGRESS || getCompState(comp) === eCompStates.UNAVAILABLE"
@@ -36,39 +54,15 @@
                 class="button is-primary"
                 disabled
               >
-                Judging in Progress
+                Collaboration Finished
               </button>
-              <router-link
-                v-else-if="getCompState(comp) === eCompStates.JUDGED"
-                :to="{name: 'comp-results', params: { id: comp.id }}"
-                class="button is-primary"
-              >
-                View Results
-              </router-link>
             </template>
           </router-link>
         </div>
-        <div class="column is-narrow">
-          <p 
-            v-if="comp.start_date && comp.end_date"
-            class="title is-4 mb-3"
-            :class="{ 
-              'is-4' : listType === eListType.column,
-              'is-6' : listType === eListType.grid 
-            }"
-          >
-            {{ kDayMonth(kfsTimestampToDate(comp.start_date)) }} - {{ kDayMonthYear(kfsTimestampToDate(comp.end_date)) }}
-          </p>
-          <p v-else>
-            Time TBD
-          </p>
-          <p v-if="getCompState(comp) === eCompStates.FINISHED" class="is-size-3">Competition finished</p>
-          <countdown-timer 
-            v-else-if="comp.start_date" 
-            :class="{ 'is-small' : listType === eListType.grid }"
-            :start_date="kfsTimestampToDate(comp.start_date)"
-            :end_date="kfsTimestampToDate(comp.end_date)"
-          />
+        <div v-if="comp.image" class="column">
+          <figure class="image is-4x3">
+            <img :src="comp.image.url">
+          </figure>
         </div>
       </div>
     </div>
@@ -87,6 +81,7 @@ import {
   getCompState, 
   COMP_STATES 
 } from '@/helpers/compHelper'
+import { runInThisContext } from 'vm'
 
 export default defineComponent({
   components: { CountdownTimer },
@@ -127,12 +122,28 @@ export default defineComponent({
         name: 'comp-enter',
         params: { id: comp.id }
       })
+    },
+    getExcerpt(comp:Competition):string {
+      let result = ''
+      let div = document.createElement("div")
+      div.innerHTML = comp.description
+      let first_paragraph = div.querySelector('p')
+      if (first_paragraph) {
+        result = first_paragraph.textContent || first_paragraph.innerText || ''
+      }
+      if (!result) {
+        result = div.textContent || div.innerText || ""
+        if (result) {
+          result = result.slice(0, 250) + '...'
+        }
+      }
+      return result
     }
   }
 })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
   .box--comp {
     padding: 2.25rem;
     cursor:pointer;
@@ -141,4 +152,18 @@ export default defineComponent({
   .is-grid .box--comp {
     width: 400px;
   }
+  .description {
+    font-size: 1em;
+    color: #1A1A1A;
+  }
+  figure {
+    border-radius: .5em;
+    overflow: hidden;
+  }
+  @include until($tablet) {
+    .columns {
+      display: flex;
+      flex-direction: column-reverse;
+    }
+	}
 </style>

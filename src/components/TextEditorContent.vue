@@ -26,4 +26,10 @@ export default defineComponent({
 .content p > br {
   display: none;
 }
+.content h1 {
+  font-size: 2.5em;
+}
+.content h2 { 
+  font-size: 2em;
+}
 </style>

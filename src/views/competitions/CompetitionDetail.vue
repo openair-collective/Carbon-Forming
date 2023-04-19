@@ -6,31 +6,7 @@
   </div>
   <div class="columns">
     <div class="column">
-      <h2 class="title is-4 mb-4">Competition Details</h2>
       <text-editor-content :value="competition.description" class="mb-6"/>
-      <h2 class="title is-4 mb-4">Competition Rules</h2>
-      <text-editor-content :value="competition.rules" class="mb-6" />
-      <h2 class="title is-4 mb-4">Judging Criteria</h2>
-      <text-editor-content :value="competition.judging_criteria"/>
-    </div>
-    <div
-      v-if="!competition.prizes_disabled"
-      class="column is-narrow"
-    >
-      <table class="table is-fullwidth">
-        <tr>
-          <td>First Prize</td>
-          <td class="has-text-weight-bold">{{ competition.prizes.first  || 'TBD' }}</td>
-        </tr>
-        <tr>
-          <td>Second Prize</td>
-          <td class="has-text-weight-bold">{{ competition.prizes.second || 'TBD' }}</td>
-        </tr>
-        <tr>
-          <td>Runner Up</td>
-          <td class="has-text-weight-bold">{{ competition.prizes.third || 'TBD' }} </td>
-        </tr>
-      </table>
     </div>
   </div>
 </template>
