@@ -81,7 +81,6 @@ import {
   getCompState, 
   COMP_STATES 
 } from '@/helpers/compHelper'
-import { runInThisContext } from 'vm'
 
 export default defineComponent({
   components: { CountdownTimer },

@@ -20,7 +20,7 @@
       </div>
     </div>
     <div v-if="project.competition && showCompetition" class="box box--with-border">
-      <h2 class="title is-4">Competition</h2>
+      <h2 class="title is-4">Collaboration</h2>
       <router-link :to="{ name: 'comp-show', params: { id: project.competition.id}}">
         {{ project.competition.name }}
       </router-link>

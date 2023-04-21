@@ -110,7 +110,7 @@
       </div>
       <div class="control">
         <button type="submit" class="button is-primary">
-          Save Competition
+          Save Collaboration
         </button>
       </div>
     </div>
@@ -125,7 +125,7 @@
       class="button is-danger mt-3"
       @click="confirmDelete(competition)"
     >
-      Delete Competition
+      Delete Collaboration
     </button>
   </div>
 </template>

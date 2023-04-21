@@ -48,6 +48,10 @@ export default defineComponent({
   methods: {
     onSaved(result:Competition) {
       this.$router.replace({ name: 'comp-edit', params: {id: result.id }})
+        .then(() => {
+          window.scrollTo({top : 0})
+          this.flashStore.$patch({ message: 'Collaboration saved', level: LogLevel.success })
+        })
     },
     onCancel() {
       this.$router.replace({ name: 'collaborations'})

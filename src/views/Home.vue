@@ -29,14 +29,15 @@
         v-if="pastCompetitions && pastCompetitions.length"
         class="tag is-medium is-dark my-3"
       >
-        Past Competitions
+        Past Collaborations
       </div>
       <competition-list
         :list="pastCompetitions"
         :listType="eListType.column"
         :showEnterButton="true"
       />
-      <div 
+    </div>
+          <div 
         v-if="canEdit"
         class="is-flex is-flex-direction-column is-align-items-center is-justify-content-center my-6"
       >
@@ -44,10 +45,9 @@
           :to="{ name: 'comp-new' }"
           class="button is-info"
         >
-          Create a Competition
+          Create a Collaboration
         </router-link>
       </div>
-    </div>
   </section>
 </template>
 
