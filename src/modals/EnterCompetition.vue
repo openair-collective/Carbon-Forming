@@ -18,7 +18,7 @@
         class="is-flex is-flex-direction-column is-align-items-stretch"
       >
         <h3 class="title is-4 mb-6 has-text-centered">
-          Choose a team or create a new one
+          Select a team or create a new one
         </h3>
         <div>
           <div class="is-flex is-flex-wrap-wrap is-justify-content-center mb-4">
@@ -42,7 +42,7 @@
         </div>
         <div class="has-text-centered">
           <button
-            class="button is-primary"
+            class="button is-info"
             @click="step = eSteps.CREATE_FIRST_TEAM"
           >
             Create a new team
@@ -54,7 +54,7 @@
         class="is-flex is-flex-direction-column is-align-items-stretch"
       >
         <h3 class="title is-4 mb-6 has-text-centered">
-          Upload your project
+          Create your project
         </h3>
         <notification 
           v-if="error"
@@ -62,16 +62,17 @@
           :type="eLogLevel.error"
           @remove="error = ''" 
         />
-        <project-input
-          :project="project"
-          ref="project_input"
-          class="p-4"
-        />
+        <div class="container project-input-wrap is-max-desktop">
+          <project-input
+            :project="project"
+            ref="project_input"
+          />
+        </div>
       </div>
     </article>
     <footer class="p-4">
-      <div class="columns is-gapless">
-        <div class="column is-3">
+      <div class="columns">
+        <div class="column">
           <div class="field is-grouped">
             <div class="control">
               <button
@@ -94,17 +95,17 @@
             </div>
           </div>
         </div>
-        <div class="column">
+        <div class="column is-6">
           <ol>
             <li :class="{ 'active': step > 0 }">Step 1: Choose your team</li>
             <li :class="{ 'active': step >= eSteps.CREATE_PROJECT }">Step 2: Upload your project</li>
           </ol>
         </div>
-        <div class="column is-3">
+        <div class="column has-text-right has-text-centered-mobile">
           <button
             v-if="step === eSteps.CREATE_PROJECT"
             @click="submitProject"
-            class="button is-pulled-right"
+            class="button"
             :class="{'is-loading': isSaving}"
             :disabled="disableProjectSubmit"
           >
@@ -113,11 +114,11 @@
           <button
             v-else
             @click="step = eSteps.CREATE_PROJECT"
-            class="button is-pulled-right"
+            class="button"
             :class="{'is-loading': isSaving}"
             :disabled="!team"
           >
-            Next: Upload your Project
+            Next: Create your Project
           </button>
         </div>
       </div>
@@ -263,7 +264,7 @@ export default defineComponent({
 
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 
 section {
   overflow: hidden;
@@ -275,6 +276,12 @@ article {
 header,
 footer {
   z-index: 1;
+}
+
+@include until($tablet) {
+  footer .column:first-child .is-grouped {
+    justify-content: center;
+  }
 }
 
 .box--team {

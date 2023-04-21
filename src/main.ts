@@ -25,4 +25,15 @@ teamProjectsSync(pinia)
 compProjectsSync(pinia)
 teamsSync(pinia)
 
+import { useModalStore } from './store/modal'
+let modal_store = useModalStore()
+modal_store.$subscribe((mutation, state) => {
+  if (state.options && state.options.fullscreen) {
+    document.body.classList.add('has-modal--fullscreen')
+  }
+  else {
+    document.body.classList.remove('has-modal--fullscreen')
+  }
+})
+
 console.info(`Version: ${__APP_VERSION__}+build.${__COMMIT_HASH__}`)

@@ -45,9 +45,9 @@ $tabs-link-padding: .75em 1em;
 }
 
 .button.is-info {
-	background-color: transparent;
-	border: 2px solid $primary;
-	color: $primary;
+	background-color: $info;
+	border: none;
+	color: $white-ter;
 }
 
 .button.is-rounded.is-small {

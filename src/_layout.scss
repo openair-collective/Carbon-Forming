@@ -10,6 +10,10 @@ body {
   background: $white;
 }
 
+body.has-modal--fullscreen {
+  height: 0;
+}
+
 #app {
   flex-grow: 1;
   display: flex;
