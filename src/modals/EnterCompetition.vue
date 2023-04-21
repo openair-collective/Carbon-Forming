@@ -6,12 +6,17 @@
     </header>
     <article class="is-flex-grow-1 px-4 py-6 has-background-white-bis">
       <loading v-if="step === eSteps.UNKNOWN" />
-      <div v-if="step === eSteps.CREATE_FIRST_TEAM || step === eSteps.CREATE_TEAM">
-        <h3 class="title is-4">Create your team</h3>
-        <team-form 
-          @team-saved="onTeamSaved"
-          @cancel="onTeamFormCancel" 
-        />
+      <div 
+        v-if="step === eSteps.CREATE_FIRST_TEAM || step === eSteps.CREATE_TEAM"
+        class="is-flex is-flex-direction-column is-align-items-stretch"
+      >
+        <h3 class="title is-4 mb-6 has-text-centered">Create your team</h3>
+        <div class="container is-max-desktop">
+          <team-form 
+            @team-saved="onTeamSaved"
+            @cancel="onTeamFormCancel"
+          />
+        </div>
       </div>
       <div 
         v-if="step === eSteps.CHOOSE_TEAM"
@@ -62,7 +67,7 @@
           :type="eLogLevel.error"
           @remove="error = ''" 
         />
-        <div class="container project-input-wrap is-max-desktop">
+        <div class="container is-max-desktop">
           <project-input
             :project="project"
             ref="project_input"

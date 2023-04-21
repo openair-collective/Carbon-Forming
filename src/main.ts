@@ -19,6 +19,7 @@ const modal = createApp(Modal)
 modal.use(pinia)
 modal.use(router)
 modal.mount('#modals')
+modal.component('font-awesome-icon', FontAwesomeIcon)
 
 import { teamProjectsSync, compProjectsSync, teamsSync } from '@/jobs/firestore_sync'
 teamProjectsSync(pinia)
