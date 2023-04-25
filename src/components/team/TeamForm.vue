@@ -40,8 +40,8 @@
     </div>
     <div class="field"> 
       <label class="label">Team Name</label>
-      <div class="control">
-        <input class="input" type="text" v-model="clone.name" required>
+      <div class="control is-expanded">
+        <input class="input is-fullwidth" type="text" v-model="clone.name" required>
       </div>
     </div>
     <autocomplete

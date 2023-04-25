@@ -31,7 +31,7 @@
         <button
           v-if="clone.image"
           @click.prevent="removeImage"
-          class="button is-warning"
+          class="button is-danger"
         >
           Remove Image
         </button>

@@ -8,19 +8,17 @@
       <loading v-if="step === eSteps.UNKNOWN" />
       <div 
         v-if="step === eSteps.CREATE_FIRST_TEAM || step === eSteps.CREATE_TEAM"
-        class="is-flex is-flex-direction-column is-align-items-stretch"
+        class="container is-max-desktop"
       >
         <h3 class="title is-4 mb-6 has-text-centered">Create your team</h3>
-        <div class="container is-max-desktop">
-          <team-form 
-            @team-saved="onTeamSaved"
-            @cancel="onTeamFormCancel"
-          />
-        </div>
+        <team-form 
+          @team-saved="onTeamSaved"
+          @cancel="onTeamFormCancel"
+        />
       </div>
       <div 
         v-if="step === eSteps.CHOOSE_TEAM"
-        class="is-flex is-flex-direction-column is-align-items-stretch"
+        class="container is-max-desktop"
       >
         <h3 class="title is-4 mb-6 has-text-centered">
           Select a team or create a new one
@@ -56,7 +54,7 @@
       </div>
       <div
         v-if="step === eSteps.CREATE_PROJECT"
-        class="is-flex is-flex-direction-column is-align-items-stretch"
+        class="container is-max-desktop"
       >
         <h3 class="title is-4 mb-6 has-text-centered">
           Create your project
@@ -67,12 +65,12 @@
           :type="eLogLevel.error"
           @remove="error = ''" 
         />
-        <div class="container is-max-desktop">
+        <form @submit.prevent="submitProject">
           <project-input
             :project="project"
             ref="project_input"
           />
-        </div>
+        </form>
       </div>
     </article>
     <footer class="p-4">
@@ -81,7 +79,7 @@
           <div class="field is-grouped">
             <div class="control">
               <button
-                v-if="step === eSteps.CREATE_PROJECT"
+                v-if="step === eSteps.CREATE_PROJECT || step === eSteps.CREATE_FIRST_TEAM"
                 @click="back"
                 class="button is-outlined"
                 :disabled="isSaving"
@@ -282,22 +280,19 @@ header,
 footer {
   z-index: 1;
 }
-
 @include until($tablet) {
   footer .column:first-child .is-grouped {
     justify-content: center;
   }
 }
-
 .box--team {
   cursor:pointer;
   border: 4px solid #ffffff;
   min-width: 400px;
 }
 .box--team.selected {
-  border: 4px solid #3F46D6;
+  border: 4px solid $info;
 }
-
 .image {
   border-radius: 8px;
   background-repeat: no-repeat;
@@ -305,12 +300,10 @@ footer {
   height: 56px;
   width: 56px;
 }
-
 ol {
   position: relative;
   overflow: hidden;
 }
-
 li {
   position: relative;
   float: left;
@@ -318,7 +311,6 @@ li {
   text-align: center;
   list-style-type: none;
 }
-
 li:before {
   content: " ";
   display: block;
@@ -335,12 +327,10 @@ li:before {
   margin-left: -12px;
   z-index: 1;
 }
-
 li.active:before  {
   background-color: #00ff00;
   border-color: #00ff00;
 }
-
 li + li:after {
   content: "";
   display: block;
@@ -352,8 +342,7 @@ li + li:after {
   top: 12px;
   z-index: 0;
 }
-
 li.active:after {
-    background-color: grey;
+  background-color: grey;
 }
 </style>
