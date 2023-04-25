@@ -17,7 +17,7 @@
       :competition="competition"
       @cancel="onCancel"
       @comp-deleted="onCompetitionDeleted"
-      @comp-saved="onSaved"
+      @comp-saved="scrollTop"
     />
     <loading v-else />
   </section>
@@ -34,6 +34,7 @@ import { useCompetitionsStore } from '@/store/competitions'
 import { useUserStore } from '@/store/user'
 import { useFlashStore } from '@/store/flash'
 import { ERROR_NOT_FOUND, ERROR_AUTH } from '@/consts'
+import { scrollTop } from '@/utils/window'
 import log from '@/services/logger'
 
 const MODULE_ID = 'views/CompetitionNew'
@@ -63,6 +64,7 @@ export default defineComponent({
     this.setCompetitonByID(id)
   },
   methods: {
+    scrollTop,
     setCompetitonByID(id:string) {
       if (this.canEdit) {
         this.competitionsStore.getCompetitionById(id)
@@ -90,9 +92,6 @@ export default defineComponent({
             this.flashStore.$patch({ message: ERROR_AUTH, level: LogLevel.warning })
           })
       }
-    },
-    onSaved() {
-      window.scrollTo({top : 0})
     },
     onCompetitionDeleted() {
       this.$router.replace({ name: 'collaborations'})

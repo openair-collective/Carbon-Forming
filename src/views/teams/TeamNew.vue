@@ -28,6 +28,7 @@ import TeamForm from '@/components/team/TeamForm.vue'
 import { useUserStore } from '@/store/user'
 import { useTeamsStore } from '@/store/teams'
 import { useFlashStore } from '@/store/flash'
+import { scrollTop } from '@/utils/window'
 import log from '@/services/logger'
 
 const MODULE_ID = 'views/TeamNew'
@@ -48,7 +49,7 @@ export default defineComponent({
           this.$router.replace({ name: 'team-show', params: { id: team.id }})
             .then(() => {
               this.flashStore.$patch({ message: 'Team saved', level: LogLevel.success })
-              window.scrollTo({ top: 0 })
+              scrollTop()
             })
         })
         .catch(error => {

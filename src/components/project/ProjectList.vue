@@ -11,7 +11,7 @@
         <div v-if="canEdit" class="is-pulled-right">
           <router-link 
             :to="{ name: 'team-project-edit', params: { project_id: project.id }}"
-            class="button is-info is-small is-outlined"
+            class="button is-info is-small is-rounded"
           >
             Edit Project
           </router-link>

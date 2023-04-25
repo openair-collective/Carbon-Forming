@@ -295,7 +295,7 @@ export default defineComponent({
         this.competitionsStore.removeCompetitionImage(this.clone)
           .then(result => {
             if (result) {
-              this.flashStore.$patch({ message: 'Collaboration image removed', level: LogLevel.success })
+              this.flashStore.$patch({ message: 'Image removed', level: LogLevel.success })
               this.competition.image = this.clone.image = null
             }
           })

@@ -72,7 +72,7 @@ function projectFactory():Project {
 
 export default defineComponent({
   name: 'project-form',
-  emits: ['cancel', 'project-saved', 'project-deleted'],
+  emits: ['cancel', 'project-saved', 'project-error', 'project-deleted'],
   components: { Notification, ProjectInput },
   props: {
     team: {
@@ -115,13 +115,13 @@ export default defineComponent({
         this.projectsStore.removeProjectImage(this.project)
           .then(result => {
             if (result) {
-              this.flashStore.$patch({ message: 'image removed', level: LogLevel.success })
+              this.flashStore.$patch({ message: 'Image removed', level: LogLevel.success })
               Object.assign(this.project, result)
               this.clone = { ...this.project }
             }
           })
           .catch(error => {
-            this.flashStore.$patch({ message: 'Error removing Design Doc. Please try again.', level: LogLevel.error })
+            this.flashStore.$patch({ message: 'Error removing image. Please try again.', level: LogLevel.error })
           })
           .finally(()=> {
             this.isSaving = false
@@ -138,7 +138,7 @@ export default defineComponent({
               Object.assign(this.project, result)
               this.clone = { ...this.project }
               this.flashStore.$patch({ message: 'Project saved', level: LogLevel.success })
-              this.$emit("project-saved", this.project)
+              this.$emit('project-saved', this.project)
             })
             .catch(error => {
               log.error(MODULE_ID, error)
@@ -157,6 +157,7 @@ export default defineComponent({
           }
           this.flashStore.$patch({ message: error, level: LogLevel.error })
           this.isSaving = false
+          this.$emit('project-error')
         }
       }
     },

@@ -6,7 +6,7 @@
         <router-link
           v-if="canEdit"
           :to="{ name: 'team-project-edit'}"
-          class="button is-info is-small is-outlined ml-2"
+          class="button is-info is-small is-rounded ml-2"
         >
           Edit Project
         </router-link>

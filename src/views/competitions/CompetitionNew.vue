@@ -24,6 +24,7 @@ import { mapStores } from 'pinia'
 import { useUserStore } from '@/store/user'
 import { useFlashStore } from '@/store/flash'
 import { ERROR_AUTH } from '@/consts'
+import { scrollTop } from '@/utils/window'
 import log from '@/services/logger'
 import { Competition } from '@/types'
 
@@ -49,7 +50,7 @@ export default defineComponent({
     onSaved(result:Competition) {
       this.$router.replace({ name: 'comp-edit', params: {id: result.id }})
         .then(() => {
-          window.scrollTo({top : 0})
+          scrollTop()
           this.flashStore.$patch({ message: 'Collaboration saved', level: LogLevel.success })
         })
     },

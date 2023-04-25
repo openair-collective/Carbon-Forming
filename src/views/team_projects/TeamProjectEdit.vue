@@ -16,6 +16,8 @@
       :project="project"
       @cancel="onCancel"
       @project-deleted="onProjectDeleted"
+      @project-saved="scrollTop"
+      @project-error="scrollTop"
     />
     <loading v-else />
   </section>
@@ -31,6 +33,7 @@ import { useTeamsStore } from '@/store/teams'
 import { useUserStore } from '@/store/user'
 import { useFlashStore } from '@/store/flash'
 import { canEditTeamWithId } from '@/helpers/authHelper'
+import { scrollTop } from '@/utils/window'
 import ProjectForm from '@/components/project/ProjectForm.vue'
 import Loading from '@/components/Loading.vue'
 
@@ -66,6 +69,7 @@ export default defineComponent({
     }
   },
   methods: {
+    scrollTop,
     onCancel() {
       const project_id = this.$route.params.project_id
       this.$router.replace({ name: 'team-project-show', params: { project_id }})
@@ -78,7 +82,7 @@ export default defineComponent({
             level: LogLevel.success
           })
         })
-    },
+    }
   }
 })
 

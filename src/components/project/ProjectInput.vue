@@ -30,7 +30,7 @@
       <button
         v-if="project.image"
         @click.prevent="$emit('remove-image')"
-        class="button is-warning"
+        class="button is-danger"
       >
         Remove Image
       </button>
@@ -182,6 +182,11 @@ export default defineComponent({
       kImagePlaceholder: PROJECT_IMAGE_PLACEHOLDER
     }
   },
+  watch: {
+    project() {
+      this.updateImagePreview()
+    }
+  },
   computed: {
     ...mapStores(useProjectsStore),
     hasValidMaterials():boolean {
@@ -192,14 +197,17 @@ export default defineComponent({
     },
     hasValidImage():boolean {
       let result = false
-      if (this.docFile) {
+      if (this.project.image && this.project.image.url) {
+        result = true
+      }
+      else if (this.docFile) {
         result = this.docFile.size < IMAGE_MAX_FILE_SIZE
       }
       return result
     },
     imageUrl():string { 
       let result = this.imagePreviewUrl || PROJECT_IMAGE_PLACEHOLDER
-      if (this.project.image && this.project.image.url) {
+      if (this.project && this.project.image && this.project.image.url) {
         result = this.project.image.url
       }
       return result
@@ -225,11 +233,11 @@ export default defineComponent({
     onImageFileChange(event:Event) {
       const files = (event.target as HTMLInputElement).files
       this.docFile = files && files.length ? files[0] : undefined
-      this.showImagePreview()
+      this.updateImagePreview()
     },
-    showImagePreview (){
+    updateImagePreview (){
       const image:HTMLInputElement = this.$refs.file_image as HTMLInputElement
-      const file: File = (image.files as FileList)[0]
+      const file:File|null = image && image.files ? (image.files as FileList)[0] : null
       this.imagePreviewUrl = file ? URL.createObjectURL(file) : PROJECT_IMAGE_PLACEHOLDER
     }
   }

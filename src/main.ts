@@ -37,4 +37,6 @@ modal_store.$subscribe((mutation, state) => {
   }
 })
 
-console.info(`Version: ${__APP_VERSION__}+build.${__COMMIT_HASH__}`)
+const hash = __COMMIT_HASH__.replace(/(\r\n|\n|\r)/gm, "")
+
+console.info(`Version: ${__APP_VERSION__}+build.${hash} | Dev Mode: ${ import.meta.env.DEV }`)
