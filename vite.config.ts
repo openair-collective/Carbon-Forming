@@ -24,7 +24,7 @@ export default defineConfig(({command, mode }) => {
     },
     build: {
       minify: mode !== 'development',
-      // sourcemap: mode === 'development' // still an issue https://github.com/vitejs/vite-plugin-vue/issues/35
+      sourcemap: mode === 'development' // still an issue https://github.com/vitejs/vite-plugin-vue/issues/35
     },
     define: {
       '__APP_VERSION__': JSON.stringify(process.env.npm_package_version),
