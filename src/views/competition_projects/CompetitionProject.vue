@@ -3,7 +3,7 @@
     <ul>
       <li>
         <router-link :to="{ name: 'comp-projects', params: { id: $route.params.id }}">
-          &lt; Back to projects
+          &lt; Back to ideas
         </router-link>
       </li>
     </ul>

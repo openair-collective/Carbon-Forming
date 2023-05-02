@@ -10,7 +10,7 @@
     class="is-flex is-flex-direction-column is-align-items-center p-6"
   >
     <p class="mb-4 is-size-4">
-      No projects yet
+      No ideas yet
     </p>
     <button
       @click="onEnterCompetition"

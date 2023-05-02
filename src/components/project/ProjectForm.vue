@@ -19,7 +19,7 @@
           :class="{'is-loading': isSaving}"
           :disabled="disableSubmit"
         >
-          Save Project
+          Save Idea
         </button>
       </div>
     </div>
@@ -28,13 +28,13 @@
     v-if="project.id"
     class="mt-6 p-4 has-background-light"
   >
-    <h3 class="title is-5">Delete Project</h3>
-    <p><strong>Warning:</strong> Deleting a Project is irreversible. All associated data will also be deleted.</p>
+    <h3 class="title is-5">Delete Idea</h3>
+    <p><strong>Warning:</strong> Deleting an Idea is irreversible. All associated data will also be deleted.</p>
     <button
       class="button is-danger mt-3"
       @click="confirmDelete(project)"
     >
-      Delete Project
+      Delete Idea
     </button>
   </div>
 </template>

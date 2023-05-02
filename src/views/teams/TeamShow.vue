@@ -53,7 +53,7 @@
           role="tab"
           :aria-selected="activeTab === eTabs.PROJECTS"
         >
-          <a>Projects</a>
+          <a>Ideas</a>
         </li>
         <li
           @click="onTabClick(eTabs.COMPS)"
@@ -87,7 +87,7 @@ import { Team } from '@/types'
 import { canEditTeamWithId } from '@/helpers/authHelper'
 import Loading from '@/components/Loading.vue'
 import { getTeamLocation, getTeamAvatar } from '@/helpers/teamHelper'
-import { TEAM_AVATAR_PLACEHOLDER, ERROR_NOT_FOUND } from '@/consts'
+import { ERROR_NOT_FOUND } from '@/consts'
 import log from '@/services/logger'
 import { LogLevel } from '@/enums'
 

@@ -120,7 +120,7 @@
     class="mt-6 p-4 has-background-light"
   >
     <h3 class="title is-5">Delete Collaboration</h3>
-    <p><strong>Warning:</strong> Deleting a Collaboration is irreversible. All associated data, including any submitted Projects, will also be deleted.</p>
+    <p><strong>Warning:</strong> Deleting a Collaboration is irreversible. All associated data, including any submitted Ideas, will also be deleted.</p>
     <button
       class="button is-danger mt-3"
       @click="confirmDelete(competition)"

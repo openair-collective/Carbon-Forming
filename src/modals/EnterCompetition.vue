@@ -23,7 +23,7 @@
         <h3 class="title is-4 mb-6 has-text-centered">
           Select a team or create a new one
         </h3>
-        <div>
+        <div v-if="userStore.teams">
           <div class="is-flex is-flex-wrap-wrap is-justify-content-center mb-4">
             <div
               v-for="(user_team, i) in userStore.teams" 
@@ -57,7 +57,7 @@
         class="container is-max-desktop"
       >
         <h3 class="title is-4 mb-6 has-text-centered">
-          Create your project
+          Create your Idea
         </h3>
         <notification 
           v-if="error"
@@ -101,7 +101,7 @@
         <div class="column is-6">
           <ol>
             <li :class="{ 'active': step > 0 }">Step 1: Choose your team</li>
-            <li :class="{ 'active': step >= eSteps.CREATE_PROJECT }">Step 2: Upload your project</li>
+            <li :class="{ 'active': step >= eSteps.CREATE_PROJECT }">Step 2: Create your idea</li>
           </ol>
         </div>
         <div class="column has-text-right has-text-centered-mobile">
@@ -112,7 +112,7 @@
             :class="{'is-loading': isSaving}"
             :disabled="disableProjectSubmit"
           >
-            Submit your project
+            Submit your Idea
           </button>
           <button
             v-else
@@ -121,7 +121,7 @@
             :class="{'is-loading': isSaving}"
             :disabled="!team"
           >
-            Next: Create your Project
+            Next: Create your Idea
           </button>
         </div>
       </div>
@@ -245,7 +245,7 @@ export default defineComponent({
             this.$router.push({ name: 'team-project-show', params: { id: this.team!.id, project_id: this.project.id} })
               .then(() => {
                 this.modalStore.options = {
-                  title: 'Project Submitted',
+                  title: 'Idea Submitted',
                   component: 'Message',
                   meta: {
                     message: `Well done, you're in ${comp.name}`

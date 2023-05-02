@@ -9,7 +9,7 @@
     </ul>
   </nav>
   <section>
-    <h1 class="title is-3">Add Team Project</h1>
+    <h1 class="title is-3">Add Team Idea</h1>
     <project-form
       :team="team"
       @project-saved="onProjectSaved"

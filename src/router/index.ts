@@ -67,22 +67,22 @@ const routes: RouteRecordRaw[] = [
             component: TeamDetail
           },
           {
-            path: 'projects',
+            path: 'ideas',
             name: 'team-projects',
             component: TeamProjects
           },
           {
-            path: 'projects/:project_id',
+            path: 'ideas/:project_id',
             name: 'team-project-show',
             component: TeamProject
           },
           {
-            path: 'projects/:project_id/edit',
+            path: 'ideas/:project_id/edit',
             name: 'team-project-edit',
             component: TeamProjectEdit
           },
           {
-            path: 'projects/new',
+            path: 'ideas/new',
             name: 'team-project-new',
             component: TeamProjectNew
           },
@@ -114,12 +114,12 @@ const routes: RouteRecordRaw[] = [
             component: CompetitionEnter
           },
           {
-            path: 'projects',
+            path: 'ideas',
             name: 'comp-projects',
             component: CompetitionProjects
           },
           {
-            path: 'projects/:project_id',
+            path: 'ideas/:project_id',
             name: 'comp-project-show',
             component: CompetitionProject
           }

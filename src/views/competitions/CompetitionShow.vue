@@ -84,7 +84,7 @@
           role="tab"
           :aria-selected="activeTab === eTabs.PROJECTS"
         >
-          <a>Submitted Projects</a>
+          <a>Submitted Ideas</a>
         </li>
       </ul>
     </div>
