@@ -6,7 +6,7 @@
         <h1 class="title is-4">Log in with your OpenAir Discord account</h1>
         <button class="button is-primary mb-4" @click="login">Log in with Discord</button>
       </div>
-      <a href="#" class="is-underlined">Don't have an OpenAir Discord account? Click here to create one.</a>
+      <a href="#" target="_blank" class="has-text-light">Don't have an OpenAir Discord account? <span class="is-underlined">Click here</span> to create one.</a>
     </div>
   </section>
 </template>
