@@ -62,7 +62,6 @@ function projectFactory():Project {
   return {
     id: '',
     name: '',
-    terms: false,
     design_doc_url: '',
     materials: [],
     team: undefined,
@@ -101,7 +100,7 @@ export default defineComponent({
   computed: {
     ...mapStores(useTeamsStore, useProjectsStore, useFlashStore, useModalStore),
     disableSubmit():boolean {
-      return !this.clone.name || !this.clone.terms
+      return !this.clone.name
     }
   },
   mounted() {

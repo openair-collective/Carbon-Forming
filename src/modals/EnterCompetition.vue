@@ -179,7 +179,6 @@ export default defineComponent({
       project: {
         name: '',
         design_doc_url: '',
-        terms: false,
         materials: [] as Material[],
         team: null as Team | null,
         competition: null as Competition | null
@@ -189,7 +188,7 @@ export default defineComponent({
   computed: {
     ...mapStores(useUserStore, useModalStore, useTeamsStore, useCompetitionsStore),
     disableProjectSubmit():boolean {
-      return !this.team || !this.competition || !this.project.name || !this.project.terms
+      return !this.team || !this.competition || !this.project.name
     }
   },
   async created() {

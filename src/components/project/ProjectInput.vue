@@ -131,17 +131,6 @@
       >
     </div>
   </div>
-  <hr/>
-  <h2 class="title is-4">Share your project on the OpenAir GitHub</h2>
-  <p class="mb-2">By sharing your project on the OpenAir GitHub you will help to drive innovation and progress in Carbon Dioxide Removal and Storage technology.</p>
-  <div class="field"> 
-    <div class="control">
-      <label class="checkbox">
-        <input type="checkbox" v-model="project.terms" required>
-          By ticking this checkbox you agree to have your project posted on the OpenAir Github under the <a href="#" target="_blank">open source licence</a>
-        </label>
-    </div>
-  </div>
 </template>
 
 <script lang="ts">

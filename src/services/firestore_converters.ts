@@ -42,7 +42,6 @@ export const projectConverter = {
     return {
       name: project.name,
       design_doc_url: project.design_doc_url || null,
-      terms: project.terms || false,
       materials: project.materials || [],
       team,
       competition,
@@ -55,7 +54,6 @@ export const projectConverter = {
       id: snapshot.id,
       name: data.name || '',
       design_doc_url: data.design_doc_url || '',
-      terms: data.terms || false,
       materials: data.materials || [],
       team: data.team || null,
       competition: data.competition || null,
