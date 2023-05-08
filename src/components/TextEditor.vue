@@ -4,7 +4,7 @@
 
 <script lang='ts'>
 import { defineComponent } from 'vue'
-import Quill from 'Quill'
+import Quill from 'quill'
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 

@@ -9,7 +9,7 @@
     </ul>
   </nav>
   <section>
-    <h1 class="title is-3">Edit Project</h1>
+    <h1 class="title is-3">Edit Idea</h1>
     <project-form
       v-if="project"
       :team="team"

@@ -138,7 +138,7 @@
     <div class="control">
       <label class="checkbox">
         <input type="checkbox" v-model="project.terms" required>
-          By ticking this checkbox you agree to have your project posted on the OpenAir Github under the <a href="#">open source licence</a>
+          By ticking this checkbox you agree to have your project posted on the OpenAir Github under the <a href="#" target="_blank">open source licence</a>
         </label>
     </div>
   </div>

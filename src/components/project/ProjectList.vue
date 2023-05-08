@@ -13,7 +13,7 @@
             :to="{ name: 'team-project-edit', params: { project_id: project.id }}"
             class="button is-info is-small is-rounded"
           >
-            Edit Project
+            Edit Idea
           </router-link>
         </div>
       </div>

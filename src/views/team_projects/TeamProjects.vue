@@ -10,7 +10,7 @@
     v-else
     class="is-flex is-flex-direction-column is-align-items-center p-6"
   >
-    <p class="mb-4 is-size-4 has-text-centered">No projects yet. You must join a collaboration to upload a project</p>
+    <p class="mb-4 is-size-4 has-text-centered">No ideas yet. You must join a collaboration to upload an idea.</p>
     <router-link
       :to="{ name: 'collaborations' }"
       class="button is-primary"
@@ -22,7 +22,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { Team, Project, Competition } from '@/types'
+import { Team, Project } from '@/types'
 import { mapStores } from 'pinia'
 import { useTeamsStore } from '@/store/teams'
 import { useCompetitionsStore } from '@/store/competitions'
