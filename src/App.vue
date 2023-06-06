@@ -42,7 +42,7 @@ export default defineComponent({
   &::after {
     content: "";
     background: $black;
-    clip-path: polygon(0 0, 100% 0, 100% 450px, 0 300px);
+    clip-path: polygon(0 0, 100% 0, 100% 450px, 0 350px);
     top: 0;
     right: 0;
     bottom: 0;

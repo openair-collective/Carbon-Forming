@@ -1,15 +1,22 @@
 <template>
   <section class="my-2">
-    <header class="header mb-6">
-      <div class="columns is-vcentered">
+    <header class="header has-background-black mb-6">
+      <div class="columns">
         <div class="column">
-          <figure class="image">
+          <figure class="image mb-4">
             <img :src="logo_img" />
           </figure>
         </div>
         <div class="column">
-          <h2 class="title is-4 mb-2 has-text-white">The carbon capture collaboration platform</h2>
-          <p class="has-text-white">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam sit amet blandit est. Suspendisse posuere purus vel sollicitudin finibus.</p>
+          <blockquote>
+            <p class="is-size-3 is-size-4-tablet is-size-4-mobile has-text-white">"Large groups of connected small things can achieve almost anything if connected in the right way."</p>
+            <footer class="is-size-4 is-size-5-tablet is-size-5-mobile has-text-grey">- Karl Deisseroth</footer>
+          </blockquote>
+        </div>
+      </div>
+      <div class="columns">
+        <div class="column">
+          <p class="has-text-white is-size-4 is-size-5-tablet is-size-6-mobile p-4">An open source platform to maximize creative participation in carbon removal problem-solving and innovation, launched and moderated by the OpenAir Collective's global community.</p>
         </div>
       </div>
     </header>
