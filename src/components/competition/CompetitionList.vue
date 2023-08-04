@@ -40,22 +40,12 @@
               {{ getExcerpt(comp) }}
             </div>
             <template v-if="showEnterButton">
-              <button
-                v-if="getCompState(comp) === eCompStates.IN_PROGRESS || getCompState(comp) === eCompStates.UNAVAILABLE"
-                @click.stop.prevent="onEnterCompetition(comp)"
+              <router-link
+                :to="{ name: 'comp-show', params: { id: comp.id } }"
                 class="button is-primary"
-                :disabled="getCompState(comp) === eCompStates.UNAVAILABLE"
               >
-                Join this collaboration
-              </button>
-              <button
-                v-else-if="getCompState(comp) === eCompStates.FINISHED"
-                @click.stop.prevent=""
-                class="button is-primary"
-                disabled
-              >
-                Collaboration Finished
-              </button>
+                View this collaboration
+              </router-link>
             </template>
           </router-link>
         </div>

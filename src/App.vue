@@ -70,7 +70,6 @@ export default defineComponent({
 	flex-grow: 1;
 	padding: 2em;
   margin-bottom: 4em;
-  overflow: hidden;
 	border-radius: .5em;
 	background-color: $white;
 }

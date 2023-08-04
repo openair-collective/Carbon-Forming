@@ -25,7 +25,7 @@
         <div
           v-if="imageUrl !== kImagePlaceholder" 
           class="file-image mr-4 has-border-radius-6 has-background-grey-lighter has-text-centered"
-          :style="{ 'background-image': 'url(' + imageUrl + ')' }"
+          :style="{ 'background-image': `url('${ imageUrl }')` }"
         >
         </div>
         <button

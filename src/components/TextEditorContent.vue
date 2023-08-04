@@ -1,6 +1,6 @@
 <template>
   <div class="text-editor">
-    <div class="content" v-html="valueFormatted" />
+    <div class="content" v-html="valueFormatted" ref="content"/>
   </div>
 </template>
 
@@ -18,11 +18,26 @@ export default defineComponent({
     valueFormatted():string {
       return this.value.replaceAll('<p><br></p>', '')
     }
+  },
+  mounted() {
+    const $content = this.$refs.content as HTMLDivElement
+    if ($content) {
+      const embeddedVideo = $content.querySelectorAll('iframe[src*="youtube"]')
+      embeddedVideo.forEach(function(item) {
+        let wrapper = document.createElement('div')
+        wrapper.classList.add(
+          'embedded-video',
+          'overflow-hidden'
+        )
+        wrapper.appendChild(item.cloneNode(true));
+        item.replaceWith(wrapper);
+      })
+    }
   }
 })
 </script>
 
-<style scoped>
+<style lang="scss">
 .content p > br {
   display: none;
 }
@@ -31,5 +46,20 @@ export default defineComponent({
 }
 .content h2 { 
   font-size: 2em;
+}
+.content .embedded-video {
+  background-color: $white-ter;
+}
+.content .ql-video {
+  display: block;
+  width: 100%;
+  height: 56.25vw;
+  max-height: 432px;
+  margin: 0 auto 1em;
+}
+@include from ($tablet) {
+  .content .ql-video {
+    width: 75%;
+  }
 }
 </style>
