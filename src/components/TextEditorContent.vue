@@ -54,12 +54,7 @@ export default defineComponent({
   display: block;
   width: 100%;
   height: 56.25vw;
-  max-height: 432px;
+  max-height: 360px;
   margin: 0 auto 1em;
-}
-@include from ($tablet) {
-  .content .ql-video {
-    width: 75%;
-  }
 }
 </style>

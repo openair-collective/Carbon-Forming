@@ -3,19 +3,19 @@
     v-if="competition"
     class="section is-flex is-flex-direction-column p-0"
   >
-    <header class="header mb-5">
+    <header class="header pb-5">
       <div 
         v-if="competition.image && competition.image.url"
         class="competition-image has-background-grey-dark mb-5"
         :style="{ '--background-image': `url('${ competition.image.url }')` }">
         <img :src="competition.image.url" />
       </div>
-      <div class="columns is-multiline is-gapless px-5">
-        <div class="column">
-          <h1 class="title is-3 is-size-4-mobile">
+      <div class="columns px-5">
+        <div class="column is-8">
+          <h1 class="title is-3">
             {{ competition.name }}
           </h1>
-          <div class="buttons mb-4">
+          <div class="buttons">
             <button
               v-if="competitionState === eCompStates.FINISHED"
               @click.stop.prevent=""
@@ -33,8 +33,8 @@
             </router-link>
           </div>
         </div>
-        <div class="column is-narrow">
-          <template v-if="competition.start_date && competition.end_date"> 
+        <div class="column">
+          <div v-if="competition.start_date && competition.end_date"> 
             <h2 class="title is-5 mb-4">
               {{ kDayMonth(kfsTimestampToDate(competition.start_date)) }} - {{ kDayMonthYear(kfsTimestampToDate(competition.end_date)) }}
             </h2>
@@ -44,12 +44,17 @@
               :start_date="kfsTimestampToDate(competition.start_date)"
               :end_date="kfsTimestampToDate(competition.end_date)"
             />
-          </template>
+          </div>
         </div>
       </div>
     </header>
-    <div class="px-5 my-5 is-flex-grow-1">
-      <text-editor-content :value="competition.description" />
+    <div class="px-5 my-5">
+      <div class="columns">
+        <div class="column is-8">
+          <text-editor-content :value="competition.description" />
+        </div>
+        <div class="column"></div>
+      </div>
     </div>
   </section>
   <loading v-else />
@@ -131,12 +136,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.help {
-  line-height: 30px;
-}
-.panel {
-  border-bottom-left-radius: .5em;
-  border-bottom-right-radius: .5em;
+
+.header {
+  border-bottom: 1px solid $white-ter;
 }
 
 .competition-image {
