@@ -1,11 +1,20 @@
 <template>
   <form @submit.prevent="submitForm" :disabled="isSaving">
     <div class="field"> 
-      <label class="label">Collaboration Name</label>
+      <label class="label">Build Name</label>
       <div class="control">
         <input class="input" type="text" v-model="clone.name" required>
       </div>
     </div>
+    <hr/>
+    <autocomplete
+      :label-text="'Build location'"
+      :defaultValue="locationAsString"
+      :values="locationValues"
+      :placeholder="'Search by city'"
+      @updated="onLocationSearch"
+      @selected="onLocationSelected"
+    />
     <hr/>
     <div class="field"> 
       <label class="label">Image</label>
@@ -13,7 +22,7 @@
         v-if="!clone.image" 
         class="mb-2"
       >
-        Please upload an image for your collaboration.
+        Please upload an image for your build.
       </p>
       <p 
         v-if="!clone.image"
@@ -58,7 +67,7 @@
     <hr />
     <div>
       <h2 class="title is-4">Dates</h2>
-      <h3 class="subtitle">Please list the beginning and the end date for your collaboration</h3>
+      <h3 class="subtitle">Please list the beginning and the end date for your build</h3>
       <div class="is-flex is-flex-direction-row">
         <div class="field mr-6"> 
           <label class="label">Start Date</label>
@@ -89,13 +98,13 @@
     <hr/>
     <div>
       <h2 class="title is-4">Collaboration Details</h2>
-      <h3 class="subtitle">Please describe your collaboration in detail.</h3>
+      <h3 class="subtitle">Please describe your build in detail.</h3>
       <div class="field"> 
-        <label class="label">Collaboration Details</label>
+        <label class="label">Build Details</label>
         <div class="control">
           <text-editor 
             :value="clone.description"
-            :placeholder="'Tell us about your collaboration'"
+            :placeholder="'Tell us about your build'"
             @text-change="(change) => clone.description = change" 
           />
         </div>
@@ -110,7 +119,7 @@
       </div>
       <div class="control">
         <button type="submit" class="button is-primary">
-          Save Collaboration
+          Save Build
         </button>
       </div>
     </div>
@@ -119,13 +128,13 @@
     v-if="competition.id"
     class="mt-6 p-4 has-background-light"
   >
-    <h3 class="title is-5">Delete Collaboration</h3>
-    <p><strong>Warning:</strong> Deleting a Collaboration is irreversible. All associated data, including any submitted Ideas, will also be deleted.</p>
+    <h3 class="title is-5">Delete Build</h3>
+    <p><strong>Warning:</strong> Deleting a Build is irreversible.</p>
     <button
       class="button is-danger mt-3"
       @click="confirmDelete(competition)"
     >
-      Delete Collaboration
+      Delete Build
     </button>
   </div>
 </template>
@@ -140,6 +149,8 @@ import { useFlashStore } from '@/store/flash'
 import { useModalStore } from '@/store/modal'
 import { fsTimestampToDate, lastDayOfMonth } from '@/utils/date'
 import { COMP_IMAGE_PLACEHOLDER } from '@/consts'
+import Autocomplete from '@/components/Autocomplete.vue'
+import teleport from '@/services/teleport'
 import log from '@/services/logger'
 const IMAGE_MAX_FILE_SIZE = 400 * 1000 // 400kb
 
@@ -164,14 +175,20 @@ function compFactory():Competition {
     start_date: null,
     end_date: null,
     projects: [],
-    image: null
+    image: null,
+    city: '',
+    region: '',
+    country: ''
   }
 }
 
 export default defineComponent({
   name: 'competition-form',
   emits: ['cancel', 'comp-saved', 'comp-deleted', 'remove-image'],
-  components: { TextEditor: defineAsyncComponent(() => import('@/components/TextEditor.vue')) },
+  components: { 
+    TextEditor: defineAsyncComponent(() => import('@/components/TextEditor.vue')),
+    Autocomplete
+  },
   props: {
     competition: {
       type: Object as () => Competition,
@@ -192,6 +209,7 @@ export default defineComponent({
       endDate: this.competition.end_date && dateForInput(this.competition.end_date),
       docFile: undefined as File|undefined,
       imagePreviewUrl: '',
+      locationValues: [] as string[],
       kImageMaxSize: IMAGE_MAX_FILE_SIZE,
       kImagePlaceholder: COMP_IMAGE_PLACEHOLDER
     }
@@ -215,6 +233,13 @@ export default defineComponent({
       }
       return result
     },
+    locationAsString():string {
+      let result = ''
+      if (this.clone.city && this.clone.region && this.clone.country) {
+        result = `${this.clone.city}, ${this.clone.region}, ${this.clone.country}`
+      }
+      return result
+    }
   },
   watch: {
     startDate(val) {
@@ -316,6 +341,25 @@ export default defineComponent({
       const image:HTMLInputElement = this.$refs.file_image as HTMLInputElement
       const file: File = (image.files as FileList)[0]
       this.imagePreviewUrl = file ? URL.createObjectURL(file) : COMP_IMAGE_PLACEHOLDER
+    },
+    onLocationSearch(value:string) {
+      if (value) {
+        teleport.cities(value)
+          .then(result => {
+            this.locationValues= result.map(location => {
+              return Object.values(location).join(', ')
+            })
+          })
+      }
+      else {
+        this.locationValues = []
+      }
+    },
+    onLocationSelected(value:string) {
+      const parts = value.split(',')
+      this.clone.city = (parts[0] || '').trim()
+      this.clone.region = (parts[1] || '').trim()
+      this.clone.country = (parts[2] || '').trim()
     }
   }
 })

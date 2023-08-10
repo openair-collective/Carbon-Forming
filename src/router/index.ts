@@ -24,7 +24,7 @@ const routes: RouteRecordRaw[] = [
         component: Home
       },
       {
-        path: '/collaborations/:id',
+        path: '/builds/:id',
         name: 'comp-parent',
         component: CompetitionShow, // has router-view -- container team children
         children: [
@@ -36,12 +36,12 @@ const routes: RouteRecordRaw[] = [
         ]
       },
       {
-        path: '/collaborations/:id/edit',
+        path: '/builds/:id/edit',
         name: 'comp-edit',
         component: CompetitionEdit
       },
       {
-        path: '/collaborations/new',
+        path: '/builds/new',
         name: 'comp-new',
         component: CompetitionNew
       }

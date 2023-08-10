@@ -24,7 +24,7 @@
     <div v-if="hasComps">
       <div v-if="currentCompetitions && currentCompetitions.length" class="has-text-centered mt-6 mb-4" >
         <div class="tag is-medium is-rounded">
-          Current Collaborations
+          Current Builds
         </div>
       </div>
       <competition-list 
@@ -36,7 +36,7 @@
         v-if="pastCompetitions && pastCompetitions.length"
         class="tag is-medium is-dark my-3"
       >
-        Past Collaborations
+        Past Builds
       </div>
       <competition-list
         :list="pastCompetitions"
@@ -52,7 +52,7 @@
           :to="{ name: 'comp-new' }"
           class="button is-info"
         >
-          Create a Collaboration
+          Create a Build
         </router-link>
       </div>
   </section>

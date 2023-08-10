@@ -69,7 +69,10 @@ export const compConverter = {
       description: comp.description,
       start_date: comp.start_date,
       end_date: comp.end_date,
-      image: comp.image || null
+      image: comp.image || null,
+      city: comp.city,
+      region: comp.region,
+      country: comp.country
     }
   },
   fromFirestore: (snapshot:QueryDocumentSnapshot, options:SnapshotOptions) => {
@@ -80,7 +83,10 @@ export const compConverter = {
       description: data.description || '',
       start_date: data.start_date,
       end_date: data.end_date,
-      image: data.image
+      image: data.image,
+      city: data.city || '',
+      region: data.region || '',
+      country: data.country || ''
     } as Competition
   }
 }

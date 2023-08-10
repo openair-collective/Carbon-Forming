@@ -8,13 +8,15 @@
         v-if="competition.image && competition.image.url"
         class="competition-image has-background-grey-dark mb-5"
         :style="{ '--background-image': `url('${ competition.image.url }')` }">
-        <img :src="competition.image.url" />
       </div>
       <div class="columns px-5">
         <div class="column is-8">
           <h1 class="title is-3">
             {{ competition.name }}
           </h1>
+          <h2 class="subtitle">
+            {{ getCompLocation(competition) }}
+          </h2>
           <div class="buttons">
             <button
               v-if="competitionState === eCompStates.FINISHED"
@@ -22,14 +24,14 @@
               class="button is-primary"
               disabled
             >
-              Collaboration finished
+              Build finished
             </button>
             <router-link 
               v-if="canEdit"
               :to="{ name: 'comp-edit', params: {id: competition.id }}"
               class="button is-info"
             >
-              Edit this Collaboration
+              Edit this Build
             </router-link>
           </div>
         </div>
@@ -77,7 +79,8 @@ import TextEditorContent from '@/components/TextEditorContent.vue'
 import { ERROR_NOT_FOUND } from '@/consts'
 import { 
   COMP_STATES, 
-  getCompState 
+  getCompState,
+  getCompLocation
 } from  '@/helpers/compHelper'
 import log from '@/services/logger'
 
@@ -107,6 +110,7 @@ export default defineComponent({
     this.setCompetitonByID(id)
   },
   methods: {
+    getCompLocation,
     getCompState,
     isEmpty,
     setCompetitonByID(id:string) {
@@ -117,11 +121,11 @@ export default defineComponent({
             this.competitionState = getCompState(this.competition)
           }
           else {
-            throw new Error('Collaboration not found.')
+            throw new Error('Build not found.')
           }
         })
         .catch(error => {
-          this.$router.replace({ name: 'collaborations'})
+          this.$router.replace({ name: 'builds'})
             .then(()=> {
               this.flashStore.$patch({ 
                 message: ERROR_NOT_FOUND,
@@ -143,37 +147,28 @@ export default defineComponent({
 
 .competition-image {
   position: relative;
-  height: 200px;
+  height: 225px;
   text-align: center;
   overflow: hidden;
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
-}
 
-@supports (filter: grayscale(1)) and (filter: blur(8px)) { 
-  .competition-image::before {
-    position: absolute;
-    z-index: 0;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    content: ' ';
-    display: block;
-    background-image: var(--background-image);
-    background-size: 300%;
-    background-position: center;
-    background-repeat: no-repeat;
-    filter: grayscale(1) blur(8px) brightness(.25);
+  @include from($tablet) {
+    height: 275px;
   }
 }
-.competition-image img {
-  max-height: 100%;
+.competition-image::before {
   position: absolute;
-  z-index: 1;
+  z-index: 0;
   top: 0;
   left: 0;
+  bottom: 0;
   right: 0;
-  margin: 0 auto;
+  content: ' ';
+  display: block;
+  background-image: var(--background-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 </style>

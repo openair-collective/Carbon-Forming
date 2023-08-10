@@ -51,8 +51,11 @@ export type Competition = {
   description:string
   start_date:Timestamp | null
   end_date:Timestamp | null
-  projects?: Project[],
+  projects?: Project[]
   image:FileUpload | null
+  city:string
+  region:string
+  country:string
 }
 
 export type Material = {
