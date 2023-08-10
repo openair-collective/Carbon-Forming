@@ -3,9 +3,9 @@
     <div class="container is-max-widescreen">
       <div class="navbar-brand">
         <div class="navbar-item">
-          <h1 class="title is-4">
+          <h1 class="title is-4 is-uppercase pr-4">
             <router-link :to="{ name: 'home'}">
-              CC
+              Carbon Crowd
             </router-link>
           </h1>
         </div>
@@ -24,8 +24,7 @@
       </div>
       <div id="mainNavbar" class="navbar-menu is-black" :class="{ 'is-active': mobileMenuActive}">
         <div class="navbar-start">
-          <router-link :to="{ name: 'teams' }" class="navbar-item button is-black" :class="{'router-link-active': activeTeamRoute}">Teams</router-link>
-          <router-link :to="{ name: 'collaborations' }" class="navbar-item button is-black" :class="{'router-link-active': activeCompRoute}">Collaborations</router-link>
+          <router-link :to="{ name: 'home' }" class="navbar-item button is-black">Home</router-link>
           <router-link :to="{ name: 'about' }" class="navbar-item button is-black">About</router-link>
         </div>
         <div v-if="isAuthenticated" class="navbar-end">
@@ -39,13 +38,6 @@
             >
               <img class="is-rounded" :src="profile.avatar" />
             </div>
-          </div>
-        </div>
-        <div v-else class="navbar-end">
-          <div class="navbar-item">
-            <router-link :to="{name: 'login'}" class="button is-primary is-small">
-              Login
-            </router-link>
           </div>
         </div>
       </div>
@@ -73,14 +65,6 @@ export default defineComponent({
     ...mapStores(useUserStore, useFlashStore),
     ...mapState(useUserStore, ['profile', 'isAuthenticated'])
   },
-  watch: {
-    $route() {
-      this.navStateCheck()
-    }
-  },
-  mounted() {
-    this.navStateCheck()
-  },
   methods: {
     logout() {
       this.userStore.logout()
@@ -90,11 +74,6 @@ export default defineComponent({
               this.flashStore.$patch({ message: 'You have been logged out.', level: LogLevel.success })
             })
       })
-    },
-    navStateCheck() {
-      const chunks = this.$route.path.split('/')
-      this.activeTeamRoute = chunks[1] === 'teams' || chunks[1] === 'my-teams'
-      this.activeCompRoute = chunks[1] === 'collaborations'
     }
   }
 })
@@ -131,13 +110,6 @@ export default defineComponent({
   margin-right: 2rem;
   color:$primary;
   font-weight: 700;
-}
-.navbar.is-black .navbar-start > a.navbar-item:hover,
-.navbar.is-black .navbar-menu a.router-link-active,
-.navbar.is-black .navbar-menu a.router-link-active:visited,
-.navbar.is-black .navbar-menu a.router-link-active:focus {
-  color: $primary;
-  background-color: rgba(217, 217, 217, 0.15);
 }
 .navbar.is-black .navbar-end button {
   color:$black;

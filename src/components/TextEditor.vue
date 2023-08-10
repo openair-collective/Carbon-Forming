@@ -30,28 +30,29 @@ export default defineComponent({
     const ref:HTMLDivElement = this.$refs.editor as HTMLDivElement
     if (ref) {
       this.editor = new Quill(ref, {
-      modules: {
-        toolbar: [
-          ['bold', 'italic', 'underline'],
-          [{ 'header': 1 }, { 'header': 2 }], 
-          [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-        ]
-      },
-      theme: 'snow',
-      formats: ['bold', 'underline', 'italic', 'list', 'header'],
-      placeholder: this.placeholder
-    })
-    this.editor.root.innerHTML = this.value
-    this.editor.on('text-change', function () {
-      return _this.update()
-    })
+        modules: {
+          toolbar: [
+            ['bold', 'italic', 'underline'],
+            [{ 'header': 1 }, { 'header': 2 }], 
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            ['link', 'video']
+          ],
+        },
+        theme: 'snow',
+        formats: ['bold', 'underline', 'italic', 'list', 'header', 'link', 'video'],
+        placeholder: this.placeholder
+      })
+      this.editor.root.innerHTML = this.value
+      this.editor.on('text-change', function () {
+        return _this.update()
+      })
     }
   },
   methods: {
     update: function update() {
       if (this.editor) {
-        let text = this.editor.getText()
-        let value = text ? this.editor.root.innerHTML : ''
+        const text = this.editor.getText()
+        const value = text ? this.editor.root.innerHTML : ''
         this.$emit('text-change', value)
       }
     }
@@ -59,9 +60,15 @@ export default defineComponent({
 })
 </script>
 
-<style scoped>
+<style>
   .ql-container {
     min-height: 200px;
     font-size: 1em;
+  }
+
+  .ql-editor .ql-video {
+    width: 100%;
+    height: 56.25vw;
+    max-height: 576px;
   }
 </style>

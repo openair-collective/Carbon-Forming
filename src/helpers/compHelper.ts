@@ -29,3 +29,9 @@ export function getCompState(comp:Competition):COMP_STATES {
   }
   return result
 }
+
+export function getCompLocation(comp:Competition):string {
+  let location = [comp.city, comp.region, comp.country]
+  location = location.filter(v => v)
+  return location.join(', ')
+}

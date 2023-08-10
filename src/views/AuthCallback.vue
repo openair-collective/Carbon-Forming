@@ -10,12 +10,13 @@ import { useUserStore } from '@/store/user'
 import { useFlashStore } from '@/store/flash'
 import Loading from '@/components/Loading.vue'
 import log from '@/services/logger'
-import { LogLevel } from '@/enums'
+import { LogLevel, UserRole } from '@/enums'
 import { KEY_REDIRECT_PATH } from '@/consts'
 
 const MODULE_ID = 'views/AuthCallback'
 const LOGIN_ERROR = 'An unknown error occurred. Please try again.'
 const GUILD_ERROR = 'Sorry, but it looks like you are not part of the OpenAir Discord guild. Click the link below to join.'
+const ADMIN_ERROR = 'Sorry, but you need to be an Administrator to access this feature.'
 
 function getURLParameter(name:string): string | null {
   const url = window.location
@@ -51,7 +52,13 @@ export default defineComponent({
         try {
           await this.userStore.fetchUser(user.uid, user.photoURL || '')
           await this.userStore.fetchUserGuild()
-          if (!this.userStore.profile || !this.userStore.guild) {
+          if (!this.userStore.profile || this.userStore.role !== UserRole.admin) {
+            this.logout({
+              message: !this.userStore.profile ? LOGIN_ERROR : ADMIN_ERROR,
+              level: LogLevel.error
+            })
+          }
+          else if (!this.userStore.profile || !this.userStore.guild) {
             this.logout({
               message: !this.userStore.profile ? LOGIN_ERROR : GUILD_ERROR,
               level: LogLevel.error

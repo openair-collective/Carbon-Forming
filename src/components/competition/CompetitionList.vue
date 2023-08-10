@@ -19,7 +19,8 @@
             :to="{ name: 'comp-show', params: { id: comp.id } }"
             class="mb-4"
           >
-            <p class="title is-3 mb-4 is-size-4-mobile">{{ comp.name }}</p>
+            <p class="title is-3 mb-5 is-size-4-mobile">{{ comp.name }}</p>
+            <p class="subtitle mb-4">{{ getCompLocation(comp) }}</p>
             <div class="is-size-6 mb-0">
               <p 
                 v-if="comp.start_date && comp.end_date"
@@ -34,28 +35,18 @@
               <p v-else>
                 Time TBD
               </p>
-              <p v-if="getCompState(comp) === eCompStates.FINISHED" class="is-size-3">Competition finished</p>
+              <p v-if="getCompState(comp) === eCompStates.FINISHED" class="is-size-3">Build finished</p>
             </div>
             <div class="description mb-4">
               {{ getExcerpt(comp) }}
             </div>
             <template v-if="showEnterButton">
-              <button
-                v-if="getCompState(comp) === eCompStates.IN_PROGRESS || getCompState(comp) === eCompStates.UNAVAILABLE"
-                @click.stop.prevent="onEnterCompetition(comp)"
+              <router-link
+                :to="{ name: 'comp-show', params: { id: comp.id } }"
                 class="button is-primary"
-                :disabled="getCompState(comp) === eCompStates.UNAVAILABLE"
               >
-                Join this collaboration
-              </button>
-              <button
-                v-else-if="getCompState(comp) === eCompStates.FINISHED"
-                @click.stop.prevent=""
-                class="button is-primary"
-                disabled
-              >
-                Collaboration Finished
-              </button>
+                View this build
+              </router-link>
             </template>
           </router-link>
         </div>
@@ -77,9 +68,10 @@ import { mapStores } from 'pinia'
 import { useModalStore } from '@/store/modal'
 import CountdownTimer from '@/components/CountdownTimer.vue'
 import { ListType } from '@/enums'
-import { 
+import {
+  getCompLocation,
   getCompState, 
-  COMP_STATES 
+  COMP_STATES, 
 } from '@/helpers/compHelper'
 
 export default defineComponent({
@@ -115,6 +107,7 @@ export default defineComponent({
     ...mapStores(useModalStore)
   },
   methods: {
+    getCompLocation,
     getCompState,
     onEnterCompetition(comp:Competition) {
       this.$router.push({

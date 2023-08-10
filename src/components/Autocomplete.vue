@@ -116,6 +116,8 @@ export default defineComponent({
       this.searchTerm = value
       this.selectedIndex = 0
       this.$emit('selected', value)
+      const input:HTMLInputElement = this.$refs.inputRef as HTMLInputElement
+      if (input) input.blur()
     },
     onFocus(event:Event) {
       this.isInputFocused = true

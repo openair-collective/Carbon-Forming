@@ -6,19 +6,6 @@ import CompetitionShow from '@/views/competitions/CompetitionShow.vue'
 import CompetitionDetail from '@/views/competitions/CompetitionDetail.vue'
 import CompetitionNew from '@/views/competitions/CompetitionNew.vue'
 import CompetitionEdit from '@/views/competitions/CompetitionEdit.vue'
-import CompetitionEnter from '@/views/competitions/CompetitionEnter.vue'
-import CompetitionProject from '@/views/competition_projects/CompetitionProject.vue'
-import CompetitionProjects from '@/views/competition_projects/CompetitionProjects.vue'
-import Teams from '@/views/teams/Teams.vue'
-import TeamShow from '@/views/teams/TeamShow.vue'
-import TeamDetail from '@/views/teams/TeamDetail.vue'
-import TeamNew from '@/views/teams/TeamNew.vue'
-import TeamEdit from '@/views/teams/TeamEdit.vue'
-import TeamProjects from '@/views/team_projects/TeamProjects.vue'
-import TeamProjectNew from '@/views/team_projects/TeamProjectNew.vue'
-import TeamProjectEdit from '@/views/team_projects/TeamProjectEdit.vue'
-import TeamProject from '@/views/team_projects/TeamProject.vue'
-import TeamCompetitions from '@/views/team_competitions/TeamCompetitions.vue'
 import Login from '@/views/Login.vue'
 import AuthCallback from '@/views/AuthCallback.vue'
 import About from '@/views/About.vue'
@@ -37,69 +24,7 @@ const routes: RouteRecordRaw[] = [
         component: Home
       },
       {
-        path: '/teams',
-        name: 'teams',
-        component: Teams
-      },
-      {
-        path: '/my-teams',
-        name: 'my-teams',
-        component: Teams
-      },
-      {
-        path: '/teams/new',
-        name: 'teams-new',
-        component: TeamNew
-      },
-      {
-        path: '/teams/:id/edit',
-        name: 'team-edit',
-        component: TeamEdit // edit a team instance directly
-      },
-      {
-        path: '/teams/:id',
-        name: 'team-parent',
-        component: TeamShow, // has router-view -- container team children
-        children: [
-          {
-            path: '',
-            name: 'team-show',
-            component: TeamDetail
-          },
-          {
-            path: 'ideas',
-            name: 'team-projects',
-            component: TeamProjects
-          },
-          {
-            path: 'ideas/:project_id',
-            name: 'team-project-show',
-            component: TeamProject
-          },
-          {
-            path: 'ideas/:project_id/edit',
-            name: 'team-project-edit',
-            component: TeamProjectEdit
-          },
-          {
-            path: 'ideas/new',
-            name: 'team-project-new',
-            component: TeamProjectNew
-          },
-          {
-            path: 'collaborations',
-            name: 'team-collaborations',
-            component: TeamCompetitions
-          }
-        ]
-      },
-      {
-        path: '/collaborations',
-        name: 'collaborations',
-        component: Competitions,
-      },
-      {
-        path: '/collaborations/:id',
+        path: '/builds/:id',
         name: 'comp-parent',
         component: CompetitionShow, // has router-view -- container team children
         children: [
@@ -107,31 +32,16 @@ const routes: RouteRecordRaw[] = [
             path: '',
             name: 'comp-show',
             component: CompetitionDetail
-          },
-          {
-            path: 'enter',
-            name: 'comp-enter',
-            component: CompetitionEnter
-          },
-          {
-            path: 'ideas',
-            name: 'comp-projects',
-            component: CompetitionProjects
-          },
-          {
-            path: 'ideas/:project_id',
-            name: 'comp-project-show',
-            component: CompetitionProject
           }
         ]
       },
       {
-        path: '/collaborations/:id/edit',
+        path: '/builds/:id/edit',
         name: 'comp-edit',
         component: CompetitionEdit
       },
       {
-        path: '/collaborations/new',
+        path: '/builds/new',
         name: 'comp-new',
         component: CompetitionNew
       }
