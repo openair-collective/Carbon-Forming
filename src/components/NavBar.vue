@@ -26,6 +26,12 @@
         <div class="navbar-start">
           <router-link :to="{ name: 'home' }" class="navbar-item button is-black">Home</router-link>
           <router-link :to="{ name: 'about' }" class="navbar-item button is-black">About</router-link>
+          <a 
+            href="https://openaircollective.cc/event/carbon-crowd-epiphyte-build-1-hello-world/2023-08-23/"
+            class="navbar-item button is-black"
+          >
+            Calendar
+          </a>
         </div>
         <div v-if="isAuthenticated" class="navbar-end">
           <div class="navbar-item">
