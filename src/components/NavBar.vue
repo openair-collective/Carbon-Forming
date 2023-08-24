@@ -32,6 +32,8 @@
           >
             Calendar
           </a>
+          <a href="https://www.bonfire.com/store/oamission-merch/" class="navbar-item button is-black">Merch</a>
+          <a href="https://www.youtube.com/playlist?list=PL1je2pACUAbIQH3p2NlbSvzjWCoRUqxOC" class="navbar-item button is-black">YouTube</a>
         </div>
         <div v-if="isAuthenticated" class="navbar-end">
           <div class="navbar-item">
@@ -113,7 +115,7 @@ export default defineComponent({
 }
 .navbar.is-black .navbar-start > a.navbar-item,
 .navbar.is-black .navbar-start > a.navbar-item:visited {
-  margin-right: 2rem;
+  margin-right: 1rem;
   color:$primary;
   font-weight: 700;
 }
