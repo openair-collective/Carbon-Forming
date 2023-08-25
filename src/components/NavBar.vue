@@ -27,7 +27,7 @@
           <router-link :to="{ name: 'home' }" class="navbar-item button is-black">Home</router-link>
           <router-link :to="{ name: 'about' }" class="navbar-item button is-black">About</router-link>
           <a 
-            href="https://openaircollective.cc/event/carbon-crowd-epiphyte-build-1-hello-world/2023-08-23/"
+            href="https://openaircollective.cc/events/list/?tribe_eventcategory%5B0%5D=13&tribe_tags%5B0%5D=130"
             class="navbar-item button is-black"
           >
             Calendar
