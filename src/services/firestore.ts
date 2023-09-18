@@ -1,4 +1,5 @@
 import { getApp, getApps, initializeApp } from "firebase/app"
+import { getAnalytics } from "firebase/analytics"
 import { FIREBASE_CONFIG } from "@/consts"
 import { UserProfile, Team, Project, Competition } from "@/types"
 import { TeamRole } from "@/enums"
@@ -42,6 +43,10 @@ export const db = getFirestore(app)
 
 if (import.meta.env.DEV) {
   connectFirestoreEmulator(db, 'localhost', 8080)
+}
+
+if (import.meta.env.PROD) {
+  getAnalytics(FIREBASE_CONFIG.measurementId)
 }
 
 const USER_PROFILE_PARAMS_BLACKLIST = [ 'id', 'avatar']
