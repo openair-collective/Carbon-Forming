@@ -27,7 +27,7 @@
           <router-link :to="{ name: 'home' }" class="navbar-item button is-black">Home</router-link>
           <router-link :to="{ name: 'about' }" class="navbar-item button is-black">About</router-link>
           <a 
-            href="https://openaircollective.cc/events/list/?tribe_tags%5B0%5D=130"
+            href="https://openaircollective.cc/series/carbon-crowd-progress-reports-bi-weekly-webinars-with-build-teams/"
             class="navbar-item button is-black"
           >
             Calendar
